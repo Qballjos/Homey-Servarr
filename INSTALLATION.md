@@ -43,6 +43,8 @@ For each Servarr application you want to use:
 - **Base URL**: E.g. `http://192.168.1.100` or `https://radarr.example.com` (without trailing slash)
 - **Port**: Default ports are 7878 (Radarr), 8989 (Sonarr), 8686 (Lidarr)
 - **API Key**: Your Servarr API key (found in Settings → General)
+- **Manual refresh only** (optional): skip scheduled polling; refresh via widget button
+- **Test Connections** button: validates each enabled app (URL/API key) before adding
 
 ### Radarr
 - Default port: `7878`

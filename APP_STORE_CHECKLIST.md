@@ -56,12 +56,11 @@ This checklist helps ensure your app meets all requirements for Homey App Store 
   - [ ] Test error scenarios (invalid API keys, network issues)
   - [ ] Test polling functionality
   - [ ] Test toggle switches for enabling/disabling apps
-  - [ ] Verify UI for Flow card `titleFormatted` (currently warnings)
+- [ ] Verify UI for Flow cards (now with `titleFormatted`)
 
 ## 🚨 Critical Issues to Fix
 
 1. **Testing Required** - App must be thoroughly tested before submission
-2. **Optional**: Add `titleFormatted` to relevant Flow cards (warnings only)
 
 ## 📋 Submission Process
 

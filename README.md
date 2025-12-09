@@ -18,6 +18,8 @@ This application is optimized for minimal CPU/memory usage and delivers the requ
    - Per-item controls: remove or block+remove downloads, with app color flags (Sonarr blue, Radarr yellow, Lidarr green)
    - Note: per-item pause/resume is not supported by Servarr APIs; only remove/block per item or pause/resume the full queue (per app/all)
    - Remove = remove from queue/client; Block = blocklist + remove
+   - Badges: shows ETA (hh:mm) when available and size (MB/GB) per item
+   - Refresh button: on-demand refresh without extra polling
 
 ### Flow Cards
 
@@ -44,6 +46,8 @@ When adding the device, configure:
 - **Radarr**: Base URL, port (default 7878), API key
 - **Sonarr**: Base URL, port (default 8989), API key
 - **Lidarr**: Base URL, port (default 8686), API key
+- **Manual refresh only** (optional): skip scheduled polling; use widget refresh instead
+- **Test Connections** button in pairing to verify URLs/API keys per app
 
 You don't need to configure all apps - only the apps you use.
 
