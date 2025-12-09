@@ -1,9 +1,9 @@
 # Future Improvements
 
 ## UI & Flow Polish
-- [ ] Add `titleFormatted` to Flow cards (download_finished, pause_app) to remove warnings and improve readability.
-- [ ] Queue widget: optional sort (status/ETA) and compact badges (ETA/size) with minimal text.
-- [ ] Add an optional “Refresh” button in widgets to update on demand without increasing polling.
+- [x] Add `titleFormatted` to Flow cards (download_finished, pause_app) to remove warnings and improve readability.
+- [x] Queue widget: optional sort (status/ETA) and compact badges (ETA/size) with minimal text.
+- [x] Add an optional “Refresh” button in widgets to update on demand without increasing polling.
 
 ## Controls & Actions
 - [ ] Expose blocklist toggle with brief description in UI/README.
