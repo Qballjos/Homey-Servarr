@@ -106,6 +106,10 @@ For each Servarr application you want to use:
 #### Search Missing Items (per app)
 - Triggers a search for missing/wanted items for the chosen app
 
+#### Toggle Monitored Status
+- Enable/disable monitoring for a specific media item by title
+- Searches for the item by title and toggles its monitored status
+
 ## Troubleshooting
 
 ### App cannot connect to Servarr
@@ -130,8 +134,10 @@ For each Servarr application you want to use:
 ## Performance
 
 The app is optimized for low resource usage:
-- Polling interval: 5 minutes
-- Minimal API calls
+- Polling interval: 5 minutes for queue/releases
+- Extended polling: 15 minutes for health checks, missing count, and library size
+- Minimal API calls (counts instead of full lists where possible)
 - Efficient data caching
+- Manual refresh mode: option to disable scheduled polling
 
 For questions or problems, consult the README.md or Homey Developer documentation.

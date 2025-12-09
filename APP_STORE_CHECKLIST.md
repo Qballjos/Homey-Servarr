@@ -7,9 +7,10 @@ This checklist helps ensure your app meets all requirements for Homey App Store 
 ### App Completeness
 - [x] App is fully functional
 - [x] No crashes or critical bugs
-- [x] All Flow Cards implemented and working
-- [x] Widgets implemented and working
-- [x] Proper error handling
+- [x] All Flow Cards implemented and working (4 triggers, 7 actions)
+- [x] Widgets implemented and working (2 widgets with enhanced features)
+- [x] All capabilities implemented (5 capabilities)
+- [x] Proper error handling (per-app errors, retry logic, sanitized logs)
 - [x] App validated (`homey app validate` at publish level)
 
 ### Required Assets
@@ -49,14 +50,19 @@ This checklist helps ensure your app meets all requirements for Homey App Store 
 
 ### Testing
 - [ ] **REQUIRED: Thorough testing on Homey Pro Mini**
-  - [ ] Test device pairing
-  - [ ] Test all Flow Cards (triggers and actions)
-  - [ ] Test widgets on dashboard
-  - [ ] Test with different Servarr configurations
-  - [ ] Test error scenarios (invalid API keys, network issues)
-  - [ ] Test polling functionality
+  - [ ] Test device pairing with test connections button
+  - [ ] Test all Flow Cards:
+    - [ ] Triggers: download finished, queue empty, health check failed, media added
+    - [ ] Actions: pause/resume all/app, search missing, toggle monitored
+  - [ ] Test widgets on dashboard (releases, queue with filters/badges/actions)
+  - [ ] Test all capabilities (today_releases, queue_count, missing_count, library_size, queue_paused)
+  - [ ] Test with different Servarr configurations (single app, multiple apps)
+  - [ ] Test error scenarios (invalid API keys, network issues, per-app errors)
+  - [ ] Test polling functionality (5 min for queue/releases, 15 min for health/missing/library)
   - [ ] Test toggle switches for enabling/disabling apps
-- [ ] Verify UI for Flow cards (now with `titleFormatted`)
+  - [ ] Test manual refresh mode
+  - [ ] Test per-app refresh buttons in widgets
+- [x] Verify UI for Flow cards (all have `titleFormatted`)
 
 ## 🚨 Critical Issues to Fix
 

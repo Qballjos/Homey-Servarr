@@ -35,6 +35,7 @@ This application is optimized for minimal CPU/memory usage and delivers the requ
 - **Pause [APP] Downloads** - Pauses downloads for a specific app (Radarr/Sonarr/Lidarr)
 - **Resume [APP] Downloads** - Resumes downloads for a specific app (Radarr/Sonarr/Lidarr)
 - **Search missing items for [APP]** - Triggers a search for missing/wanted items for the chosen app
+- **Toggle monitored status** - Enable/disable monitoring for a specific media item by title
 
 ## 🚀 Installation
 
@@ -59,10 +60,12 @@ You don't need to configure all apps - only the apps you use.
 
 ### Performance Optimizations
 
-- **Polling Interval**: 5 minutes for most data (as required)
-- **Efficient API Calls**: Minimal data transfer, only required information
+- **Polling Interval**: 5 minutes for queue/releases (as required)
+- **Extended Polling**: 15 minutes for health checks, missing count, and library size
+- **Efficient API Calls**: Minimal data transfer, only required information (counts instead of full lists)
 - **Caching**: Results are cached where possible
 - **Lightweight**: Optimized for Homey Pro Mini
+- **Manual Refresh Mode**: Option to disable scheduled polling and refresh on-demand only
 
 ### API Communication
 
@@ -77,6 +80,7 @@ The device has the following capabilities:
 - `text_today_releases` - Text display of the number of releases today
 - `measure_queue_count` - Measurement of the number of items in the queue
 - `measure_missing_count` - Count of missing/wanted items across enabled apps
+- `measure_library_size` - Total number of movies/series/albums in library
 - `queue_paused` - Indicates if any configured app queue is paused
 
 ## 📝 Development
