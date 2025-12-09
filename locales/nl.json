@@ -1,0 +1,57 @@
+{
+  "app": {
+    "name": "Servarr Flow Control",
+    "description": "Lichtgewicht monitoring en Flow-brug voor Servarr-suite (Radarr, Sonarr, Lidarr)"
+  },
+  "driver": {
+    "servarr_hub": {
+      "name": "Servarr Control Hub"
+    }
+  },
+  "flow": {
+    "triggers": {
+      "download_finished": {
+        "title": "Een download is voltooid",
+        "args": {
+          "title": {
+            "label": "Media Titel"
+          },
+          "app": {
+            "label": "Servarr App"
+          }
+        }
+      },
+      "queue_empty": {
+        "title": "De wachtrij is leeg"
+      }
+    },
+    "actions": {
+      "pause_all": {
+        "title": "Pauzeer alle Servarr Downloads"
+      },
+      "resume_all": {
+        "title": "Hervat alle Servarr Downloads"
+      },
+      "pause_app": {
+        "title": "Pauzeer [APP] Downloads",
+        "args": {
+          "app": {
+            "label": "Servarr App"
+          }
+        }
+      }
+    }
+  },
+  "settings": {
+    "radarr_url": "Radarr URL",
+    "radarr_port": "Radarr Poort",
+    "radarr_api_key": "Radarr API Sleutel",
+    "sonarr_url": "Sonarr URL",
+    "sonarr_port": "Sonarr Poort",
+    "sonarr_api_key": "Sonarr API Sleutel",
+    "lidarr_url": "Lidarr URL",
+    "lidarr_port": "Lidarr Poort",
+    "lidarr_api_key": "Lidarr API Sleutel"
+  }
+}
+

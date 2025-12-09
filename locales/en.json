@@ -1,0 +1,57 @@
+{
+  "app": {
+    "name": "Servarr Flow Control",
+    "description": "Lightweight monitoring and Flow bridge for Servarr suite (Radarr, Sonarr, Lidarr)"
+  },
+  "driver": {
+    "servarr_hub": {
+      "name": "Servarr Control Hub"
+    }
+  },
+  "flow": {
+    "triggers": {
+      "download_finished": {
+        "title": "A download has finished",
+        "args": {
+          "title": {
+            "label": "Media Title"
+          },
+          "app": {
+            "label": "Servarr App"
+          }
+        }
+      },
+      "queue_empty": {
+        "title": "The queue is empty"
+      }
+    },
+    "actions": {
+      "pause_all": {
+        "title": "Pause all Servarr Downloads"
+      },
+      "resume_all": {
+        "title": "Resume all Servarr Downloads"
+      },
+      "pause_app": {
+        "title": "Pause [APP] Downloads",
+        "args": {
+          "app": {
+            "label": "Servarr App"
+          }
+        }
+      }
+    }
+  },
+  "settings": {
+    "radarr_url": "Radarr URL",
+    "radarr_port": "Radarr Port",
+    "radarr_api_key": "Radarr API Key",
+    "sonarr_url": "Sonarr URL",
+    "sonarr_port": "Sonarr Port",
+    "sonarr_api_key": "Sonarr API Key",
+    "lidarr_url": "Lidarr URL",
+    "lidarr_port": "Lidarr Port",
+    "lidarr_api_key": "Lidarr API Key"
+  }
+}
+

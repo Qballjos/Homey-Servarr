@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Servarr Setup</title>
+  <script src="/lib/homey.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    h2 {
+      font-size: 18px;
+      margin-top: 30px;
+      margin-bottom: 15px;
+      color: #2c3e50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .app-section {
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      background: #f9f9f9;
+    }
+    .app-section.disabled {
+      opacity: 0.5;
+      background: #f5f5f5;
+    }
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .toggle-switch {
+      position: relative;
+      width: 50px;
+      height: 26px;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 26px;
+    }
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .toggle-slider {
+      background-color: #2196F3;
+    }
+    input:checked + .toggle-slider:before {
+      transform: translateX(24px);
+    }
+    label {
+      display: block;
+      margin-bottom: 10px;
+    }
+    label input[type="text"],
+    label input[type="number"],
+    label input[type="password"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .app-config {
+      margin-top: 15px;
+    }
+    .app-config.disabled {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Servarr Configuration</h1>
+  <p>Schakel de Servarr-applicaties in die je wilt gebruiken en configureer de API-instellingen. De app werkt met Servarr op elk platform (Docker, native, Unraid, etc.).</p>
+  
+  <div class="app-section" id="radarr_section">
+    <h2>
+      <span>Radarr</span>
+      <div class="toggle-container">
+        <label class="toggle-switch">
+          <input type="checkbox" id="radarr_enabled" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </h2>
+    <div class="app-config" id="radarr_config">
+      <label>
+        Base URL:
+        <input type="text" id="radarr_url" placeholder="http://192.168.1.100 of https://radarr.example.com">
+      </label>
+      <label>
+        Port:
+        <input type="number" id="radarr_port" placeholder="7878" value="7878">
+      </label>
+      <label>
+        API Key:
+        <input type="password" id="radarr_api_key" placeholder="Your Radarr API key">
+      </label>
+    </div>
+  </div>
+  
+  <div class="app-section" id="sonarr_section">
+    <h2>
+      <span>Sonarr</span>
+      <div class="toggle-container">
+        <label class="toggle-switch">
+          <input type="checkbox" id="sonarr_enabled" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </h2>
+    <div class="app-config" id="sonarr_config">
+      <label>
+        Base URL:
+        <input type="text" id="sonarr_url" placeholder="http://192.168.1.100 of https://sonarr.example.com">
+      </label>
+      <label>
+        Port:
+        <input type="number" id="sonarr_port" placeholder="8989" value="8989">
+      </label>
+      <label>
+        API Key:
+        <input type="password" id="sonarr_api_key" placeholder="Your Sonarr API key">
+      </label>
+    </div>
+  </div>
+  
+  <div class="app-section" id="lidarr_section">
+    <h2>
+      <span>Lidarr</span>
+      <div class="toggle-container">
+        <label class="toggle-switch">
+          <input type="checkbox" id="lidarr_enabled" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </h2>
+    <div class="app-config" id="lidarr_config">
+      <label>
+        Base URL:
+        <input type="text" id="lidarr_url" placeholder="http://192.168.1.100 of https://lidarr.example.com">
+      </label>
+      <label>
+        Port:
+        <input type="number" id="lidarr_port" placeholder="8686" value="8686">
+      </label>
+      <label>
+        API Key:
+        <input type="password" id="lidarr_api_key" placeholder="Your Lidarr API key">
+      </label>
+    </div>
+  </div>
+  
+  <script>
+    Homey.ready();
+    
+    Homey.setTitle('Servarr Setup');
+    
+    // Toggle handlers for enabling/disabling apps
+    function setupToggle(appName) {
+      const toggle = document.getElementById(appName + '_enabled');
+      const section = document.getElementById(appName + '_section');
+      const config = document.getElementById(appName + '_config');
+      
+      toggle.addEventListener('change', function() {
+        if (this.checked) {
+          section.classList.remove('disabled');
+          config.classList.remove('disabled');
+        } else {
+          section.classList.add('disabled');
+          config.classList.add('disabled');
+        }
+      });
+      
+      // Initial state
+      if (!toggle.checked) {
+        section.classList.add('disabled');
+        config.classList.add('disabled');
+      }
+    }
+    
+    // Setup toggles for all apps
+    setupToggle('radarr');
+    setupToggle('sonarr');
+    setupToggle('lidarr');
+    
+    // Handle getSettings request
+    Homey.on('getSettings', (callback) => {
+      callback(null, {
+        radarr_enabled: document.getElementById('radarr_enabled').checked,
+        radarr_url: document.getElementById('radarr_url').value,
+        radarr_port: parseInt(document.getElementById('radarr_port').value) || 7878,
+        radarr_api_key: document.getElementById('radarr_api_key').value,
+        sonarr_enabled: document.getElementById('sonarr_enabled').checked,
+        sonarr_url: document.getElementById('sonarr_url').value,
+        sonarr_port: parseInt(document.getElementById('sonarr_port').value) || 8989,
+        sonarr_api_key: document.getElementById('sonarr_api_key').value,
+        lidarr_enabled: document.getElementById('lidarr_enabled').checked,
+        lidarr_url: document.getElementById('lidarr_url').value,
+        lidarr_port: parseInt(document.getElementById('lidarr_port').value) || 8686,
+        lidarr_api_key: document.getElementById('lidarr_api_key').value
+      });
+    });
+    
+    // Handle setSettings request (for editing existing device)
+    Homey.on('setSettings', (settings) => {
+      // Radarr
+      if (settings.radarr_enabled !== undefined) {
+        document.getElementById('radarr_enabled').checked = settings.radarr_enabled;
+        document.getElementById('radarr_enabled').dispatchEvent(new Event('change'));
+      }
+      if (settings.radarr_url) document.getElementById('radarr_url').value = settings.radarr_url;
+      if (settings.radarr_port) document.getElementById('radarr_port').value = settings.radarr_port;
+      if (settings.radarr_api_key) document.getElementById('radarr_api_key').value = settings.radarr_api_key;
+      
+      // Sonarr
+      if (settings.sonarr_enabled !== undefined) {
+        document.getElementById('sonarr_enabled').checked = settings.sonarr_enabled;
+        document.getElementById('sonarr_enabled').dispatchEvent(new Event('change'));
+      }
+      if (settings.sonarr_url) document.getElementById('sonarr_url').value = settings.sonarr_url;
+      if (settings.sonarr_port) document.getElementById('sonarr_port').value = settings.sonarr_port;
+      if (settings.sonarr_api_key) document.getElementById('sonarr_api_key').value = settings.sonarr_api_key;
+      
+      // Lidarr
+      if (settings.lidarr_enabled !== undefined) {
+        document.getElementById('lidarr_enabled').checked = settings.lidarr_enabled;
+        document.getElementById('lidarr_enabled').dispatchEvent(new Event('change'));
+      }
+      if (settings.lidarr_url) document.getElementById('lidarr_url').value = settings.lidarr_url;
+      if (settings.lidarr_port) document.getElementById('lidarr_port').value = settings.lidarr_port;
+      if (settings.lidarr_api_key) document.getElementById('lidarr_api_key').value = settings.lidarr_api_key;
+    });
+    
+    // Handle next button click
+    Homey.on('next', () => {
+      const settings = {
+        radarr_enabled: document.getElementById('radarr_enabled').checked,
+        radarr_url: document.getElementById('radarr_url').value,
+        radarr_port: parseInt(document.getElementById('radarr_port').value) || 7878,
+        radarr_api_key: document.getElementById('radarr_api_key').value,
+        sonarr_enabled: document.getElementById('sonarr_enabled').checked,
+        sonarr_url: document.getElementById('sonarr_url').value,
+        sonarr_port: parseInt(document.getElementById('sonarr_port').value) || 8989,
+        sonarr_api_key: document.getElementById('sonarr_api_key').value,
+        lidarr_enabled: document.getElementById('lidarr_enabled').checked,
+        lidarr_url: document.getElementById('lidarr_url').value,
+        lidarr_port: parseInt(document.getElementById('lidarr_port').value) || 8686,
+        lidarr_api_key: document.getElementById('lidarr_api_key').value
+      };
+      Homey.emit('add', settings);
+    });
+  </script>
+</body>
+</html>
+

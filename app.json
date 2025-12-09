@@ -1,0 +1,236 @@
+{
+  "id": "com.servarr.flowcontrol",
+  "version": "1.0.0",
+  "compatibility": ">=5.0.0",
+  "sdk": 3,
+  "name": {
+    "en": "Servarr Flow Control",
+    "nl": "Servarr Flow Control"
+  },
+  "description": {
+    "en": "Lightweight monitoring and Flow bridge for Servarr suite (Radarr, Sonarr, Lidarr). Works with Servarr on any platform (Docker, native, Unraid, etc.)",
+    "nl": "Lichtgewicht monitoring en Flow-brug voor Servarr-suite (Radarr, Sonarr, Lidarr). Werkt met Servarr op elk platform (Docker, native, Unraid, etc.)"
+  },
+  "category": [
+    "tools"
+  ],
+  "permissions": [],
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "Servarr Flow Control"
+  },
+  "tags": {
+    "en": [
+      "servarr",
+      "radarr",
+      "sonarr",
+      "lidarr",
+      "media",
+      "monitoring"
+    ],
+    "nl": [
+      "servarr",
+      "radarr",
+      "sonarr",
+      "lidarr",
+      "media",
+      "monitoring"
+    ]
+  },
+  "drivers": [
+    {
+      "id": "servarr_hub",
+      "name": {
+        "en": "Servarr Control Hub",
+        "nl": "Servarr Control Hub"
+      },
+      "class": "other",
+      "capabilities": [
+        "text_today_releases",
+        "measure_queue_count"
+      ],
+      "images": {
+        "small": "/drivers/servarr_hub/assets/images/small.png",
+        "large": "/drivers/servarr_hub/assets/images/large.png"
+      },
+      "pair": [
+        {
+          "id": "setup"
+        }
+      ],
+      "widgets": [
+        {
+          "id": "release_agenda",
+          "title": {
+            "en": "Release Agenda Today",
+            "nl": "Release Agenda Vandaag"
+          },
+          "capabilities": [
+            "text_today_releases"
+          ]
+        },
+        {
+          "id": "downloads_panel",
+          "title": {
+            "en": "Downloads & Action Panel",
+            "nl": "Downloads & Actiepaneel"
+          },
+          "capabilities": [
+            "measure_queue_count"
+          ]
+        }
+      ]
+    }
+  ],
+  "flow": {
+    "triggers": [
+      {
+        "id": "download_finished",
+        "title": {
+          "en": "A download has finished",
+          "nl": "Een download is voltooid"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=servarr_hub"
+          },
+          {
+            "name": "title",
+            "type": "text",
+            "label": {
+              "en": "Media Title",
+              "nl": "Media Titel"
+            }
+          },
+          {
+            "name": "app",
+            "type": "dropdown",
+            "label": {
+              "en": "Servarr App",
+              "nl": "Servarr App"
+            },
+            "values": [
+              {
+                "id": "radarr",
+                "label": {
+                  "en": "Radarr",
+                  "nl": "Radarr"
+                }
+              },
+              {
+                "id": "sonarr",
+                "label": {
+                  "en": "Sonarr",
+                  "nl": "Sonarr"
+                }
+              },
+              {
+                "id": "lidarr",
+                "label": {
+                  "en": "Lidarr",
+                  "nl": "Lidarr"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "queue_empty",
+        "title": {
+          "en": "The queue is empty",
+          "nl": "De wachtrij is leeg"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=servarr_hub"
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "id": "pause_all",
+        "title": {
+          "en": "Pause all Servarr Downloads",
+          "nl": "Pauzeer alle Servarr Downloads"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=servarr_hub"
+          }
+        ]
+      },
+      {
+        "id": "resume_all",
+        "title": {
+          "en": "Resume all Servarr Downloads",
+          "nl": "Hervat alle Servarr Downloads"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=servarr_hub"
+          }
+        ]
+      },
+      {
+        "id": "pause_app",
+        "title": {
+          "en": "Pause [APP] Downloads",
+          "nl": "Pauzeer [APP] Downloads"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=servarr_hub"
+          },
+          {
+            "name": "app",
+            "type": "dropdown",
+            "label": {
+              "en": "Servarr App",
+              "nl": "Servarr App"
+            },
+            "values": [
+              {
+                "id": "radarr",
+                "label": {
+                  "en": "Radarr",
+                  "nl": "Radarr"
+                }
+              },
+              {
+                "id": "sonarr",
+                "label": {
+                  "en": "Sonarr",
+                  "nl": "Sonarr"
+                }
+              },
+              {
+                "id": "lidarr",
+                "label": {
+                  "en": "Lidarr",
+                  "nl": "Lidarr"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+
