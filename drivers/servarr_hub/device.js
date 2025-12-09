@@ -112,7 +112,7 @@ class ServarrHubDevice extends Homey.Device {
     this.log(`Loaded configuration for ${enabledCount} enabled Servarr app(s)`);
     
     if (enabledCount === 0) {
-      this.setUnavailable('Geen Servarr-applicaties ingeschakeld');
+      this.setUnavailable('No Servarr applications enabled');
     } else {
       this.setAvailable();
     }

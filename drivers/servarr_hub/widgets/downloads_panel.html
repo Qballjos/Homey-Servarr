@@ -69,14 +69,14 @@
 <body>
   <div class="widget-container">
     <div class="queue-info">
-      <div class="label">Wachtrij</div>
+      <div class="label">Queue</div>
       <div class="count" id="queue-count">0</div>
       <div class="label" style="margin-top: 5px;">Items</div>
     </div>
     
     <div class="actions">
-      <button class="btn btn-pause" id="btn-pause">Pauzeren</button>
-      <button class="btn btn-resume" id="btn-resume">Hervatten</button>
+      <button class="btn btn-pause" id="btn-pause">Pause</button>
+      <button class="btn btn-resume" id="btn-resume">Resume</button>
     </div>
   </div>
   
@@ -106,12 +106,12 @@
       
       try {
         await device.pauseAllDownloads();
-        Homey.showNotification('Downloads gepauzeerd');
+        Homey.showNotification('Downloads paused');
       } catch (error) {
-        Homey.alert('Fout bij pauzeren: ' + error.message);
+        Homey.alert('Error pausing: ' + error.message);
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Pauzeren';
+        btn.textContent = 'Pause';
       }
     });
     
@@ -122,12 +122,12 @@
       
       try {
         await device.resumeAllDownloads();
-        Homey.showNotification('Downloads hervat');
+        Homey.showNotification('Downloads resumed');
       } catch (error) {
-        Homey.alert('Fout bij hervatten: ' + error.message);
+        Homey.alert('Error resuming: ' + error.message);
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Hervatten';
+        btn.textContent = 'Resume';
       }
     });
   </script>

@@ -1,124 +1,123 @@
-# Installatie Instructies
+# Installation Instructions
 
-## Vereisten
+## Requirements
 
-- Homey Pro Mini met firmware versie 5.0.0 of hoger
-- Servarr-applicaties (Radarr, Sonarr, Lidarr) draaiend op elk platform (Docker, native installatie, Unraid, etc.)
-- API-sleutels van je Servarr-applicaties
-- Netwerktoegang vanaf Homey naar je Servarr-servers
+- Homey Pro Mini with firmware version 5.0.0 or higher
+- Servarr applications (Radarr, Sonarr, Lidarr) running on any platform (Docker, native installation, Unraid, etc.)
+- API keys from your Servarr applications
+- Network access from Homey to your Servarr servers
 
-## Stap 1: API-sleutels ophalen
+## Step 1: Get API Keys
 
-Voor elke Servarr-applicatie die je wilt gebruiken:
+For each Servarr application you want to use:
 
-1. Open de applicatie in je browser
-2. Ga naar **Settings** → **General**
-3. Kopieer de **API Key**
+1. Open the application in your browser
+2. Go to **Settings** → **General**
+3. Copy the **API Key**
 
-## Stap 2: App installeren
+## Step 2: Install App
 
-### Optie A: Via Homey Developer Console
+### Option A: Via Homey Developer Console
 
-1. Open de Homey Developer Console (via `homey developer` CLI of web interface)
-2. Upload de app map naar Homey
-3. Installeer de app via de Developer Console
+1. Open the Homey Developer Console (via `homey developer` CLI or web interface)
+2. Upload the app folder to Homey
+3. Install the app via the Developer Console
 
-### Optie B: Via CLI
+### Option B: Via CLI
 
 ```bash
 cd "/Users/qballjos/Documents/GitHub/Homey Servarr"
 homey app install
 ```
 
-## Stap 3: Device toevoegen
+## Step 3: Add Device
 
-1. Open de Homey app op je telefoon
-2. Ga naar **Apps** → **Servarr Flow Control**
-3. Klik op **Device toevoegen**
-4. Selecteer **Servarr Control Hub**
-5. Vul de configuratie in:
+1. Open the Homey app on your phone
+2. Go to **Apps** → **Servarr Flow Control**
+3. Click **Add Device**
+4. Select **Servarr Control Hub**
+5. Fill in the configuration:
 
-Voor elke Servarr-applicatie die je wilt gebruiken:
-- **Schakel de app in** met de toggle switch bovenaan de sectie
-- **Base URL**: Bijv. `http://192.168.1.100` of `https://radarr.example.com` (zonder trailing slash)
-- **Port**: Standaard poorten zijn 7878 (Radarr), 8989 (Sonarr), 8686 (Lidarr)
-- **API Key**: Je Servarr API-sleutel (te vinden in Settings → General)
+For each Servarr application you want to use:
+- **Enable the app** with the toggle switch at the top of the section
+- **Base URL**: E.g. `http://192.168.1.100` or `https://radarr.example.com` (without trailing slash)
+- **Port**: Default ports are 7878 (Radarr), 8989 (Sonarr), 8686 (Lidarr)
+- **API Key**: Your Servarr API key (found in Settings → General)
 
 ### Radarr
-- Standaard poort: `7878`
-- Schakel in/uit met de toggle switch
+- Default port: `7878`
+- Enable/disable with the toggle switch
 
 ### Sonarr
-- Standaard poort: `8989`
-- Schakel in/uit met de toggle switch
+- Default port: `8989`
+- Enable/disable with the toggle switch
 
 ### Lidarr
-- Standaard poort: `8686`
-- Schakel in/uit met de toggle switch
+- Default port: `8686`
+- Enable/disable with the toggle switch
 
-**Let op**: 
-- Je hoeft niet alle apps te configureren - schakel alleen de apps in die je gebruikt
-- De app werkt met Servarr op elk platform (Docker, native, Unraid, etc.)
-- Je kunt later apps in- of uitschakelen via de device-instellingen
+**Note**: 
+- You don't need to configure all apps - only enable the apps you use
+- The app works with Servarr on any platform (Docker, native, Unraid, etc.)
+- You can enable/disable apps later via device settings
 
-## Stap 4: Widgets toevoegen
+## Step 4: Add Widgets
 
-1. Ga naar het Homey Dashboard
-2. Klik op **Widget toevoegen**
-3. Selecteer je **Servarr Control Hub** device
-4. Kies een van de beschikbare widgets:
-   - **Release Agenda Today** - Toont geplande releases voor vandaag
-   - **Downloads & Action Panel** - Toont wachtrijstatus met pauze/hervat knoppen
+1. Go to the Homey Dashboard
+2. Click **Add Widget**
+3. Select your **Servarr Control Hub** device
+4. Choose one of the available widgets:
+   - **Release Agenda Today** - Shows planned releases for today
+   - **Downloads & Action Panel** - Shows queue status with pause/resume buttons
 
-## Stap 5: Flow Cards gebruiken
+## Step 5: Use Flow Cards
 
 ### IF... Triggers
 
 #### Download Finished
-- Getriggerd wanneer een download succesvol is voltooid
-- Biedt media titel en app naam als tags
+- Triggered when a download successfully completes
+- Provides media title and app name as tags
 
 #### Queue Empty
-- Getriggerd wanneer de wachtrij leeg wordt
+- Triggered when the queue becomes empty
 
 ### THEN... Actions
 
 #### Pause All Downloads
-- Pauzeert downloads in alle geconfigureerde Servarr-apps
+- Pauses downloads in all configured Servarr apps
 
 #### Resume All Downloads
-- Hervat downloads in alle geconfigureerde Servarr-apps
+- Resumes downloads in all configured Servarr apps
 
 #### Pause App Downloads
-- Pauzeert downloads voor een specifieke app (Radarr/Sonarr/Lidarr)
+- Pauses downloads for a specific app (Radarr/Sonarr/Lidarr)
 
 ## Troubleshooting
 
-### App kan niet verbinden met Servarr
+### App cannot connect to Servarr
 
-1. Controleer of de Base URL correct is (zonder trailing slash)
-2. Controleer of de poort correct is
-3. Controleer of de API-sleutel correct is gekopieerd
-4. Controleer of je Servarr-applicatie bereikbaar is vanaf je Homey
+1. Check if the Base URL is correct (without trailing slash)
+2. Check if the port is correct
+3. Check if the API key is correctly copied
+4. Check if your Servarr application is accessible from your Homey
 
-### Widgets tonen geen data
+### Widgets show no data
 
-1. Wacht enkele minuten (polling interval is 5 minuten)
-2. Controleer of de device correct is geconfigureerd
-3. Controleer de Homey logs voor foutmeldingen
+1. Wait a few minutes (polling interval is 5 minutes)
+2. Check if the device is correctly configured
+3. Check Homey logs for error messages
 
-### Flow Cards werken niet
+### Flow Cards don't work
 
-1. Controleer of de device correct is toegevoegd
-2. Controleer of de API-instellingen correct zijn
-3. Controleer de Homey logs voor foutmeldingen
+1. Check if the device is correctly added
+2. Check if the API settings are correct
+3. Check Homey logs for error messages
 
 ## Performance
 
-De app is geoptimaliseerd voor lage resource-usage:
-- Polling interval: 5 minuten
-- Minimale API calls
-- Efficiënte data caching
+The app is optimized for low resource usage:
+- Polling interval: 5 minutes
+- Minimal API calls
+- Efficient data caching
 
-Voor vragen of problemen, raadpleeg de README.md of de Homey Developer documentatie.
-
+For questions or problems, consult the README.md or Homey Developer documentation.

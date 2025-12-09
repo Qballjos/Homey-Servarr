@@ -57,7 +57,7 @@ class ServarrHubDriver extends Homey.Driver {
       const hasLidarr = data.lidarr_enabled && data.lidarr_url && data.lidarr_api_key;
       
       if (!hasRadarr && !hasSonarr && !hasLidarr) {
-        throw new Error('Schakel ten minste één Servarr-applicatie in en configureer deze');
+        throw new Error('Enable at least one Servarr application and configure it');
       }
       
       // Create device with settings from pair view

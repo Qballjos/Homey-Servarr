@@ -1,98 +1,97 @@
 # Servarr Flow Control - Homey App
 
-Een extreem lichtgewicht Homey App voor de Homey Pro Mini die fungeert als een read-only monitoring interface en Flow-brug om de Servarr-suite (Radarr, Sonarr, Lidarr) te bedienen. Werkt met Servarr-applicaties op elk platform (Unraid, Docker, native installaties, etc.).
+An extremely lightweight Homey App for the Homey Pro Mini that functions as a read-only monitoring interface and Flow bridge to control the Servarr suite (Radarr, Sonarr, Lidarr). Works with Servarr applications on any platform (Unraid, Docker, native installations, etc.).
 
-## 🎯 Doel
+## 🎯 Purpose
 
-Deze applicatie is geoptimaliseerd voor minimale CPU/geheugenbelasting en levert de vereiste widgets en Flow Cards voor monitoring en controle van Servarr-applicaties.
+This application is optimized for minimal CPU/memory usage and delivers the required widgets and Flow Cards for monitoring and controlling Servarr applications.
 
-## ✨ Functionaliteit
+## ✨ Features
 
 ### Dashboard Widgets
 
-1. **Release Agenda Vandaag** - Toont het totaal aantal geplande releases (films, series, albums) voor vandaag
-2. **Downloads & Actiepaneel** - Toont de wachtrijstatus met knoppen voor pauzeren/hervatten
+1. **Release Agenda Today** - Shows the total number of planned releases (movies, series, albums) for today
+2. **Downloads & Action Panel** - Shows queue status with pause/resume buttons
 
 ### Flow Cards
 
-#### IF... Triggers (Status Rapportering)
-- **A download has finished** - Getriggerd wanneer een download succesvol is voltooid (met media titel als tag)
-- **The queue is empty** - Getriggerd wanneer de totale wachtrij van alle apps naar nul zakt
+#### IF... Triggers (Status Reporting)
+- **A download has finished** - Triggered when a download successfully completes (with media title as tag)
+- **The queue is empty** - Triggered when the total queue of all apps drops to zero
 
-#### THEN... Actions (Actie Controle)
-- **Pause all Servarr Downloads** - Pauzeert downloads in alle geconfigureerde Servarr-applicaties
-- **Resume all Servarr Downloads** - Hervat downloads in alle geconfigureerde Servarr-applicaties
-- **Pause [APP] Downloads** - Pauzeert downloads voor een specifieke app (Radarr/Sonarr/Lidarr)
+#### THEN... Actions (Action Control)
+- **Pause all Servarr Downloads** - Pauses downloads in all configured Servarr applications
+- **Resume all Servarr Downloads** - Resumes downloads in all configured Servarr applications
+- **Pause [APP] Downloads** - Pauses downloads for a specific app (Radarr/Sonarr/Lidarr)
 
-## 🚀 Installatie
+## 🚀 Installation
 
-1. Kopieer deze app naar je Homey App directory
-2. Installeer via de Homey Developer Console of via `homey app install`
-3. Voeg een "Servarr Control Hub" device toe via de Homey app
-4. Configureer de API-instellingen voor Radarr, Sonarr en/of Lidarr
+1. Copy this app to your Homey App directory
+2. Install via the Homey Developer Console or via `homey app install`
+3. Add a "Servarr Control Hub" device via the Homey app
+4. Configure the API settings for Radarr, Sonarr and/or Lidarr
 
-## ⚙️ Configuratie
+## ⚙️ Configuration
 
-Bij het toevoegen van het device configureer je:
+When adding the device, configure:
 
-- **Radarr**: Base URL, poort (standaard 7878), API-sleutel
-- **Sonarr**: Base URL, poort (standaard 8989), API-sleutel
-- **Lidarr**: Base URL, poort (standaard 8686), API-sleutel
+- **Radarr**: Base URL, port (default 7878), API key
+- **Sonarr**: Base URL, port (default 8989), API key
+- **Lidarr**: Base URL, port (default 8686), API key
 
-Je hoeft niet alle apps te configureren - alleen de apps die je gebruikt.
+You don't need to configure all apps - only the apps you use.
 
-## 🔧 Technische Details
+## 🔧 Technical Details
 
-### Performance Optimalisaties
+### Performance Optimizations
 
-- **Polling Interval**: 5 minuten voor de meeste data (zoals vereist)
-- **Efficiënte API Calls**: Minimale data transfer, alleen benodigde informatie
-- **Caching**: Resultaten worden gecached waar mogelijk
-- **Lichtgewicht**: Geoptimaliseerd voor Homey Pro Mini
+- **Polling Interval**: 5 minutes for most data (as required)
+- **Efficient API Calls**: Minimal data transfer, only required information
+- **Caching**: Results are cached where possible
+- **Lightweight**: Optimized for Homey Pro Mini
 
-### API Communicatie
+### API Communication
 
-De app communiceert rechtstreeks met de Servarr API's via HTTP/HTTPS:
+The app communicates directly with Servarr APIs via HTTP/HTTPS:
 - Radarr API v3
 - Sonarr API v3
 - Lidarr API v3
 
 ### Capabilities
 
-Het device heeft de volgende capabilities:
-- `text_today_releases` - Tekstweergave van het aantal releases vandaag
-- `measure_queue_count` - Meting van het aantal items in de wachtrij
+The device has the following capabilities:
+- `text_today_releases` - Text display of the number of releases today
+- `measure_queue_count` - Measurement of the number of items in the queue
 
-## 📝 Ontwikkeling
+## 📝 Development
 
-### Project Structuur
+### Project Structure
 
 ```
 Homey Servarr/
 ├── app.json                 # App manifest
 ├── drivers/
 │   └── servarr_hub/
-│       ├── driver.js        # Driver implementatie
-│       ├── device.js        # Device implementatie
+│       ├── driver.js        # Driver implementation
+│       ├── device.js        # Device implementation
 │       ├── pair/
 │       │   └── setup.html   # Setup interface
 │       └── widgets/         # Dashboard widgets
 ├── lib/
 │   ├── ServarrAPI.js        # API client library
-│   └── flow/                # Flow card implementaties
-├── locales/                 # Vertalingen (NL/EN)
-└── assets/                  # App iconen
+│   └── flow/                # Flow card implementations
+├── locales/                 # Translations (EN)
+└── assets/                  # App icons
 ```
 
-### Code Documentatie
+### Code Documentation
 
-De code bevat uitgebreide commentaar over efficiëntie-keuzes en implementatie details.
+The code contains extensive comments about efficiency choices and implementation details.
 
-## 📄 Licentie
+## 📄 License
 
-Deze app is ontwikkeld voor gebruik met Homey en Servarr-applicaties.
+This app is developed for use with Homey and Servarr applications.
 
-## 🤝 Ondersteuning
+## 🤝 Support
 
-Voor vragen of problemen, raadpleeg de Homey Developer documentatie of de Servarr API documentatie.
-
+For questions or problems, consult the Homey Developer documentation or the Servarr API documentation.

@@ -4,12 +4,10 @@
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "name": {
-    "en": "Servarr Flow Control",
-    "nl": "Servarr Flow Control"
+    "en": "Servarr Flow Control"
   },
   "description": {
-    "en": "Lightweight monitoring and Flow bridge for Servarr suite (Radarr, Sonarr, Lidarr). Works with Servarr on any platform (Docker, native, Unraid, etc.)",
-    "nl": "Lichtgewicht monitoring en Flow-brug voor Servarr-suite (Radarr, Sonarr, Lidarr). Werkt met Servarr op elk platform (Docker, native, Unraid, etc.)"
+    "en": "Lightweight monitoring and Flow bridge for Servarr suite (Radarr, Sonarr, Lidarr). Works with Servarr on any platform (Docker, native, Unraid, etc.)"
   },
   "category": [
     "tools"
@@ -31,22 +29,13 @@
       "lidarr",
       "media",
       "monitoring"
-    ],
-    "nl": [
-      "servarr",
-      "radarr",
-      "sonarr",
-      "lidarr",
-      "media",
-      "monitoring"
     ]
   },
   "drivers": [
     {
       "id": "servarr_hub",
       "name": {
-        "en": "Servarr Control Hub",
-        "nl": "Servarr Control Hub"
+        "en": "Servarr Control Hub"
       },
       "class": "other",
       "capabilities": [
@@ -66,8 +55,7 @@
         {
           "id": "release_agenda",
           "title": {
-            "en": "Release Agenda Today",
-            "nl": "Release Agenda Vandaag"
+            "en": "Release Agenda Today"
           },
           "capabilities": [
             "text_today_releases"
@@ -76,8 +64,7 @@
         {
           "id": "downloads_panel",
           "title": {
-            "en": "Downloads & Action Panel",
-            "nl": "Downloads & Actiepaneel"
+            "en": "Downloads & Action Panel"
           },
           "capabilities": [
             "measure_queue_count"
@@ -91,8 +78,7 @@
       {
         "id": "download_finished",
         "title": {
-          "en": "A download has finished",
-          "nl": "Een download is voltooid"
+          "en": "A download has finished"
         },
         "args": [
           {
@@ -104,37 +90,32 @@
             "name": "title",
             "type": "text",
             "label": {
-              "en": "Media Title",
-              "nl": "Media Titel"
+              "en": "Media Title"
             }
           },
           {
             "name": "app",
             "type": "dropdown",
             "label": {
-              "en": "Servarr App",
-              "nl": "Servarr App"
+              "en": "Servarr App"
             },
             "values": [
               {
                 "id": "radarr",
                 "label": {
-                  "en": "Radarr",
-                  "nl": "Radarr"
+                  "en": "Radarr"
                 }
               },
               {
                 "id": "sonarr",
                 "label": {
-                  "en": "Sonarr",
-                  "nl": "Sonarr"
+                  "en": "Sonarr"
                 }
               },
               {
                 "id": "lidarr",
                 "label": {
-                  "en": "Lidarr",
-                  "nl": "Lidarr"
+                  "en": "Lidarr"
                 }
               }
             ]
@@ -144,8 +125,7 @@
       {
         "id": "queue_empty",
         "title": {
-          "en": "The queue is empty",
-          "nl": "De wachtrij is leeg"
+          "en": "The queue is empty"
         },
         "args": [
           {
@@ -160,8 +140,7 @@
       {
         "id": "pause_all",
         "title": {
-          "en": "Pause all Servarr Downloads",
-          "nl": "Pauzeer alle Servarr Downloads"
+          "en": "Pause all Servarr Downloads"
         },
         "args": [
           {
@@ -174,8 +153,7 @@
       {
         "id": "resume_all",
         "title": {
-          "en": "Resume all Servarr Downloads",
-          "nl": "Hervat alle Servarr Downloads"
+          "en": "Resume all Servarr Downloads"
         },
         "args": [
           {
@@ -188,8 +166,7 @@
       {
         "id": "pause_app",
         "title": {
-          "en": "Pause [APP] Downloads",
-          "nl": "Pauzeer [APP] Downloads"
+          "en": "Pause [APP] Downloads"
         },
         "args": [
           {
@@ -201,29 +178,25 @@
             "name": "app",
             "type": "dropdown",
             "label": {
-              "en": "Servarr App",
-              "nl": "Servarr App"
+              "en": "Servarr App"
             },
             "values": [
               {
                 "id": "radarr",
                 "label": {
-                  "en": "Radarr",
-                  "nl": "Radarr"
+                  "en": "Radarr"
                 }
               },
               {
                 "id": "sonarr",
                 "label": {
-                  "en": "Sonarr",
-                  "nl": "Sonarr"
+                  "en": "Sonarr"
                 }
               },
               {
                 "id": "lidarr",
                 "label": {
-                  "en": "Lidarr",
-                  "nl": "Lidarr"
+                  "en": "Lidarr"
                 }
               }
             ]
