@@ -20,5 +20,5 @@
 
 ## Documentation
 - [ ] Add screenshots of widgets and a short troubleshooting section (API key/URL/SSL tips).
-- [ ] Note (optional) that `titleFormatted` is still missing but harmless.
+- [x] Note that `titleFormatted` has been added for Flow cards (warnings resolved).
 
