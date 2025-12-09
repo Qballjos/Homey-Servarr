@@ -23,6 +23,25 @@
 ## Documentation
 - [ ] Add screenshots of widgets and a short troubleshooting section (API key/URL/SSL tips).
 - [x] Note that `titleFormatted` has been added for Flow cards (warnings resolved).
-- [x] Add mini stats per app (optional) in widget footer, e.g., “R:2 S:1 L:0”.
+- [x] Add mini stats per app (optional) in widget footer, e.g., "R:2 S:1 L:0".
 - [x] Normalize ETA/size badges (hh:mm, one-decimal GB) and add status badge (Queued/Downloading/Importing).
+
+## Additional API Features (Based on Servarr API Analysis)
+
+### High Priority (Lightweight & Useful)
+- [ ] **Resume [APP] Downloads Action** - Add per-app resume Flow action (complements pause_app).
+- [ ] **Health Check Trigger** - Flow trigger when Servarr health check fails (poll every 15 min).
+- [ ] **Missing Items Count** - Capability/widget to show wanted but not downloaded items count.
+
+### Medium Priority
+- [ ] **Search for Missing Items Action** - Flow action to trigger searches for missing movies/series/albums.
+- [ ] **Queue Status Capability** - Track if queue is paused (onoff.queue_paused) for Flow conditions.
+- [ ] **Media Added Trigger** - Flow trigger when new movie/series/album is added to library.
+
+### Low Priority (Nice to Have)
+- [ ] **Toggle Monitored Status Action** - Flow action to enable/disable monitoring for specific items.
+- [ ] **Library Size Widget** - Display total number of movies/series/albums in library.
+- [ ] **Import List Status** - Monitor import lists (Trakt, etc.) status.
+
+**Note**: See `API_FEATURES_ANALYSIS.md` for detailed analysis of available Servarr API endpoints and implementation recommendations.
 
