@@ -1,64 +1,84 @@
 # Changelog
 
-## Versie 1.1.0 - Universele App met Toggle Switches
+All notable changes to this project will be documented in this file.
 
-### Nieuwe Features
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-- **Toggle Switches**: Elke Servarr-applicatie kan nu individueel worden in- of uitgeschakeld via een toggle switch in de configuratie
-- **Universele Compatibiliteit**: App werkt nu met Servarr op elk platform (Docker, native installatie, Unraid, etc.)
-- **Flexibele Configuratie**: Gebruikers kunnen kiezen welke apps ze willen gebruiken zonder alle apps te configureren
+## [1.1.0] - 2024-XX-XX - Universal App with Toggle Switches
 
-### Wijzigingen
+### Added
 
-#### Configuratie Interface
-- Toegevoegd: Toggle switches voor Radarr, Sonarr en Lidarr
-- Toegevoegd: Visuele feedback wanneer een app is uitgeschakeld (grijze sectie)
-- Verbeterd: Placeholder tekst voor Base URL ondersteunt nu zowel IP-adressen als domeinnamen
-- Verbeterd: Configuratievelden worden automatisch verborgen wanneer een app wordt uitgeschakeld
+- **Toggle Switches**: Each Servarr application can now be individually enabled/disabled via a toggle switch in the configuration
+- **Universal Compatibility**: App now works with Servarr on any platform (Docker, native installation, Unraid, etc.)
+- **Flexible Configuration**: Users can choose which apps they want to use without configuring all apps
 
-#### Device Logica
-- Wijziging: Alleen ingeschakelde apps worden geïnitialiseerd en gebruikt
-- Toegevoegd: Device status wordt automatisch bijgewerkt wanneer geen apps zijn ingeschakeld
-- Verbeterd: Betere error handling bij het initialiseren van clients
+### Changed
 
-#### Documentatie
-- Bijgewerkt: README verwijderd Unraid-specifieke referenties
-- Bijgewerkt: INSTALLATION.md met instructies voor toggle switches
-- Bijgewerkt: App beschrijving in app.json voor universele compatibiliteit
+#### Configuration Interface
+- Added: Toggle switches for Radarr, Sonarr, and Lidarr
+- Added: Visual feedback when an app is disabled (grayed out section)
+- Improved: Base URL placeholder text now supports both IP addresses and domain names
+- Improved: Configuration fields are automatically hidden when an app is disabled
 
-### Technische Details
+#### Device Logic
+- Changed: Only enabled apps are initialized and used
+- Added: Device status is automatically updated when no apps are enabled
+- Improved: Better error handling when initializing clients
 
-#### Nieuwe Settings
-- `radarr_enabled` (boolean) - Schakelt Radarr in/uit
-- `sonarr_enabled` (boolean) - Schakelt Sonarr in/uit
-- `lidarr_enabled` (boolean) - Schakelt Lidarr in/uit
+#### Documentation
+- Updated: README removed Unraid-specific references
+- Updated: INSTALLATION.md with instructions for toggle switches
+- Updated: App description in app.json for universal compatibility
 
-#### Gedrag
-- Wanneer een app wordt uitgeschakeld, wordt de client niet geïnitialiseerd
-- Alleen ingeschakelde apps worden gebruikt voor:
+### Technical Details
+
+#### New Settings
+- `radarr_enabled` (boolean) - Enables/disables Radarr
+- `sonarr_enabled` (boolean) - Enables/disables Sonarr
+- `lidarr_enabled` (boolean) - Enables/disables Lidarr
+
+#### Behavior
+- When an app is disabled, the client is not initialized
+- Only enabled apps are used for:
   - Polling (releases, queue count)
   - Flow triggers (download finished, queue empty)
   - Flow actions (pause/resume)
-- Device wordt "unavailable" wanneer geen apps zijn ingeschakeld
+- Device becomes "unavailable" when no apps are enabled
 
-### Gebruik
+### Usage
 
-1. Open device-instellingen tijdens pairing of via device-instellingen
-2. Gebruik de toggle switch bovenaan elke app-sectie om apps in/uit te schakelen
-3. Configureer alleen de ingeschakelde apps
-4. Apps kunnen op elk moment worden in- of uitgeschakeld zonder device te verwijderen
+1. Open device settings during pairing or via device settings
+2. Use the toggle switch at the top of each app section to enable/disable apps
+3. Configure only the enabled apps
+4. Apps can be enabled/disabled at any time without removing the device
 
-### Compatibiliteit
+### Compatibility
 
-- Werkt met Servarr op:
+- Works with Servarr on:
   - Docker containers
-  - Native installaties (Windows, Linux, macOS)
+  - Native installations (Windows, Linux, macOS)
   - Unraid
   - Synology NAS
   - QNAP NAS
-  - Elke andere platform waar Servarr draait
+  - Any other platform where Servarr runs
 
-### Migratie
+### Migration
 
-Bestaande devices blijven werken. Bij het bewerken van instellingen kunnen gebruikers nu toggle switches gebruiken om apps in/uit te schakelen.
+Existing devices continue to work. When editing settings, users can now use toggle switches to enable/disable apps.
 
+## [1.0.0] - 2024-XX-XX - Initial Release
+
+### Added
+
+- Initial release of Servarr Flow Control Homey App
+- Support for Radarr, Sonarr, and Lidarr
+- Dashboard widgets:
+  - Release Agenda Today
+  - Downloads & Action Panel
+- Flow Cards:
+  - Triggers: Download Finished, Queue Empty
+  - Actions: Pause All, Resume All, Pause App
+- Lightweight design optimized for Homey Pro Mini
+- 5-minute polling interval
+- Direct API communication with Servarr applications
