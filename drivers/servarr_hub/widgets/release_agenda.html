@@ -32,6 +32,39 @@
       color: #95a5a6;
       margin-top: 5px;
     }
+    .list {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0 0 0;
+      text-align: left;
+    }
+    .list li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 4px;
+      border-bottom: 1px solid #ecf0f1;
+      font-size: 14px;
+      color: #2c3e50;
+    }
+    .flag {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      display: inline-block;
+    }
+    .title {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .check {
+      color: #27ae60;
+      font-weight: 700;
+      min-width: 18px;
+      text-align: right;
+    }
   </style>
 </head>
 <body>
@@ -39,24 +72,58 @@
     <div class="label">Today</div>
     <div class="count" id="release-count">0</div>
     <div class="subtitle">Planned releases</div>
+    <ul class="list" id="release-list"></ul>
   </div>
   
   <script>
     Homey.ready();
     
     const device = Homey.getDevice();
+    const listEl = document.getElementById('release-list');
+    const countEl = document.getElementById('release-count');
+
+    const appColors = {
+      sonarr: '#3498db', // blue
+      radarr: '#f1c40f', // yellow
+      lidarr: '#27ae60', // green
+    };
+
+    function renderList(items) {
+      listEl.innerHTML = '';
+      if (!items || items.length === 0) {
+        listEl.innerHTML = '<li>No releases today</li>';
+        return;
+      }
+      for (const item of items) {
+        const color = appColors[item.app] || '#7f8c8d';
+        const check = item.hasFile ? '✓' : '';
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <span class="flag" style="background:${color};"></span>
+          <span class="title">${item.title}</span>
+          <span class="check">${check}</span>
+        `;
+        listEl.appendChild(li);
+      }
+    }
+
+    async function load() {
+      const releases = await device.getStoreValue('today_releases');
+      const count = await device.getCapabilityValue('text_today_releases');
+      countEl.textContent = count || '0';
+      renderList(releases || []);
+    }
     
     // Update on capability change
     device.on('capability:text_today_releases', (value) => {
-      document.getElementById('release-count').textContent = value || '0';
+      countEl.textContent = value || '0';
+      // refresh list from store
+      device.getStoreValue('today_releases').then(renderList);
     });
     
-    // Initial load
-    device.getCapabilityValue('text_today_releases').then((value) => {
-      document.getElementById('release-count').textContent = value || '0';
-    }).catch((error) => {
-      console.error('Error loading capability:', error);
-      document.getElementById('release-count').textContent = '0';
+    load().catch((error) => {
+      console.error('Error loading release data:', error);
+      renderList([]);
     });
   </script>
 </body>

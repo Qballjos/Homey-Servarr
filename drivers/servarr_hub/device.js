@@ -177,6 +177,7 @@ class ServarrHubDevice extends Homey.Device {
    */
   async updateTodayReleases() {
     let totalReleases = 0;
+    const releases = [];
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
@@ -186,12 +187,34 @@ class ServarrHubDevice extends Homey.Device {
       try {
         const calendar = await client.getCalendar(today, tomorrow);
         totalReleases += calendar.length;
+
+        // Map calendar entries to a simplified structure for the widget
+        for (const item of calendar) {
+          const title =
+            item.title ||
+            item.series?.title ||
+            item.movie?.title ||
+            item.album?.title ||
+            item.artist?.artistName ||
+            item.sourceTitle ||
+            'Unknown';
+
+          const hasFile = !!item.hasFile;
+
+          releases.push({
+            app: appName,
+            title,
+            hasFile,
+          });
+        }
       } catch (error) {
         this.error(`Error fetching calendar for ${appName}:`, error);
       }
     }
     
     await this.setCapabilityValue('text_today_releases', totalReleases.toString());
+    // Store detailed releases for widget rendering
+    await this.setStoreValue('today_releases', releases);
     this.log(`Today's releases: ${totalReleases}`);
   }
 
