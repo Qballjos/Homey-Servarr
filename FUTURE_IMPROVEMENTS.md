@@ -12,7 +12,7 @@
 ## Resilience & Errors
 - [x] Lightweight retry/back-off on transient network errors (single retry max).
 - [x] “Test connection” in settings/pair view to validate API URL/key per app.
-- [ ] Mask API keys in logs and error surfaces.
+- [x] Mask API keys in logs and error surfaces.
 
 ## Performance Options
 - [x] “Manual only” mode: skip scheduled polling, allow user-triggered refresh.

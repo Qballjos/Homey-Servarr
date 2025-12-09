@@ -221,7 +221,7 @@ class ServarrHubDevice extends Homey.Device {
           });
         }
       } catch (error) {
-        this.error(`Error fetching calendar for ${appName}:`, error);
+        this.error(`Error fetching calendar for ${appName}: ${error.message || error}`);
       }
     }
     
@@ -262,7 +262,7 @@ class ServarrHubDevice extends Homey.Device {
           });
         }
       } catch (error) {
-        this.error(`Error fetching queue for ${appName}:`, error);
+        this.error(`Error fetching queue for ${appName}: ${error.message || error}`);
       }
     }
     
@@ -337,7 +337,7 @@ class ServarrHubDevice extends Homey.Device {
           }
         }
       } catch (error) {
-        this.error(`Error checking downloads for ${appName}:`, error);
+        this.error(`Error checking downloads for ${appName}: ${error.message || error}`);
       }
     }
   }
@@ -355,7 +355,7 @@ class ServarrHubDevice extends Homey.Device {
         results.push({ app: appName, success: true });
         this.log(`Paused downloads for ${appName}`);
       } catch (error) {
-        this.error(`Error pausing ${appName}:`, error);
+        this.error(`Error pausing ${appName}: ${error.message || error}`);
         results.push({ app: appName, success: false, error: error.message });
       }
     }
@@ -378,7 +378,7 @@ class ServarrHubDevice extends Homey.Device {
         results.push({ app: appName, success: true });
         this.log(`Resumed downloads for ${appName}`);
       } catch (error) {
-        this.error(`Error resuming ${appName}:`, error);
+        this.error(`Error resuming ${appName}: ${error.message || error}`);
         results.push({ app: appName, success: false, error: error.message });
       }
     }
@@ -408,7 +408,7 @@ class ServarrHubDevice extends Homey.Device {
       
       return { success: true };
     } catch (error) {
-      this.error(`Error pausing ${appName}:`, error);
+      this.error(`Error pausing ${appName}: ${error.message || error}`);
       throw error;
     }
   }
