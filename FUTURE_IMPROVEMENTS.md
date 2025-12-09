@@ -29,9 +29,9 @@
 ## Additional API Features (Based on Servarr API Analysis)
 
 ### High Priority (Lightweight & Useful)
-- [ ] **Resume [APP] Downloads Action** - Add per-app resume Flow action (complements pause_app).
-- [ ] **Health Check Trigger** - Flow trigger when Servarr health check fails (poll every 15 min).
-- [ ] **Missing Items Count** - Capability/widget to show wanted but not downloaded items count.
+- [x] **Resume [APP] Downloads Action** - Add per-app resume Flow action (complements pause_app).
+- [x] **Health Check Trigger** - Flow trigger when Servarr health check fails (poll every 15 min).
+- [x] **Missing Items Count** - Capability/widget to show wanted but not downloaded items count.
 
 ### Medium Priority
 - [ ] **Search for Missing Items Action** - Flow action to trigger searches for missing movies/series/albums.

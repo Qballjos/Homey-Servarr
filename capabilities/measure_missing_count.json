@@ -1,0 +1,15 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Missing Items Count"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "decimals": 0,
+  "units": {
+    "en": "items"
+  },
+  "min": 0
+}
+

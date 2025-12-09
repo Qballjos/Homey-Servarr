@@ -17,9 +17,11 @@ class ServarrHubDriver extends Homey.Driver {
     // Get flow cards from app (they are registered in app.js)
     this._downloadFinishedTrigger = this.homey.app.downloadFinishedTrigger;
     this._queueEmptyTrigger = this.homey.app.queueEmptyTrigger;
+    this._healthCheckFailedTrigger = this.homey.app.healthCheckFailedTrigger;
     this._pauseAllAction = this.homey.app.pauseAllAction;
     this._resumeAllAction = this.homey.app.resumeAllAction;
     this._pauseAppAction = this.homey.app.pauseAppAction;
+    this._resumeAppAction = this.homey.app.resumeAppAction;
     
     // Register action handlers
     this._pauseAllAction.registerRunListener(async (args) => {
@@ -32,6 +34,10 @@ class ServarrHubDriver extends Homey.Driver {
     
     this._pauseAppAction.registerRunListener(async (args) => {
       return await args.device.pauseAppDownloads(args.app);
+    });
+    
+    this._resumeAppAction.registerRunListener(async (args) => {
+      return await args.device.resumeAppDownloads(args.app);
     });
   }
 

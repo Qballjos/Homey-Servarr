@@ -22,9 +22,11 @@ class ServarrHubDevice extends Homey.Device {
     // Initialize API clients
     this._apiClients = {};
     this._pollingInterval = null;
+    this._healthCheckInterval = null;
     this._lastQueueCount = 0;
     this._lastDownloadStates = new Map();
     this._appErrors = {};
+    this._lastHealthStatus = {}; // Track health status per app
     
     // Initialize capabilities with default values
     if (!this.hasCapability('text_today_releases')) {
@@ -33,10 +35,14 @@ class ServarrHubDevice extends Homey.Device {
     if (!this.hasCapability('measure_queue_count')) {
       await this.addCapability('measure_queue_count');
     }
+    if (!this.hasCapability('measure_missing_count')) {
+      await this.addCapability('measure_missing_count');
+    }
     
     // Set initial values
     await this.setCapabilityValue('text_today_releases', '0');
     await this.setCapabilityValue('measure_queue_count', 0);
+    await this.setCapabilityValue('measure_missing_count', 0);
     
     // Load configuration
     await this.loadConfiguration();
@@ -50,6 +56,10 @@ class ServarrHubDevice extends Homey.Device {
     });
     
     this.registerCapabilityListener('measure_queue_count', async () => {
+      // Read-only capability
+    });
+    
+    this.registerCapabilityListener('measure_missing_count', async () => {
       // Read-only capability
     });
   }
@@ -140,7 +150,17 @@ class ServarrHubDevice extends Homey.Device {
       this.updateData();
     }, 300000);
     
-    this.log('Started polling (interval: 5 minutes)');
+    // Set up health check interval (15 minutes = 900000 ms)
+    this._healthCheckInterval = setInterval(() => {
+      this.checkHealth();
+      this.updateMissingCount();
+    }, 900000);
+    
+    // Initial health check and missing count
+    this.checkHealth();
+    this.updateMissingCount();
+    
+    this.log('Started polling (interval: 5 minutes, health check & missing count: 15 minutes)');
   }
 
   /**
@@ -150,8 +170,12 @@ class ServarrHubDevice extends Homey.Device {
     if (this._pollingInterval) {
       clearInterval(this._pollingInterval);
       this._pollingInterval = null;
-      this.log('Stopped polling');
     }
+    if (this._healthCheckInterval) {
+      clearInterval(this._healthCheckInterval);
+      this._healthCheckInterval = null;
+    }
+    this.log('Stopped polling');
   }
 
   /**
@@ -292,6 +316,66 @@ class ServarrHubDevice extends Homey.Device {
   }
 
   /**
+   * Update missing items count
+   * Polls every 15 minutes (same interval as health check)
+   */
+  async updateMissingCount() {
+    let totalMissing = 0;
+    
+    for (const [appName, client] of Object.entries(this._apiClients)) {
+      try {
+        const result = await client.getMissing(1); // Use pageSize=1 to minimize data transfer
+        totalMissing += result.count || 0;
+        this._clearAppError(appName);
+      } catch (error) {
+        this.error(`Error getting missing items for ${appName}: ${error.message || error}`);
+        this._setAppError(appName, error.message || 'Missing items error');
+      }
+    }
+    
+    await this.setCapabilityValue('measure_missing_count', totalMissing);
+    this.log(`Total missing items: ${totalMissing}`);
+  }
+
+  /**
+   * Check health status for all apps
+   * Polls every 15 minutes, triggers Flow card on new errors/warnings
+   */
+  async checkHealth() {
+    for (const [appName, client] of Object.entries(this._apiClients)) {
+      try {
+        const health = await client.getHealth();
+        const currentIssues = health.filter(h => h.type === 'error' || h.type === 'warning');
+        
+        // Get previous issues for this app
+        const previousIssues = this._lastHealthStatus[appName] || [];
+        const previousIssueIds = new Set(previousIssues.map(h => h.id || h.message));
+        
+        // Trigger for new issues only
+        for (const issue of currentIssues) {
+          const issueId = issue.id || issue.message;
+          if (!previousIssueIds.has(issueId)) {
+            // New issue detected, trigger Flow card
+            const trigger = this.driver._healthCheckFailedTrigger;
+            await trigger.trigger(this, {
+              app: appName,
+              message: issue.message || issue.source || 'Health check issue',
+              type: issue.type || 'warning'
+            }, {});
+            this.log(`Health check failed for ${appName}: ${issue.message || issue.source}`);
+          }
+        }
+        
+        // Update stored health status
+        this._lastHealthStatus[appName] = currentIssues;
+      } catch (error) {
+        this.error(`Error checking health for ${appName}: ${error.message || error}`);
+        // Don't trigger on API errors (handled by app_errors)
+      }
+    }
+  }
+
+  /**
    * Check for finished downloads and trigger Flow cards
    */
   async checkFinishedDownloads() {
@@ -424,6 +508,30 @@ class ServarrHubDevice extends Homey.Device {
       return { success: true };
     } catch (error) {
       this.error(`Error pausing ${appName}: ${error.message || error}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Resume downloads for a specific app
+   */
+  async resumeAppDownloads(appName) {
+    const client = this._apiClients[appName];
+    
+    if (!client) {
+      throw new Error(`No client configured for ${appName}`);
+    }
+    
+    try {
+      await client.resumeQueue();
+      this.log(`Resumed downloads for ${appName}`);
+      
+      // Force immediate queue update
+      await this.updateQueueCount();
+      
+      return { success: true };
+    } catch (error) {
+      this.error(`Error resuming ${appName}: ${error.message || error}`);
       throw error;
     }
   }

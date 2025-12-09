@@ -135,6 +135,77 @@
             "filter": "driver_id=servarr_hub"
           }
         ]
+      },
+      {
+        "id": "health_check_failed",
+        "title": {
+          "en": "Health check failed"
+        },
+        "titleFormatted": {
+          "en": "Health check [[type]] for [[app]]: [[message]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=servarr_hub"
+          },
+          {
+            "name": "app",
+            "type": "dropdown",
+            "label": {
+              "en": "Servarr App"
+            },
+            "values": [
+              {
+                "id": "radarr",
+                "label": {
+                  "en": "Radarr"
+                }
+              },
+              {
+                "id": "sonarr",
+                "label": {
+                  "en": "Sonarr"
+                }
+              },
+              {
+                "id": "lidarr",
+                "label": {
+                  "en": "Lidarr"
+                }
+              }
+            ]
+          },
+          {
+            "name": "message",
+            "type": "text",
+            "label": {
+              "en": "Health Message"
+            }
+          },
+          {
+            "name": "type",
+            "type": "dropdown",
+            "label": {
+              "en": "Health Type"
+            },
+            "values": [
+              {
+                "id": "error",
+                "label": {
+                  "en": "Error"
+                }
+              },
+              {
+                "id": "warning",
+                "label": {
+                  "en": "Warning"
+                }
+              }
+            ]
+          }
+        ]
       }
     ],
     "actions": [
@@ -171,6 +242,49 @@
         },
         "titleFormatted": {
           "en": "Pause downloads for [[app]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=servarr_hub"
+          },
+          {
+            "name": "app",
+            "type": "dropdown",
+            "label": {
+              "en": "Servarr App"
+            },
+            "values": [
+              {
+                "id": "radarr",
+                "label": {
+                  "en": "Radarr"
+                }
+              },
+              {
+                "id": "sonarr",
+                "label": {
+                  "en": "Sonarr"
+                }
+              },
+              {
+                "id": "lidarr",
+                "label": {
+                  "en": "Lidarr"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "resume_app",
+        "title": {
+          "en": "Resume [APP] Downloads"
+        },
+        "titleFormatted": {
+          "en": "Resume downloads for [[app]]"
         },
         "args": [
           {
