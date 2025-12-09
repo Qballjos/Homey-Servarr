@@ -153,6 +153,13 @@
       text-align: left;
       line-height: 1.4;
     }
+    .errors {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #c0392b;
+      text-align: left;
+      line-height: 1.4;
+    }
   </style>
 </head>
 <body>
@@ -177,6 +184,7 @@
       <div><strong>Remove</strong>: remove from queue and download client.</div>
       <div><strong>Block</strong>: blocklist and remove from queue/client.</div>
     </div>
+    <div class="errors" id="error-box"></div>
   </div>
   
   <script>
@@ -185,6 +193,7 @@
     const device = Homey.getDevice();
     const listEl = document.getElementById('queue-list');
     const countEl = document.getElementById('queue-count');
+    const errorBox = document.getElementById('error-box');
 
     const appColors = {
       sonarr: '#3498db', // blue
@@ -284,14 +293,17 @@
     async function load() {
       const items = await device.getStoreValue('queue_items');
       const count = await device.getCapabilityValue('measure_queue_count');
+      const errors = await device.getStoreValue('app_errors');
       countEl.textContent = count || 0;
       renderList(items || []);
+      renderErrors(errors || []);
     }
     
     // Update on capability change
     device.on('capability:measure_queue_count', (value) => {
       countEl.textContent = value || 0;
       device.getStoreValue('queue_items').then(renderList);
+      device.getStoreValue('app_errors').then(renderErrors);
     });
     
     // Initial load

@@ -65,6 +65,13 @@
       min-width: 18px;
       text-align: right;
     }
+    .errors {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #c0392b;
+      text-align: left;
+      line-height: 1.4;
+    }
   </style>
 </head>
 <body>
@@ -73,6 +80,7 @@
     <div class="count" id="release-count">0</div>
     <div class="subtitle">Planned releases</div>
     <ul class="list" id="release-list"></ul>
+    <div class="errors" id="error-box"></div>
   </div>
   
   <script>
@@ -81,6 +89,7 @@
     const device = Homey.getDevice();
     const listEl = document.getElementById('release-list');
     const countEl = document.getElementById('release-count');
+    const errorBox = document.getElementById('error-box');
 
     const appColors = {
       sonarr: '#3498db', // blue
@@ -110,8 +119,10 @@
     async function load() {
       const releases = await device.getStoreValue('today_releases');
       const count = await device.getCapabilityValue('text_today_releases');
+      const errors = await device.getStoreValue('app_errors');
       countEl.textContent = count || '0';
       renderList(releases || []);
+      renderErrors(errors || []);
     }
     
     // Update on capability change
@@ -119,6 +130,7 @@
       countEl.textContent = value || '0';
       // refresh list from store
       device.getStoreValue('today_releases').then(renderList);
+      device.getStoreValue('app_errors').then(renderErrors);
     });
     
     load().catch((error) => {

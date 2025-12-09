@@ -24,6 +24,7 @@ class ServarrHubDevice extends Homey.Device {
     this._pollingInterval = null;
     this._lastQueueCount = 0;
     this._lastDownloadStates = new Map();
+    this._appErrors = {};
     
     // Initialize capabilities with default values
     if (!this.hasCapability('text_today_releases')) {
@@ -63,6 +64,7 @@ class ServarrHubDevice extends Homey.Device {
     
     // Clear existing clients
     this._apiClients = {};
+    this._appErrors = {};
     
     // Initialize Radarr client if enabled and configured
     if (settings.radarr_enabled && settings.radarr_url && settings.radarr_api_key) {
@@ -220,14 +222,17 @@ class ServarrHubDevice extends Homey.Device {
             hasFile,
           });
         }
+        this._clearAppError(appName);
       } catch (error) {
         this.error(`Error fetching calendar for ${appName}: ${error.message || error}`);
+        this._setAppError(appName, error.message || 'Calendar error');
       }
     }
     
     await this.setCapabilityValue('text_today_releases', totalReleases.toString());
     // Store detailed releases for widget rendering (keep it small)
     await this.setStoreValue('today_releases', releases.slice(0, 100));
+    await this.setStoreValue('app_errors', this._serializeErrors());
     this.log(`Today's releases: ${totalReleases}`);
   }
 
@@ -261,8 +266,10 @@ class ServarrHubDevice extends Homey.Device {
             timeLeft: item.timeleft || item.estimatedCompletionTime || null,
           });
         }
+        this._clearAppError(appName);
       } catch (error) {
         this.error(`Error fetching queue for ${appName}: ${error.message || error}`);
+        this._setAppError(appName, error.message || 'Queue error');
       }
     }
     
@@ -271,6 +278,7 @@ class ServarrHubDevice extends Homey.Device {
     
     await this.setCapabilityValue('measure_queue_count', totalQueue);
     await this.setStoreValue('queue_items', queueItems.slice(0, 100));
+    await this.setStoreValue('app_errors', this._serializeErrors());
     this._lastQueueCount = totalQueue;
     this.log(`Total queue count: ${totalQueue}`);
     
@@ -336,8 +344,10 @@ class ServarrHubDevice extends Homey.Device {
             });
           }
         }
+        this._clearAppError(appName);
       } catch (error) {
         this.error(`Error checking downloads for ${appName}: ${error.message || error}`);
+        this._setAppError(appName, error.message || 'History error');
       }
     }
   }
@@ -411,6 +421,22 @@ class ServarrHubDevice extends Homey.Device {
       this.error(`Error pausing ${appName}: ${error.message || error}`);
       throw error;
     }
+  }
+
+  _setAppError(appName, message) {
+    this._appErrors[appName] = { message, timestamp: Date.now() };
+  }
+
+  _clearAppError(appName) {
+    delete this._appErrors[appName];
+  }
+
+  _serializeErrors() {
+    return Object.entries(this._appErrors).map(([app, err]) => ({
+      app,
+      message: err.message,
+      timestamp: err.timestamp,
+    })).slice(0, 20);
   }
 
   /**
