@@ -242,11 +242,15 @@ class ServarrHubDevice extends Homey.Device {
   async updateQueueCount() {
     let totalQueue = 0;
     const queueItems = [];
+    const perAppCounts = { radarr: 0, sonarr: 0, lidarr: 0 };
     
     for (const [appName, client] of Object.entries(this._apiClients)) {
       try {
         const queue = await client.getQueue();
         totalQueue += queue.length;
+        if (perAppCounts[appName] !== undefined) {
+          perAppCounts[appName] = queue.length;
+        }
 
         for (const item of queue) {
           const title =
@@ -279,6 +283,7 @@ class ServarrHubDevice extends Homey.Device {
     await this.setCapabilityValue('measure_queue_count', totalQueue);
     await this.setStoreValue('queue_items', queueItems.slice(0, 100));
     await this.setStoreValue('app_errors', this._serializeErrors());
+    await this.setStoreValue('queue_app_counts', perAppCounts);
     this._lastQueueCount = totalQueue;
     this.log(`Total queue count: ${totalQueue}`);
     

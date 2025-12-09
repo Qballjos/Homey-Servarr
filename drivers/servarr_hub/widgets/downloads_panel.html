@@ -160,6 +160,12 @@
       text-align: left;
       line-height: 1.4;
     }
+.stats {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #7f8c8d;
+  text-align: left;
+}
   </style>
 </head>
 <body>
@@ -184,6 +190,7 @@
       <div><strong>Remove</strong>: remove from queue and download client.</div>
       <div><strong>Block</strong>: blocklist and remove from queue/client.</div>
     </div>
+    <div class="stats" id="stats"></div>
     <div class="errors" id="error-box"></div>
   </div>
   
@@ -194,12 +201,20 @@
     const listEl = document.getElementById('queue-list');
     const countEl = document.getElementById('queue-count');
     const errorBox = document.getElementById('error-box');
+    const statsEl = document.getElementById('stats');
 
     const appColors = {
       sonarr: '#3498db', // blue
       radarr: '#f1c40f', // yellow
       lidarr: '#27ae60', // green
     };
+
+    function renderStats(stats) {
+      const r = stats.radarr || 0;
+      const s = stats.sonarr || 0;
+      const l = stats.lidarr || 0;
+      statsEl.textContent = `R:${r}  S:${s}  L:${l}`;
+    }
 
     function renderList(items) {
       listEl.innerHTML = '';
@@ -229,11 +244,7 @@
         if (sizeMb) {
           const sizeBadge = document.createElement('span');
           sizeBadge.className = 'badge';
-          if (sizeMb >= 1024) {
-            sizeBadge.textContent = `${(sizeMb / 1024).toFixed(1)} GB`;
-          } else {
-            sizeBadge.textContent = `${sizeMb.toFixed(0)} MB`;
-          }
+          sizeBadge.textContent = sizeMb >= 1024 ? `${(sizeMb / 1024).toFixed(1)} GB` : `${sizeMb.toFixed(0)} MB`;
           badges.appendChild(sizeBadge);
         }
 
@@ -294,8 +305,10 @@
       const items = await device.getStoreValue('queue_items');
       const count = await device.getCapabilityValue('measure_queue_count');
       const errors = await device.getStoreValue('app_errors');
+      const stats = await device.getStoreValue('queue_app_counts');
       countEl.textContent = count || 0;
       renderList(items || []);
+      renderStats(stats || {});
       renderErrors(errors || []);
     }
     
