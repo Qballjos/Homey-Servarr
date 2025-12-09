@@ -10,23 +10,24 @@ This checklist helps ensure your app meets all requirements for Homey App Store 
 - [x] All Flow Cards implemented and working
 - [x] Widgets implemented and working
 - [x] Proper error handling
-- [ ] **MISSING: All required images/assets** ⚠️
+- [x] App validated (`homey app validate` at publish level)
 
 ### Required Assets
-- [ ] `/assets/images/small.png` (256x256px) - App icon small
-- [ ] `/assets/images/large.png` (512x512px) - App icon large  
-- [ ] `/assets/images/xlarge.png` (1024x1024px) - App icon xlarge
-- [ ] `/drivers/servarr_hub/assets/images/small.png` (256x256px) - Device icon small
-- [ ] `/drivers/servarr_hub/assets/images/large.png` (512x512px) - Device icon large
+- [x] `/assets/images/small.png` (250x175px) - App icon small
+- [x] `/assets/images/large.png` (500x350px) - App icon large  
+- [x] `/assets/images/xlarge.png` (1024x1024px) - App icon xlarge
+- [x] `/drivers/servarr_hub/assets/images/small.png` (75x75px) - Device icon small
+- [x] `/drivers/servarr_hub/assets/images/large.png` (500x500px) - Device icon large
+- [x] `/assets/icon.svg` present
 
-**Status**: ❌ **All image assets are missing - REQUIRED before submission**
+**Status**: ✅ All required image assets present
 
 ### Design & Branding
 - [x] Clear and concise app name ("Servarr Flow Control")
 - [x] Appropriate description
 - [x] No protocol names in app name
 - [x] Consistent with Homey UI standards
-- [ ] **MISSING: App icons must match Homey design guidelines** ⚠️
+- [x] App icons match required sizes
 
 ### Permissions
 - [x] Minimal permissions requested (currently none, which is good)
@@ -55,12 +56,12 @@ This checklist helps ensure your app meets all requirements for Homey App Store 
   - [ ] Test error scenarios (invalid API keys, network issues)
   - [ ] Test polling functionality
   - [ ] Test toggle switches for enabling/disabling apps
+  - [ ] Verify UI for Flow card `titleFormatted` (currently warnings)
 
 ## 🚨 Critical Issues to Fix
 
-1. **Missing Image Assets** - App cannot be submitted without all required images
-2. **Testing Required** - App must be thoroughly tested before submission
-3. **App Icons** - Must follow Homey design guidelines
+1. **Testing Required** - App must be thoroughly tested before submission
+2. **Optional**: Add `titleFormatted` to relevant Flow cards (warnings only)
 
 ## 📋 Submission Process
 
@@ -126,11 +127,11 @@ Once all requirements are met:
 
 ## 🎯 Next Steps
 
-1. **Create all required image assets** (highest priority)
-2. **Thoroughly test the app** on Homey Pro Mini
-3. **Review Homey App Store guidelines** one more time
-4. **Prepare submission** via Homey CLI
-5. **Submit and wait for review**
+1. **Thoroughly test the app** on Homey Pro Mini
+2. (Optional) Add `titleFormatted` for Flow cards to remove future warnings
+3. Review Homey App Store guidelines one more time
+4. Prepare submission via Homey CLI (`homey app publish`)
+5. Submit and wait for review
 
 ## 📚 Resources
 
