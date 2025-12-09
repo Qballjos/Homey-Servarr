@@ -30,6 +30,66 @@
       text-transform: uppercase;
       letter-spacing: 1px;
     }
+    .list {
+      list-style: none;
+      padding: 0;
+      margin: 10px 0 0 0;
+      text-align: left;
+    }
+    .list li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 4px;
+      border-bottom: 1px solid #ecf0f1;
+      font-size: 13px;
+      color: #2c3e50;
+    }
+    .flag {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      display: inline-block;
+    }
+    .title {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .status {
+      font-size: 12px;
+      color: #7f8c8d;
+      min-width: 70px;
+      text-align: right;
+    }
+    .actions-row {
+      display: flex;
+      gap: 6px;
+    }
+    .btn-mini {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-remove {
+      background: #e67e22;
+      color: white;
+    }
+    .btn-remove:hover {
+      background: #d35400;
+    }
+    .btn-block {
+      background: #c0392b;
+      color: white;
+    }
+    .btn-block:hover {
+      background: #922b21;
+    }
     .actions {
       display: flex;
       gap: 10px;
@@ -78,24 +138,97 @@
       <button class="btn btn-pause" id="btn-pause">Pause</button>
       <button class="btn btn-resume" id="btn-resume">Resume</button>
     </div>
+
+    <ul class="list" id="queue-list"></ul>
   </div>
   
   <script>
     Homey.ready();
     
     const device = Homey.getDevice();
+    const listEl = document.getElementById('queue-list');
+    const countEl = document.getElementById('queue-count');
+
+    const appColors = {
+      sonarr: '#3498db', // blue
+      radarr: '#f1c40f', // yellow
+      lidarr: '#27ae60', // green
+    };
+
+    function renderList(items) {
+      listEl.innerHTML = '';
+      if (!items || items.length === 0) {
+        listEl.innerHTML = '<li>No items in queue</li>';
+        return;
+      }
+      for (const item of items) {
+        const color = appColors[item.app] || '#7f8c8d';
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <span class="flag" style="background:${color};"></span>
+          <span class="title">${item.title}</span>
+          <span class="status">${item.status || ''}</span>
+        `;
+
+        const actions = document.createElement('div');
+        actions.className = 'actions-row';
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'btn-mini btn-remove';
+        removeBtn.textContent = 'Remove';
+        removeBtn.addEventListener('click', async () => {
+          removeBtn.disabled = true;
+          try {
+            await device.removeQueueItem(item.app, item.id, { blocklist: false });
+            Homey.showNotification('Removed from queue');
+            load(); // refresh
+          } catch (error) {
+            Homey.alert('Error removing: ' + error.message);
+          } finally {
+            removeBtn.disabled = false;
+          }
+        });
+
+        const blockBtn = document.createElement('button');
+        blockBtn.className = 'btn-mini btn-block';
+        blockBtn.textContent = 'Block';
+        blockBtn.addEventListener('click', async () => {
+          blockBtn.disabled = true;
+          try {
+            await device.removeQueueItem(item.app, item.id, { blocklist: true });
+            Homey.showNotification('Blocked and removed');
+            load(); // refresh
+          } catch (error) {
+            Homey.alert('Error blocking/removing: ' + error.message);
+          } finally {
+            blockBtn.disabled = false;
+          }
+        });
+
+        actions.appendChild(removeBtn);
+        actions.appendChild(blockBtn);
+        li.appendChild(actions);
+        listEl.appendChild(li);
+      }
+    }
+
+    async function load() {
+      const items = await device.getStoreValue('queue_items');
+      const count = await device.getCapabilityValue('measure_queue_count');
+      countEl.textContent = count || 0;
+      renderList(items || []);
+    }
     
     // Update on capability change
     device.on('capability:measure_queue_count', (value) => {
-      document.getElementById('queue-count').textContent = value || 0;
+      countEl.textContent = value || 0;
+      device.getStoreValue('queue_items').then(renderList);
     });
     
     // Initial load
-    device.getCapabilityValue('measure_queue_count').then((value) => {
-      document.getElementById('queue-count').textContent = value || 0;
-    }).catch((error) => {
-      console.error('Error loading capability:', error);
-      document.getElementById('queue-count').textContent = '0';
+    load().catch((error) => {
+      console.error('Error loading queue data:', error);
+      renderList([]);
     });
     
     // Button handlers

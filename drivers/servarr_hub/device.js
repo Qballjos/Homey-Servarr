@@ -223,11 +223,31 @@ class ServarrHubDevice extends Homey.Device {
    */
   async updateQueueCount() {
     let totalQueue = 0;
+    const queueItems = [];
     
     for (const [appName, client] of Object.entries(this._apiClients)) {
       try {
         const queue = await client.getQueue();
         totalQueue += queue.length;
+
+        for (const item of queue) {
+          const title =
+            item.title ||
+            item.series?.title ||
+            item.movie?.title ||
+            item.artist?.artistName ||
+            item.sourceTitle ||
+            'Unknown';
+
+          queueItems.push({
+            id: item.id || item.queueId || item.downloadId || item.trackedDownloadId || '',
+            app: appName,
+            title,
+            status: item.status || item.trackedDownloadStatus || 'queued',
+            size: item.size || item.sizeleft || null,
+            timeLeft: item.timeleft || item.estimatedCompletionTime || null,
+          });
+        }
       } catch (error) {
         this.error(`Error fetching queue for ${appName}:`, error);
       }
@@ -237,6 +257,7 @@ class ServarrHubDevice extends Homey.Device {
     const previousCount = this._lastQueueCount;
     
     await this.setCapabilityValue('measure_queue_count', totalQueue);
+    await this.setStoreValue('queue_items', queueItems);
     this._lastQueueCount = totalQueue;
     this.log(`Total queue count: ${totalQueue}`);
     
@@ -375,6 +396,30 @@ class ServarrHubDevice extends Homey.Device {
       return { success: true };
     } catch (error) {
       this.error(`Error pausing ${appName}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Remove a queue item for a specific app
+   */
+  async removeQueueItem(appName, queueId, { blocklist = false } = {}) {
+    const client = this._apiClients[appName];
+    
+    if (!client) {
+      throw new Error(`No client configured for ${appName}`);
+    }
+    
+    try {
+      await client.removeQueueItem(queueId, {
+        removeFromClient: true,
+        blocklist,
+      });
+      // Refresh queue
+      await this.updateQueueCount();
+      return { success: true };
+    } catch (error) {
+      this.error(`Error removing queue item ${queueId} for ${appName}:`, error);
       throw error;
     }
   }

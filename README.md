@@ -15,6 +15,7 @@ This application is optimized for minimal CPU/memory usage and delivers the requ
 
 1. **Release Agenda Today** - Shows the total number of planned releases (movies, series, albums) for today
 2. **Downloads & Action Panel** - Shows queue status with pause/resume buttons
+   - Per-item controls: remove or block+remove downloads, with app color flags (Sonarr blue, Radarr yellow, Lidarr green)
 
 ### Flow Cards
 
