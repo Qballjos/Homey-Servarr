@@ -166,6 +166,19 @@
   color: #7f8c8d;
   text-align: left;
 }
+.filters {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #2c3e50;
+  text-align: left;
+}
+.filters label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+}
   </style>
 </head>
 <body>
@@ -188,6 +201,13 @@
       <button class="btn btn-resume" id="btn-refresh-lidarr" style="flex:0 0 auto;">Lidarr</button>
     </div>
 
+    <div class="filters">
+      <label>
+        <input type="checkbox" id="toggle-active">
+        Show only active items (hide completed/blocked/failed)
+      </label>
+    </div>
+
     <ul class="list" id="queue-list"></ul>
     <div class="legend">
       <div><strong>Remove</strong>: remove from queue and download client.</div>
@@ -205,6 +225,7 @@
     const countEl = document.getElementById('queue-count');
     const errorBox = document.getElementById('error-box');
     const statsEl = document.getElementById('stats');
+    const toggleActiveEl = document.getElementById('toggle-active');
 
     const appColors = {
       sonarr: '#3498db', // blue
@@ -225,6 +246,13 @@
         listEl.innerHTML = '<li>No items in queue</li>';
         return;
       }
+      const onlyActive = toggleActiveEl.checked;
+      const filtered = onlyActive
+        ? items.filter((item) => {
+            const st = (item.status || '').toLowerCase();
+            return !(st.includes('complete') || st.includes('blocked') || st.includes('failed'));
+          })
+        : items;
       const sorted = [...items].sort((a, b) => {
         const sa = (a.status || '').toLowerCase();
         const sb = (b.status || '').toLowerCase();
@@ -232,7 +260,13 @@
         return sa.localeCompare(sb);
       });
 
-      for (const item of sorted) {
+      const source = filtered.length ? filtered : sorted;
+      if (!source.length) {
+        listEl.innerHTML = '<li>No active items</li>';
+        return;
+      }
+
+      for (const item of source) {
         const color = appColors[item.app] || '#7f8c8d';
         const li = document.createElement('li');
         li.innerHTML = `
@@ -396,6 +430,11 @@
     document.getElementById('btn-refresh-radarr').addEventListener('click', () => refreshApp('radarr'));
     document.getElementById('btn-refresh-sonarr').addEventListener('click', () => refreshApp('sonarr'));
     document.getElementById('btn-refresh-lidarr').addEventListener('click', () => refreshApp('lidarr'));
+
+    // Filter toggle
+    toggleActiveEl.addEventListener('change', () => {
+      device.getStoreValue('queue_items').then(renderList);
+    });
   </script>
 </body>
 </html>
