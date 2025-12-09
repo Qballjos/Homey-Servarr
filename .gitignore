@@ -7,3 +7,20 @@ node_modules/
 *.swo
 *~
 
+# Homey specific
+.homey/
+*.homey.json
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# IDE
+*.sublime-project
+*.sublime-workspace
+

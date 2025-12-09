@@ -1,5 +1,8 @@
 # Servarr Flow Control - Homey App
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Homey SDK](https://img.shields.io/badge/Homey%20SDK-v3-blue)](https://apps-sdk-v3.developer.athom.com/)
+
 An extremely lightweight Homey App for the Homey Pro Mini that functions as a read-only monitoring interface and Flow bridge to control the Servarr suite (Radarr, Sonarr, Lidarr). Works with Servarr applications on any platform (Unraid, Docker, native installations, etc.).
 
 ## 🎯 Purpose
@@ -94,4 +97,28 @@ This app is developed for use with Homey and Servarr applications.
 
 ## 🤝 Support
 
-For questions or problems, consult the Homey Developer documentation or the Servarr API documentation.
+For questions or problems:
+- Check the [Installation Guide](INSTALLATION.md)
+- Review [existing issues](https://github.com/Qballjos/Homey-Servarr/issues)
+- Start a [discussion](https://github.com/Qballjos/Homey-Servarr/discussions)
+- Consult the [Homey Developer documentation](https://apps-sdk-v3.developer.athom.com/) or [Servarr API documentation](https://wiki.servarr.com/)
+
+## 📝 Contributing
+
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) first.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Built for the Homey ecosystem
+- Compatible with Radarr, Sonarr, and Lidarr
+- Inspired by the Servarr community
