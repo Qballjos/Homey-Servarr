@@ -63,6 +63,21 @@
       min-width: 70px;
       text-align: right;
     }
+.badges {
+  display: flex;
+  gap: 6px;
+  margin-left: 18px;
+  margin-top: 2px;
+  flex-wrap: wrap;
+}
+.badge {
+  background: #ecf0f1;
+  color: #34495e;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  line-height: 1.4;
+}
     .actions-row {
       display: flex;
       gap: 6px;
@@ -187,6 +202,31 @@
           <span class="title">${item.title}</span>
           <span class="status">${item.status || ''}</span>
         `;
+        const badges = document.createElement('div');
+        badges.className = 'badges';
+
+        const sizeMb = item.size ? item.size / (1024 * 1024) : null;
+        if (sizeMb) {
+          const sizeBadge = document.createElement('span');
+          sizeBadge.className = 'badge';
+          if (sizeMb >= 1024) {
+            sizeBadge.textContent = `${(sizeMb / 1024).toFixed(1)} GB`;
+          } else {
+            sizeBadge.textContent = `${sizeMb.toFixed(0)} MB`;
+          }
+          badges.appendChild(sizeBadge);
+        }
+
+        if (item.timeLeft) {
+          const etaBadge = document.createElement('span');
+          etaBadge.className = 'badge';
+          etaBadge.textContent = item.timeLeft;
+          badges.appendChild(etaBadge);
+        }
+
+        if (badges.children.length > 0) {
+          li.appendChild(badges);
+        }
 
         const actions = document.createElement('div');
         actions.className = 'actions-row';
