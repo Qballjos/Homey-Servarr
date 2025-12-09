@@ -78,6 +78,18 @@
   font-size: 11px;
   line-height: 1.4;
 }
+.badge-status {
+  background: #95a5a6;
+  color: white;
+}
+.badge-eta {
+  background: #3498db;
+  color: white;
+}
+.badge-size {
+  background: #27ae60;
+  color: white;
+}
     .actions-row {
       display: flex;
       gap: 6px;
@@ -240,6 +252,43 @@
       statsEl.textContent = `R:${r}  S:${s}  L:${l}`;
     }
 
+    function formatSize(bytes) {
+      if (!bytes || isNaN(bytes)) return null;
+      const gb = bytes / (1024 * 1024 * 1024);
+      if (gb >= 0.1) return `${gb.toFixed(1)} GB`;
+      const mb = bytes / (1024 * 1024);
+      return `${mb.toFixed(0)} MB`;
+    }
+
+    function formatEta(value) {
+      if (!value) return null;
+      // If ISO date: show remaining hh:mm
+      const date = new Date(value);
+      if (!isNaN(date)) {
+        const diffMs = date.getTime() - Date.now();
+        if (diffMs <= 0) return '00:00';
+        const mins = Math.floor(diffMs / 60000);
+        const hh = Math.floor(mins / 60).toString().padStart(2, '0');
+        const mm = (mins % 60).toString().padStart(2, '0');
+        return `${hh}:${mm}`;
+      }
+      // If already hh:mm or text
+      if (typeof value === 'string') return value;
+      return null;
+    }
+
+    function normalizeStatus(status) {
+      if (!status) return '';
+      const s = status.toString().toLowerCase();
+      if (s.includes('download')) return 'Downloading';
+      if (s.includes('queue') || s.includes('queued')) return 'Queued';
+      if (s.includes('import')) return 'Importing';
+      if (s.includes('pause')) return 'Paused';
+      if (s.includes('block')) return 'Blocked';
+      if (s.includes('complete')) return 'Completed';
+      return status;
+    }
+
     function renderList(items) {
       listEl.innerHTML = '';
       if (!items || items.length === 0) {
@@ -269,27 +318,36 @@
       for (const item of source) {
         const color = appColors[item.app] || '#7f8c8d';
         const li = document.createElement('li');
+        const niceStatus = normalizeStatus(item.status || '');
+        const eta = formatEta(item.timeLeft || item.eta);
+        const sizeText = formatSize(item.size);
         li.innerHTML = `
           <span class="flag" style="background:${color};"></span>
           <span class="title">${item.title}</span>
-          <span class="status">${item.status || ''}</span>
+          <span class="status">${niceStatus}</span>
         `;
         const badges = document.createElement('div');
         badges.className = 'badges';
 
-        const sizeMb = item.size ? item.size / (1024 * 1024) : null;
-        if (sizeMb) {
-          const sizeBadge = document.createElement('span');
-          sizeBadge.className = 'badge';
-          sizeBadge.textContent = sizeMb >= 1024 ? `${(sizeMb / 1024).toFixed(1)} GB` : `${sizeMb.toFixed(0)} MB`;
-          badges.appendChild(sizeBadge);
+        if (niceStatus) {
+          const stBadge = document.createElement('span');
+          stBadge.className = 'badge badge-status';
+          stBadge.textContent = niceStatus;
+          badges.appendChild(stBadge);
         }
 
-        if (item.timeLeft) {
+        if (eta) {
           const etaBadge = document.createElement('span');
-          etaBadge.className = 'badge';
-          etaBadge.textContent = item.timeLeft;
+          etaBadge.className = 'badge badge-eta';
+          etaBadge.textContent = eta;
           badges.appendChild(etaBadge);
+        }
+
+        if (sizeText) {
+          const sizeBadge = document.createElement('span');
+          sizeBadge.className = 'badge badge-size';
+          sizeBadge.textContent = sizeText;
+          badges.appendChild(sizeBadge);
         }
 
         if (badges.children.length > 0) {
