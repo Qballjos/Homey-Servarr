@@ -1,0 +1,16 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Queue Count"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "insights": false,
+  "decimals": 0,
+  "units": {
+    "en": "items"
+  },
+  "min": 0
+}
+
