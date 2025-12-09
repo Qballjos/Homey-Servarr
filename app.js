@@ -21,6 +21,9 @@ class ServarrFlowControlApp extends Homey.App {
     
     this.healthCheckFailedTrigger = new Homey.FlowCardTrigger('health_check_failed');
     await this.healthCheckFailedTrigger.register();
+
+    this.mediaAddedTrigger = new Homey.FlowCardTrigger('media_added');
+    await this.mediaAddedTrigger.register();
     
     // Register Flow Actions
     this.pauseAllAction = new Homey.FlowCardAction('pause_all');
@@ -34,6 +37,9 @@ class ServarrFlowControlApp extends Homey.App {
     
     this.resumeAppAction = new Homey.FlowCardAction('resume_app');
     await this.resumeAppAction.register();
+
+    this.searchMissingAction = new Homey.FlowCardAction('search_missing');
+    await this.searchMissingAction.register();
     
     this.log('Flow cards registered successfully');
   }

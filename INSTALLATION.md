@@ -83,6 +83,12 @@ For each Servarr application you want to use:
 #### Queue Empty
 - Triggered when the queue becomes empty
 
+#### Health Check Failed
+- Triggered when Servarr reports a health warning/error
+
+#### Media Added
+- Triggered when a movie/series/album/artist is added
+
 ### THEN... Actions
 
 #### Pause All Downloads
@@ -93,6 +99,12 @@ For each Servarr application you want to use:
 
 #### Pause App Downloads
 - Pauses downloads for a specific app (Radarr/Sonarr/Lidarr)
+
+#### Resume App Downloads
+- Resumes downloads for a specific app (Radarr/Sonarr/Lidarr)
+
+#### Search Missing Items (per app)
+- Triggers a search for missing/wanted items for the chosen app
 
 ## Troubleshooting
 

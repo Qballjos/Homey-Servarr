@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2024-XX-XX - Health, Missing Search, Media Added
+
+### Added
+- Flow Trigger: Health check failed (per app, new issues only)
+- Flow Trigger: Media item added (movie/series/album/artist)
+- Flow Action: Resume [APP] Downloads (per app)
+- Flow Action: Search missing items for [APP]
+- Capability: measure_missing_count (wanted items count)
+- Capability: queue_paused (true if any app queue is paused)
+
+### Changed
+- Polling: Added 15-minute interval for health + missing count (lightweight)
+- Queue status: tracks paused apps and exposes queue_paused capability
+
 ## [1.1.0] - 2024-XX-XX - Universal App with Toggle Switches
 
 ### Added

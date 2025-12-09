@@ -18,10 +18,12 @@ class ServarrHubDriver extends Homey.Driver {
     this._downloadFinishedTrigger = this.homey.app.downloadFinishedTrigger;
     this._queueEmptyTrigger = this.homey.app.queueEmptyTrigger;
     this._healthCheckFailedTrigger = this.homey.app.healthCheckFailedTrigger;
+    this._mediaAddedTrigger = this.homey.app.mediaAddedTrigger;
     this._pauseAllAction = this.homey.app.pauseAllAction;
     this._resumeAllAction = this.homey.app.resumeAllAction;
     this._pauseAppAction = this.homey.app.pauseAppAction;
     this._resumeAppAction = this.homey.app.resumeAppAction;
+    this._searchMissingAction = this.homey.app.searchMissingAction;
     
     // Register action handlers
     this._pauseAllAction.registerRunListener(async (args) => {
@@ -38,6 +40,10 @@ class ServarrHubDriver extends Homey.Driver {
     
     this._resumeAppAction.registerRunListener(async (args) => {
       return await args.device.resumeAppDownloads(args.app);
+    });
+
+    this._searchMissingAction.registerRunListener(async (args) => {
+      return await args.device.searchMissing(args.app);
     });
   }
 

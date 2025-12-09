@@ -25,6 +25,7 @@ class ServarrHubDevice extends Homey.Device {
     this._healthCheckInterval = null;
     this._lastQueueCount = 0;
     this._lastDownloadStates = new Map();
+    this._lastAddedStates = new Map();
     this._appErrors = {};
     this._lastHealthStatus = {}; // Track health status per app
     
@@ -38,11 +39,15 @@ class ServarrHubDevice extends Homey.Device {
     if (!this.hasCapability('measure_missing_count')) {
       await this.addCapability('measure_missing_count');
     }
+    if (!this.hasCapability('queue_paused')) {
+      await this.addCapability('queue_paused');
+    }
     
     // Set initial values
     await this.setCapabilityValue('text_today_releases', '0');
     await this.setCapabilityValue('measure_queue_count', 0);
     await this.setCapabilityValue('measure_missing_count', 0);
+    await this.setCapabilityValue('queue_paused', false);
     
     // Load configuration
     await this.loadConfiguration();
@@ -60,6 +65,10 @@ class ServarrHubDevice extends Homey.Device {
     });
     
     this.registerCapabilityListener('measure_missing_count', async () => {
+      // Read-only capability
+    });
+
+    this.registerCapabilityListener('queue_paused', async () => {
       // Read-only capability
     });
   }
@@ -160,7 +169,7 @@ class ServarrHubDevice extends Homey.Device {
     this.checkHealth();
     this.updateMissingCount();
     
-    this.log('Started polling (interval: 5 minutes, health check & missing count: 15 minutes)');
+    this.log('Started polling (interval: 5 minutes, health/missing: 15 minutes)');
   }
 
   /**
@@ -267,9 +276,16 @@ class ServarrHubDevice extends Homey.Device {
     let totalQueue = 0;
     const queueItems = [];
     const perAppCounts = { radarr: 0, sonarr: 0, lidarr: 0 };
+    const pausedApps = [];
     
     for (const [appName, client] of Object.entries(this._apiClients)) {
       try {
+        // Queue status (paused)
+        const status = await client.getQueueStatus();
+        if (status && status.isPaused) {
+          pausedApps.push(appName);
+        }
+
         const queue = await client.getQueue();
         totalQueue += queue.length;
         if (perAppCounts[appName] !== undefined) {
@@ -308,6 +324,8 @@ class ServarrHubDevice extends Homey.Device {
     await this.setStoreValue('queue_items', queueItems.slice(0, 100));
     await this.setStoreValue('app_errors', this._serializeErrors());
     await this.setStoreValue('queue_app_counts', perAppCounts);
+    await this.setStoreValue('queue_paused_apps', pausedApps);
+    await this.setCapabilityValue('queue_paused', pausedApps.length > 0);
     this._lastQueueCount = totalQueue;
     this.log(`Total queue count: ${totalQueue}`);
     
@@ -385,6 +403,7 @@ class ServarrHubDevice extends Homey.Device {
         
         for (const item of history) {
           const downloadId = `${appName}_${item.id || item.eventType}_${item.date}`;
+          const addedId = `${appName}_added_${item.id || item.eventType}_${item.date}`;
           
           // Check if this is a completed download event
           // Servarr apps use different event types: 'downloadFolderImported', 'grabbed', etc.
@@ -422,6 +441,52 @@ class ServarrHubDevice extends Homey.Device {
               });
             }
           }
+
+          // Detect newly added media events (lightweight)
+          const eventType = (item.eventType || '').toLowerCase();
+          const isMediaAdded = eventType.includes('movieadded') ||
+                               eventType.includes('seriesadded') ||
+                               eventType.includes('artistadded') ||
+                               eventType.includes('albumadded');
+
+          if (isMediaAdded) {
+            if (!this._lastAddedStates.has(addedId)) {
+              let title = 'Unknown';
+              let mediaType = 'movie';
+              if (item.movie) {
+                title = item.movie.title || title;
+                mediaType = 'movie';
+              } else if (item.series) {
+                title = item.series.title || title;
+                mediaType = 'series';
+              } else if (item.artist) {
+                title = item.artist.artistName || title;
+                mediaType = 'artist';
+              } else if (item.album) {
+                title = item.album.title || title;
+                mediaType = 'album';
+              } else if (item.sourceTitle) {
+                title = item.sourceTitle;
+              } else if (item.title) {
+                title = item.title;
+              }
+
+              const trigger = this.driver._mediaAddedTrigger;
+              await trigger.trigger(this, {
+                title,
+                app: appName,
+                type: mediaType,
+              }, {});
+
+              this.log(`Media added: ${title} (${mediaType}) via ${appName}`);
+
+              this._lastAddedStates.set(addedId, {
+                status: 'added',
+                title,
+                timestamp: Date.now()
+              });
+            }
+          }
           
           // Clean up old states (keep only last 100)
           if (this._lastDownloadStates.size > 100) {
@@ -430,6 +495,15 @@ class ServarrHubDevice extends Homey.Device {
             this._lastDownloadStates.clear();
             entries.slice(0, 100).forEach(([key, value]) => {
               this._lastDownloadStates.set(key, value);
+            });
+          }
+
+          if (this._lastAddedStates.size > 100) {
+            const entries = Array.from(this._lastAddedStates.entries());
+            entries.sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0));
+            this._lastAddedStates.clear();
+            entries.slice(0, 100).forEach(([key, value]) => {
+              this._lastAddedStates.set(key, value);
             });
           }
         }
@@ -532,6 +606,25 @@ class ServarrHubDevice extends Homey.Device {
       return { success: true };
     } catch (error) {
       this.error(`Error resuming ${appName}: ${error.message || error}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Search missing items for a specific app
+   */
+  async searchMissing(appName) {
+    const client = this._apiClients[appName];
+    if (!client) {
+      throw new Error(`No client configured for ${appName}`);
+    }
+
+    try {
+      await client.searchMissing();
+      this.log(`Triggered missing search for ${appName}`);
+      return { success: true };
+    } catch (error) {
+      this.error(`Error searching missing for ${appName}: ${error.message || error}`);
       throw error;
     }
   }

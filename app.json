@@ -206,6 +206,69 @@
             ]
           }
         ]
+      },
+      {
+        "id": "media_added",
+        "title": {
+          "en": "A media item was added"
+        },
+        "titleFormatted": {
+          "en": "[[type]] added: [[title]] ([[app]])"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=servarr_hub"
+          },
+          {
+            "name": "title",
+            "type": "text",
+            "label": {
+              "en": "Media Title"
+            }
+          },
+          {
+            "name": "app",
+            "type": "dropdown",
+            "label": {
+              "en": "Servarr App"
+            },
+            "values": [
+              {
+                "id": "radarr",
+                "label": {
+                  "en": "Radarr"
+                }
+              },
+              {
+                "id": "sonarr",
+                "label": {
+                  "en": "Sonarr"
+                }
+              },
+              {
+                "id": "lidarr",
+                "label": {
+                  "en": "Lidarr"
+                }
+              }
+            ]
+          },
+          {
+            "name": "type",
+            "type": "dropdown",
+            "label": {
+              "en": "Media Type"
+            },
+            "values": [
+              { "id": "movie", "label": { "en": "Movie" } },
+              { "id": "series", "label": { "en": "Series" } },
+              { "id": "album", "label": { "en": "Album" } },
+              { "id": "artist", "label": { "en": "Artist" } }
+            ]
+          }
+        ]
       }
     ],
     "actions": [
@@ -285,6 +348,49 @@
         },
         "titleFormatted": {
           "en": "Resume downloads for [[app]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=servarr_hub"
+          },
+          {
+            "name": "app",
+            "type": "dropdown",
+            "label": {
+              "en": "Servarr App"
+            },
+            "values": [
+              {
+                "id": "radarr",
+                "label": {
+                  "en": "Radarr"
+                }
+              },
+              {
+                "id": "sonarr",
+                "label": {
+                  "en": "Sonarr"
+                }
+              },
+              {
+                "id": "lidarr",
+                "label": {
+                  "en": "Lidarr"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "search_missing",
+        "title": {
+          "en": "Search missing items for [APP]"
+        },
+        "titleFormatted": {
+          "en": "Search missing items for [[app]]"
         },
         "args": [
           {

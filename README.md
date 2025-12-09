@@ -26,11 +26,15 @@ This application is optimized for minimal CPU/memory usage and delivers the requ
 #### IF... Triggers (Status Reporting)
 - **A download has finished** - Triggered when a download successfully completes (with media title as tag)
 - **The queue is empty** - Triggered when the total queue of all apps drops to zero
+- **Health check failed** - Triggered when Servarr reports a health warning/error
+- **A media item was added** - Triggered when a movie/series/album/artist is added
 
 #### THEN... Actions (Action Control)
 - **Pause all Servarr Downloads** - Pauses downloads in all configured Servarr applications
 - **Resume all Servarr Downloads** - Resumes downloads in all configured Servarr applications
 - **Pause [APP] Downloads** - Pauses downloads for a specific app (Radarr/Sonarr/Lidarr)
+- **Resume [APP] Downloads** - Resumes downloads for a specific app (Radarr/Sonarr/Lidarr)
+- **Search missing items for [APP]** - Triggers a search for missing/wanted items for the chosen app
 
 ## 🚀 Installation
 
@@ -72,6 +76,8 @@ The app communicates directly with Servarr APIs via HTTP/HTTPS:
 The device has the following capabilities:
 - `text_today_releases` - Text display of the number of releases today
 - `measure_queue_count` - Measurement of the number of items in the queue
+- `measure_missing_count` - Count of missing/wanted items across enabled apps
+- `queue_paused` - Indicates if any configured app queue is paused
 
 ## 📝 Development
 

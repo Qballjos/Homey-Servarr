@@ -34,9 +34,9 @@
 - [x] **Missing Items Count** - Capability/widget to show wanted but not downloaded items count.
 
 ### Medium Priority
-- [ ] **Search for Missing Items Action** - Flow action to trigger searches for missing movies/series/albums.
-- [ ] **Queue Status Capability** - Track if queue is paused (onoff.queue_paused) for Flow conditions.
-- [ ] **Media Added Trigger** - Flow trigger when new movie/series/album is added to library.
+- [x] **Search for Missing Items Action** - Flow action to trigger searches for missing movies/series/albums.
+- [x] **Queue Status Capability** - Track if queue is paused (onoff.queue_paused) for Flow conditions.
+- [x] **Media Added Trigger** - Flow trigger when new movie/series/album is added to library.
 
 ### Low Priority (Nice to Have)
 - [ ] **Toggle Monitored Status Action** - Flow action to enable/disable monitoring for specific items.
