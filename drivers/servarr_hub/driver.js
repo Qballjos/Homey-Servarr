@@ -24,6 +24,7 @@ class ServarrHubDriver extends Homey.Driver {
     this._pauseAppAction = this.homey.app.pauseAppAction;
     this._resumeAppAction = this.homey.app.resumeAppAction;
     this._searchMissingAction = this.homey.app.searchMissingAction;
+    this._toggleMonitoredAction = this.homey.app.toggleMonitoredAction;
     
     // Register action handlers
     this._pauseAllAction.registerRunListener(async (args) => {
@@ -44,6 +45,10 @@ class ServarrHubDriver extends Homey.Driver {
 
     this._searchMissingAction.registerRunListener(async (args) => {
       return await args.device.searchMissing(args.app);
+    });
+    
+    this._toggleMonitoredAction.registerRunListener(async (args) => {
+      return await args.device.toggleMonitoredStatus(args.app, args.title, args.monitored === 'true');
     });
   }
 

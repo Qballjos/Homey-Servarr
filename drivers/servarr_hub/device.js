@@ -42,12 +42,16 @@ class ServarrHubDevice extends Homey.Device {
     if (!this.hasCapability('queue_paused')) {
       await this.addCapability('queue_paused');
     }
+    if (!this.hasCapability('measure_library_size')) {
+      await this.addCapability('measure_library_size');
+    }
     
     // Set initial values
     await this.setCapabilityValue('text_today_releases', '0');
     await this.setCapabilityValue('measure_queue_count', 0);
     await this.setCapabilityValue('measure_missing_count', 0);
     await this.setCapabilityValue('queue_paused', false);
+    await this.setCapabilityValue('measure_library_size', 0);
     
     // Load configuration
     await this.loadConfiguration();
@@ -69,6 +73,10 @@ class ServarrHubDevice extends Homey.Device {
     });
 
     this.registerCapabilityListener('queue_paused', async () => {
+      // Read-only capability
+    });
+    
+    this.registerCapabilityListener('measure_library_size', async () => {
       // Read-only capability
     });
   }
@@ -163,13 +171,15 @@ class ServarrHubDevice extends Homey.Device {
     this._healthCheckInterval = setInterval(() => {
       this.checkHealth();
       this.updateMissingCount();
+      this.updateLibrarySize();
     }, 900000);
     
-    // Initial health check and missing count
+    // Initial health check, missing count, and library size
     this.checkHealth();
     this.updateMissingCount();
+    this.updateLibrarySize();
     
-    this.log('Started polling (interval: 5 minutes, health/missing: 15 minutes)');
+    this.log('Started polling (interval: 5 minutes, health/missing/library: 15 minutes)');
   }
 
   /**
@@ -353,6 +363,28 @@ class ServarrHubDevice extends Homey.Device {
     
     await this.setCapabilityValue('measure_missing_count', totalMissing);
     this.log(`Total missing items: ${totalMissing}`);
+  }
+
+  /**
+   * Update library size (total movies/series/albums)
+   * Polls every 15 minutes (same interval as health check)
+   */
+  async updateLibrarySize() {
+    let totalLibrarySize = 0;
+    
+    for (const [appName, client] of Object.entries(this._apiClients)) {
+      try {
+        const count = await client.getLibraryCount();
+        totalLibrarySize += count;
+        this._clearAppError(appName);
+      } catch (error) {
+        this.error(`Error getting library count for ${appName}: ${error.message || error}`);
+        this._setAppError(appName, error.message || 'Library count error');
+      }
+    }
+    
+    await this.setCapabilityValue('measure_library_size', totalLibrarySize);
+    this.log(`Total library size: ${totalLibrarySize}`);
   }
 
   /**
@@ -625,6 +657,40 @@ class ServarrHubDevice extends Homey.Device {
       return { success: true };
     } catch (error) {
       this.error(`Error searching missing for ${appName}: ${error.message || error}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Toggle monitored status for a media item
+   */
+  async toggleMonitoredStatus(appName, title, monitored) {
+    const client = this._apiClients[appName];
+    if (!client) {
+      throw new Error(`No client configured for ${appName}`);
+    }
+
+    try {
+      // Search for item by title
+      const results = await client.searchByTitle(title);
+      if (results.length === 0) {
+        throw new Error(`No item found with title "${title}" in ${appName}`);
+      }
+      
+      // Use first match (could be improved with better matching)
+      const item = results[0];
+      const itemId = item.id || item.movieId || item.seriesId || item.artistId;
+      
+      if (!itemId) {
+        throw new Error(`Item found but no ID available for ${title}`);
+      }
+      
+      // Toggle monitored status
+      await client.toggleMonitored(itemId, monitored);
+      this.log(`Toggled monitored status for ${title} in ${appName} to ${monitored}`);
+      return { success: true, title, monitored };
+    } catch (error) {
+      this.error(`Error toggling monitored status for ${title} in ${appName}: ${error.message || error}`);
       throw error;
     }
   }

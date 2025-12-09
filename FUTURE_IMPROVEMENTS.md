@@ -39,9 +39,9 @@
 - [x] **Media Added Trigger** - Flow trigger when new movie/series/album is added to library.
 
 ### Low Priority (Nice to Have)
-- [ ] **Toggle Monitored Status Action** - Flow action to enable/disable monitoring for specific items.
-- [ ] **Library Size Widget** - Display total number of movies/series/albums in library.
-- [ ] **Import List Status** - Monitor import lists (Trakt, etc.) status.
+- [x] **Toggle Monitored Status Action** - Flow action to enable/disable monitoring for specific items.
+- [x] **Library Size Widget** - Display total number of movies/series/albums in library (capability added).
+- [ ] **Import List Status** - Monitor import lists (Trakt, etc.) status (API method added, not yet polled/displayed).
 
 **Note**: See `API_FEATURES_ANALYSIS.md` for detailed analysis of available Servarr API endpoints and implementation recommendations.
 

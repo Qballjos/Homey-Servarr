@@ -41,6 +41,9 @@ class ServarrFlowControlApp extends Homey.App {
     this.searchMissingAction = new Homey.FlowCardAction('search_missing');
     await this.searchMissingAction.register();
     
+    this.toggleMonitoredAction = new Homey.FlowCardAction('toggle_monitored');
+    await this.toggleMonitoredAction.register();
+    
     this.log('Flow cards registered successfully');
   }
 
