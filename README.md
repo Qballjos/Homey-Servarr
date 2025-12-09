@@ -17,6 +17,7 @@ This application is optimized for minimal CPU/memory usage and delivers the requ
 2. **Downloads & Action Panel** - Shows queue status with pause/resume buttons
    - Per-item controls: remove or block+remove downloads, with app color flags (Sonarr blue, Radarr yellow, Lidarr green)
    - Note: per-item pause/resume is not supported by Servarr APIs; only remove/block per item or pause/resume the full queue (per app/all)
+   - Remove = remove from queue/client; Block = blocklist + remove
 
 ### Flow Cards
 

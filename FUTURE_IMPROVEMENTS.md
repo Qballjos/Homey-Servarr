@@ -6,7 +6,7 @@
 - [x] Add an optional “Refresh” button in widgets to update on demand without increasing polling.
 
 ## Controls & Actions
-- [ ] Expose blocklist toggle with brief description in UI/README.
+- [x] Expose blocklist toggle with brief description in UI/README.
 - [ ] (Not supported by Servarr APIs) Per-item pause/resume — only remove/block per item or pause/resume per app/all.
 
 ## Resilience & Errors

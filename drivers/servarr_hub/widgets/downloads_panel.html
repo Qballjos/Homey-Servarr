@@ -146,6 +146,13 @@
     .btn:active {
       transform: scale(0.95);
     }
+    .legend {
+      margin-top: 10px;
+      font-size: 11px;
+      color: #7f8c8d;
+      text-align: left;
+      line-height: 1.4;
+    }
   </style>
 </head>
 <body>
@@ -166,6 +173,10 @@
     </div>
 
     <ul class="list" id="queue-list"></ul>
+    <div class="legend">
+      <div><strong>Remove</strong>: remove from queue and download client.</div>
+      <div><strong>Block</strong>: blocklist and remove from queue/client.</div>
+    </div>
   </div>
   
   <script>
