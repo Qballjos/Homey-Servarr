@@ -75,6 +75,7 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
+  display: inline-block;
     }
     .btn-remove {
       background: #e67e22;
@@ -95,6 +96,12 @@
       gap: 10px;
       justify-content: center;
     }
+.toolbar {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 8px;
+}
     .btn {
       flex: 1;
       padding: 12px 20px;
@@ -139,6 +146,10 @@
       <button class="btn btn-resume" id="btn-resume">Resume</button>
     </div>
 
+    <div class="toolbar">
+      <button class="btn btn-pause" id="btn-refresh" style="flex:0 0 auto;">Refresh</button>
+    </div>
+
     <ul class="list" id="queue-list"></ul>
   </div>
   
@@ -161,7 +172,14 @@
         listEl.innerHTML = '<li>No items in queue</li>';
         return;
       }
-      for (const item of items) {
+      const sorted = [...items].sort((a, b) => {
+        const sa = (a.status || '').toLowerCase();
+        const sb = (b.status || '').toLowerCase();
+        if (sa === sb) return (a.title || '').localeCompare(b.title || '');
+        return sa.localeCompare(sb);
+      });
+
+      for (const item of sorted) {
         const color = appColors[item.app] || '#7f8c8d';
         const li = document.createElement('li');
         li.innerHTML = `
@@ -261,6 +279,21 @@
       } finally {
         btn.disabled = false;
         btn.textContent = 'Resume';
+      }
+    });
+
+    // Refresh handler
+    document.getElementById('btn-refresh').addEventListener('click', async () => {
+      const btn = document.getElementById('btn-refresh');
+      btn.disabled = true;
+      btn.textContent = '...';
+      try {
+        await load();
+      } catch (error) {
+        Homey.alert('Error refreshing: ' + error.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Refresh';
       }
     });
   </script>

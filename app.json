@@ -78,6 +78,9 @@
         "title": {
           "en": "A download has finished"
         },
+        "titleFormatted": {
+          "en": "Download finished: [[title]] ([[app]])"
+        },
         "args": [
           {
             "name": "device",
@@ -165,6 +168,9 @@
         "id": "pause_app",
         "title": {
           "en": "Pause [APP] Downloads"
+        },
+        "titleFormatted": {
+          "en": "Pause downloads for [[app]]"
         },
         "args": [
           {
