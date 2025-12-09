@@ -151,6 +151,12 @@ class ServarrHubDevice extends Homey.Device {
    */
   async updateData() {
     try {
+      // If no clients configured/enabled, skip heavy work
+      if (Object.keys(this._apiClients).length === 0) {
+        this.log('No Servarr apps enabled; skipping update');
+        return;
+      }
+
       // Update today's releases
       await this.updateTodayReleases();
       
@@ -213,8 +219,8 @@ class ServarrHubDevice extends Homey.Device {
     }
     
     await this.setCapabilityValue('text_today_releases', totalReleases.toString());
-    // Store detailed releases for widget rendering
-    await this.setStoreValue('today_releases', releases);
+    // Store detailed releases for widget rendering (keep it small)
+    await this.setStoreValue('today_releases', releases.slice(0, 100));
     this.log(`Today's releases: ${totalReleases}`);
   }
 
@@ -257,7 +263,7 @@ class ServarrHubDevice extends Homey.Device {
     const previousCount = this._lastQueueCount;
     
     await this.setCapabilityValue('measure_queue_count', totalQueue);
-    await this.setStoreValue('queue_items', queueItems);
+    await this.setStoreValue('queue_items', queueItems.slice(0, 100));
     this._lastQueueCount = totalQueue;
     this.log(`Total queue count: ${totalQueue}`);
     
