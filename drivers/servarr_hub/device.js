@@ -59,6 +59,7 @@ class ServarrHubDevice extends Homey.Device {
    */
   async loadConfiguration() {
     const settings = this.getSettings();
+    this._manualOnly = settings.manual_refresh_only || false;
     
     // Clear existing clients
     this._apiClients = {};
@@ -125,6 +126,12 @@ class ServarrHubDevice extends Homey.Device {
   startPolling() {
     // Initial update
     this.updateData();
+    
+    // Manual-only mode skips interval polling
+    if (this._manualOnly) {
+      this.log('Manual refresh only; skipping polling interval');
+      return;
+    }
     
     // Set up polling interval (5 minutes = 300000 ms)
     this._pollingInterval = setInterval(() => {

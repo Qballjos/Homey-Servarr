@@ -67,6 +67,7 @@ class ServarrHubDriver extends Homey.Driver {
           id: 'servarr_hub_' + Date.now()
         },
         settings: {
+          manual_refresh_only: data.manual_refresh_only || false,
           radarr_enabled: data.radarr_enabled || false,
           radarr_url: data.radarr_url || '',
           radarr_port: parseInt(data.radarr_port) || 7878,

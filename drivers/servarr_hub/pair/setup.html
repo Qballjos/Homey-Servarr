@@ -104,6 +104,10 @@
 <body>
   <h1>Servarr Configuration</h1>
   <p>Enable the Servarr applications you want to use and configure the API settings. The app works with Servarr on any platform (Docker, native, Unraid, etc.).</p>
+  <label>
+    <input type="checkbox" id="manual_refresh_only">
+    Manual refresh only (skip scheduled polling, refresh via widgets)
+  </label>
   
   <div class="app-section" id="radarr_section">
     <h2>
@@ -263,6 +267,7 @@
     // Handle getSettings request
     Homey.on('getSettings', (callback) => {
       callback(null, {
+        manual_refresh_only: document.getElementById('manual_refresh_only').checked,
         radarr_enabled: document.getElementById('radarr_enabled').checked,
         radarr_url: document.getElementById('radarr_url').value,
         radarr_port: parseInt(document.getElementById('radarr_port').value) || 7878,
@@ -306,11 +311,16 @@
       if (settings.lidarr_url) document.getElementById('lidarr_url').value = settings.lidarr_url;
       if (settings.lidarr_port) document.getElementById('lidarr_port').value = settings.lidarr_port;
       if (settings.lidarr_api_key) document.getElementById('lidarr_api_key').value = settings.lidarr_api_key;
+
+      if (settings.manual_refresh_only !== undefined) {
+        document.getElementById('manual_refresh_only').checked = settings.manual_refresh_only;
+      }
     });
     
     // Handle next button click
     Homey.on('next', () => {
       const settings = {
+        manual_refresh_only: document.getElementById('manual_refresh_only').checked,
         radarr_enabled: document.getElementById('radarr_enabled').checked,
         radarr_url: document.getElementById('radarr_url').value,
         radarr_port: parseInt(document.getElementById('radarr_port').value) || 7878,
