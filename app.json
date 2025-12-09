@@ -21,6 +21,7 @@
   "author": {
     "name": "Servarr Flow Control"
   },
+  "brandColor": "#2196F3",
   "tags": {
     "en": [
       "servarr",
@@ -38,10 +39,7 @@
         "en": "Servarr Control Hub"
       },
       "class": "other",
-      "capabilities": [
-        "text_today_releases",
-        "measure_queue_count"
-      ],
+      "capabilities": [],
       "images": {
         "small": "/drivers/servarr_hub/assets/images/small.png",
         "large": "/drivers/servarr_hub/assets/images/large.png"

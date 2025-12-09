@@ -24,3 +24,7 @@ Thumbs.db
 *.sublime-project
 *.sublime-workspace
 
+
+
+# Added by Homey CLI
+/.homeybuild/
