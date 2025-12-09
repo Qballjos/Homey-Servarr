@@ -8,11 +8,13 @@
 ## Controls & Actions
 - [x] Expose blocklist toggle with brief description in UI/README.
 - [ ] (Not supported by Servarr APIs) Per-item pause/resume — only remove/block per item or pause/resume per app/all.
-
+- [ ] App-specific refresh buttons (optional) to refresh only Radarr/Sonarr/Lidarr queues.
+- [ ] Queue filters (e.g., “Only active”) to hide completed/blocked items.
 ## Resilience & Errors
 - [x] Lightweight retry/back-off on transient network errors (single retry max).
 - [x] “Test connection” in settings/pair view to validate API URL/key per app.
 - [x] Mask API keys in logs and error surfaces.
+- [ ] Inline errors per app in widget for common issues (auth/host/timeout).
 
 ## Performance Options
 - [x] “Manual only” mode: skip scheduled polling, allow user-triggered refresh.
@@ -21,4 +23,6 @@
 ## Documentation
 - [ ] Add screenshots of widgets and a short troubleshooting section (API key/URL/SSL tips).
 - [x] Note that `titleFormatted` has been added for Flow cards (warnings resolved).
+- [ ] Add mini stats per app (optional) in widget footer, e.g., “R:2 S:1 L:0”.
+- [ ] Normalize ETA/size badges (hh:mm, one-decimal GB) and add status badge (Queued/Downloading/Importing).
 
