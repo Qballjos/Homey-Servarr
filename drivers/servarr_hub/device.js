@@ -469,6 +469,87 @@ class ServarrHubDevice extends Homey.Device {
   }
 
   /**
+   * Refresh data for a specific app (queue + calendar) without polling others
+   */
+  async refreshApp(appName) {
+    const client = this._apiClients[appName];
+    if (!client) {
+      throw new Error(`No client configured for ${appName}`);
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    try {
+      const [calendar, queue] = await Promise.all([
+        client.getCalendar(today, tomorrow),
+        client.getQueue(),
+      ]);
+
+      // Update releases store
+      const releases = (await this.getStoreValue('today_releases')) || [];
+      const filteredReleases = releases.filter((r) => r.app !== appName);
+      const newReleases = calendar.map((item) => {
+        const title =
+          item.title ||
+          item.series?.title ||
+          item.movie?.title ||
+          item.album?.title ||
+          item.artist?.artistName ||
+          item.sourceTitle ||
+          'Unknown';
+        const hasFile = !!item.hasFile;
+        return { app: appName, title, hasFile };
+      });
+      const mergedReleases = [...filteredReleases, ...newReleases].slice(0, 100);
+      await this.setStoreValue('today_releases', mergedReleases);
+      await this.setCapabilityValue('text_today_releases', mergedReleases.length.toString());
+
+      // Update queue store
+      const queueItems = (await this.getStoreValue('queue_items')) || [];
+      const filteredQueue = queueItems.filter((q) => q.app !== appName);
+      const newQueueItems = queue.map((item) => {
+        const title =
+          item.title ||
+          item.series?.title ||
+          item.movie?.title ||
+          item.artist?.artistName ||
+          item.sourceTitle ||
+          'Unknown';
+        return {
+          id: item.id || item.queueId || item.downloadId || item.trackedDownloadId || '',
+          app: appName,
+          title,
+          status: item.status || item.trackedDownloadStatus || 'queued',
+          size: item.size || item.sizeleft || null,
+          timeLeft: item.timeleft || item.estimatedCompletionTime || null,
+        };
+      });
+
+      const perAppCounts = (await this.getStoreValue('queue_app_counts')) || { radarr: 0, sonarr: 0, lidarr: 0 };
+      perAppCounts[appName] = newQueueItems.length;
+
+      const mergedQueue = [...filteredQueue, ...newQueueItems];
+      await this.setStoreValue('queue_items', mergedQueue.slice(0, 100));
+      await this.setStoreValue('queue_app_counts', perAppCounts);
+      await this.setCapabilityValue('measure_queue_count', mergedQueue.length);
+
+      // Clear errors for this app
+      this._clearAppError(appName);
+      await this.setStoreValue('app_errors', this._serializeErrors());
+
+      this.log(`Refreshed app ${appName}`);
+      return { success: true };
+    } catch (error) {
+      this._setAppError(appName, error.message || 'Refresh error');
+      await this.setStoreValue('app_errors', this._serializeErrors());
+      throw error;
+    }
+  }
+
+  /**
    * Handle settings update
    */
   async onSettings({ oldSettings, newSettings, changedKeys }) {

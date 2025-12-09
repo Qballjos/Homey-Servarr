@@ -183,6 +183,9 @@
 
     <div class="toolbar">
       <button class="btn btn-pause" id="btn-refresh" style="flex:0 0 auto;">Refresh</button>
+      <button class="btn btn-resume" id="btn-refresh-radarr" style="flex:0 0 auto;">Radarr</button>
+      <button class="btn btn-resume" id="btn-refresh-sonarr" style="flex:0 0 auto;">Sonarr</button>
+      <button class="btn btn-resume" id="btn-refresh-lidarr" style="flex:0 0 auto;">Lidarr</button>
     </div>
 
     <ul class="list" id="queue-list"></ul>
@@ -372,6 +375,27 @@
         btn.textContent = 'Refresh';
       }
     });
+
+    async function refreshApp(app) {
+      const btn = document.getElementById(`btn-refresh-${app}`);
+      if (!btn) return;
+      btn.disabled = true;
+      const old = btn.textContent;
+      btn.textContent = '...';
+      try {
+        await device.refreshApp(app);
+        await load();
+      } catch (error) {
+        Homey.alert(`Error refreshing ${app}: ` + error.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = old;
+      }
+    }
+
+    document.getElementById('btn-refresh-radarr').addEventListener('click', () => refreshApp('radarr'));
+    document.getElementById('btn-refresh-sonarr').addEventListener('click', () => refreshApp('sonarr'));
+    document.getElementById('btn-refresh-lidarr').addEventListener('click', () => refreshApp('lidarr'));
   </script>
 </body>
 </html>
