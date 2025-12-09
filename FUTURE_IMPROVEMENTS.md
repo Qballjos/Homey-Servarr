@@ -7,14 +7,14 @@
 
 ## Controls & Actions
 - [x] Expose blocklist toggle with brief description in UI/README.
-- [ ] (Not supported by Servarr APIs) Per-item pause/resume — only remove/block per item or pause/resume per app/all.
+- [x] (Not supported by Servarr APIs) Per-item pause/resume — only remove/block per item or pause/resume per app/all.
 - [ ] App-specific refresh buttons (optional) to refresh only Radarr/Sonarr/Lidarr queues.
 - [ ] Queue filters (e.g., “Only active”) to hide completed/blocked items.
 ## Resilience & Errors
 - [x] Lightweight retry/back-off on transient network errors (single retry max).
 - [x] “Test connection” in settings/pair view to validate API URL/key per app.
 - [x] Mask API keys in logs and error surfaces.
-- [ ] Inline errors per app in widget for common issues (auth/host/timeout).
+- [x] Inline errors per app in widget for common issues (auth/host/timeout).
 
 ## Performance Options
 - [x] “Manual only” mode: skip scheduled polling, allow user-triggered refresh.
