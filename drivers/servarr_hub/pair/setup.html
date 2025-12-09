@@ -215,6 +215,50 @@
     setupToggle('radarr');
     setupToggle('sonarr');
     setupToggle('lidarr');
+
+    async function testConnections() {
+      const btn = document.getElementById('btn-test');
+      btn.disabled = true;
+      btn.textContent = 'Testing...';
+      const settings = {
+        radarr_enabled: document.getElementById('radarr_enabled').checked,
+        radarr_url: document.getElementById('radarr_url').value,
+        radarr_port: parseInt(document.getElementById('radarr_port').value) || 7878,
+        radarr_api_key: document.getElementById('radarr_api_key').value,
+        sonarr_enabled: document.getElementById('sonarr_enabled').checked,
+        sonarr_url: document.getElementById('sonarr_url').value,
+        sonarr_port: parseInt(document.getElementById('sonarr_port').value) || 8989,
+        sonarr_api_key: document.getElementById('sonarr_api_key').value,
+        lidarr_enabled: document.getElementById('lidarr_enabled').checked,
+        lidarr_url: document.getElementById('lidarr_url').value,
+        lidarr_port: parseInt(document.getElementById('lidarr_port').value) || 8686,
+        lidarr_api_key: document.getElementById('lidarr_api_key').value
+      };
+
+      try {
+        Homey.showLoadingOverlay();
+        const results = await Homey.emit('testConnection', settings);
+        let ok = 0;
+        let fail = 0;
+        let msg = '';
+        results.forEach(r => {
+          if (r.success) {
+            ok++;
+            msg += `${r.app}: OK\n`;
+          } else {
+            fail++;
+            msg += `${r.app}: FAIL (${r.error || 'unknown error'})\n`;
+          }
+        });
+        Homey.alert(msg || 'No apps tested');
+      } catch (err) {
+        Homey.alert('Test failed: ' + err.message);
+      } finally {
+        Homey.hideLoadingOverlay();
+        btn.disabled = false;
+        btn.textContent = 'Test Connections';
+      }
+    }
     
     // Handle getSettings request
     Homey.on('getSettings', (callback) => {
@@ -282,6 +326,16 @@
       };
       Homey.emit('add', settings);
     });
+
+    // Test connections button
+    const testBtn = document.createElement('button');
+    testBtn.id = 'btn-test';
+    testBtn.textContent = 'Test Connections';
+    testBtn.style.marginTop = '16px';
+    testBtn.style.padding = '10px 14px';
+    testBtn.style.fontWeight = '600';
+    testBtn.addEventListener('click', testConnections);
+    document.body.appendChild(testBtn);
   </script>
 </body>
 </html>

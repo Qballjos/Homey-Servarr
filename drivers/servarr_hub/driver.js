@@ -82,6 +82,51 @@ class ServarrHubDriver extends Homey.Driver {
         }
       };
     });
+
+    // Test connections without creating the device yet
+    session.setHandler('testConnection', async (data) => {
+      const results = [];
+      const tests = [];
+      const configs = [
+        { enabled: data.radarr_enabled, url: data.radarr_url, port: data.radarr_port || 7878, key: data.radarr_api_key, app: 'radarr' },
+        { enabled: data.sonarr_enabled, url: data.sonarr_url, port: data.sonarr_port || 8989, key: data.sonarr_api_key, app: 'sonarr' },
+        { enabled: data.lidarr_enabled, url: data.lidarr_url, port: data.lidarr_port || 8686, key: data.lidarr_api_key, app: 'lidarr' },
+      ];
+
+      for (const cfg of configs) {
+        if (!cfg.enabled || !cfg.url || !cfg.key) continue;
+        try {
+          const client = new ServarrAPI({
+            baseUrl: cfg.url,
+            port: cfg.port,
+            apiKey: cfg.key,
+            appName: cfg.app,
+          });
+          tests.push(
+            client.testConnection().then((ok) => ({
+              app: cfg.app,
+              success: ok === true,
+            })).catch((err) => ({
+              app: cfg.app,
+              success: false,
+              error: err.message,
+            }))
+          );
+        } catch (err) {
+          results.push({ app: cfg.app, success: false, error: err.message });
+        }
+      }
+
+      if (tests.length) {
+        results.push(...(await Promise.all(tests)));
+      }
+
+      if (results.length === 0) {
+        return [{ app: 'none', success: false, error: 'No enabled apps to test' }];
+      }
+
+      return results;
+    });
   }
 
 }
