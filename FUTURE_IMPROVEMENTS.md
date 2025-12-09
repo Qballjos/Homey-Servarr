@@ -23,6 +23,6 @@
 ## Documentation
 - [ ] Add screenshots of widgets and a short troubleshooting section (API key/URL/SSL tips).
 - [x] Note that `titleFormatted` has been added for Flow cards (warnings resolved).
-- [ ] Add mini stats per app (optional) in widget footer, e.g., “R:2 S:1 L:0”.
+- [x] Add mini stats per app (optional) in widget footer, e.g., “R:2 S:1 L:0”.
 - [ ] Normalize ETA/size badges (hh:mm, one-decimal GB) and add status badge (Queued/Downloading/Importing).
 
