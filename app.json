@@ -26,10 +26,7 @@
     "email": "qballjos@gmail.com"
   },
   "homepage": "https://josvisserict.nl",
-  "support": {
-    "supportUrl": "https://github.com/Qballjos/Homey-Servarr/issues",
-    "supportEmail": "qballjos@gmail.com"
-  },
+  "support": "https://github.com/Qballjos/Homey-Servarr/issues",
   "brandColor": "#4B0082",
   "tags": {
     "en": [
