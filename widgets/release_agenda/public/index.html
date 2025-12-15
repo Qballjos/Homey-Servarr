@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Release Agenda</title>
+  <script src="/lib/homey.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: transparent;
+    }
+    .widget-container {
+      text-align: center;
+    }
+    .count {
+      font-size: 48px;
+      font-weight: bold;
+      color: #2c3e50;
+      margin: 10px 0;
+    }
+    .label {
+      font-size: 14px;
+      color: #7f8c8d;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .subtitle {
+      font-size: 12px;
+      color: #95a5a6;
+      margin-top: 5px;
+    }
+    .list {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0 0 0;
+      text-align: left;
+    }
+    .list li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 4px;
+      border-bottom: 1px solid #ecf0f1;
+      font-size: 14px;
+      color: #2c3e50;
+    }
+    .flag {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      display: inline-block;
+    }
+    .title {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .check {
+      color: #27ae60;
+      font-weight: 700;
+      min-width: 18px;
+      text-align: right;
+    }
+    .errors {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #c0392b;
+      text-align: left;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <div class="widget-container">
+    <div class="label">Today</div>
+    <div class="count" id="release-count">0</div>
+    <div class="subtitle">Planned releases</div>
+    <ul class="list" id="release-list"></ul>
+    <div class="errors" id="error-box"></div>
+  </div>
+  
+  <script>
+    function onHomeyReady(Homey) {
+      Homey.ready();
+      
+      const listEl = document.getElementById('release-list');
+      const countEl = document.getElementById('release-count');
+      const errorBox = document.getElementById('error-box');
+
+      const appColors = {
+        sonarr: '#3498db', // blue
+        radarr: '#f1c40f', // yellow
+        lidarr: '#27ae60', // green
+      };
+
+      function renderList(items, appReleaseCounts) {
+        listEl.innerHTML = '';
+        if (!items || items.length === 0) {
+          listEl.innerHTML = '<li>No releases today</li>';
+          return;
+        }
+        
+        // Group by app and show per-app counts
+        const appGroups = {};
+        items.forEach(item => {
+          if (!appGroups[item.app]) {
+            appGroups[item.app] = [];
+          }
+          appGroups[item.app].push(item);
+        });
+        
+        // Show per-app summary
+        Object.keys(appGroups).forEach(app => {
+          const count = appReleaseCounts[app] || appGroups[app].length;
+          const color = appColors[app] || '#7f8c8d';
+          const li = document.createElement('li');
+          li.style.fontWeight = 'bold';
+          li.style.paddingTop = '8px';
+          li.innerHTML = `
+            <span class="flag" style="background:${color};"></span>
+            <span class="title">${app.charAt(0).toUpperCase() + app.slice(1)}: ${count}</span>
+          `;
+          listEl.appendChild(li);
+          
+          // Show items for this app
+          appGroups[app].slice(0, 5).forEach(item => {
+            const check = item.hasFile ? '✓' : '';
+            const itemLi = document.createElement('li');
+            itemLi.style.paddingLeft = '20px';
+            itemLi.innerHTML = `
+              <span class="flag" style="background:${color};"></span>
+              <span class="title">${item.title}</span>
+              <span class="check">${check}</span>
+            `;
+            listEl.appendChild(itemLi);
+          });
+        });
+      }
+
+      function renderErrors(errors) {
+        if (!errors || Object.keys(errors).length === 0) {
+          errorBox.innerHTML = '';
+          return;
+        }
+        const errorList = Object.keys(errors).map(app => `${app}: ${errors[app]}`).join('<br>');
+        errorBox.innerHTML = `<strong>Errors:</strong><br>${errorList}`;
+      }
+
+      async function load() {
+        const deviceIds = Homey.getDeviceIds();
+        if (!deviceIds || deviceIds.length === 0) {
+          countEl.textContent = '0';
+          listEl.innerHTML = '<li>Please select a device in widget settings</li>';
+          return;
+        }
+        
+        try {
+          const data = await Homey.api('GET', '/', { deviceIds: deviceIds.join(',') });
+          const total = Object.values(data.appReleaseCounts || {}).reduce((a, b) => a + b, 0);
+          countEl.textContent = total.toString();
+          renderList(data.releases || [], data.appReleaseCounts || {});
+          renderErrors(data.errors || {});
+        } catch (error) {
+          console.error('Error loading release data:', error);
+          countEl.textContent = '0';
+          renderList([], {});
+          renderErrors({});
+        }
+      }
+      
+      load();
+      // Refresh every 30 seconds
+      setInterval(load, 30000);
+    }
+  </script>
+</body>
+</html>
+

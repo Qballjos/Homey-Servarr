@@ -2,6 +2,46 @@
   "name": {
     "en": "Downloads & Action Panel"
   },
-  "height": 200,
+  "settings": [
+    {
+      "id": "device",
+      "type": "devices",
+      "title": {
+        "en": "Select Servarr Control Hub"
+      },
+      "singular": true,
+      "type": "app",
+      "filter": {
+        "driver_id": "servarr_hub"
+      }
+    }
+  ],
+  "height": 300,
+  "transparent": true,
+  "api": {
+    "getDeviceData": {
+      "method": "GET",
+      "path": "/"
+    },
+    "pause": {
+      "method": "POST",
+      "path": "/pause"
+    },
+    "resume": {
+      "method": "POST",
+      "path": "/resume"
+    },
+    "remove": {
+      "method": "POST",
+      "path": "/remove"
+    },
+    "refresh": {
+      "method": "POST",
+      "path": "/refresh"
+    }
+  }
+    }
+  ],
+  "height": 300,
   "transparent": true
 }

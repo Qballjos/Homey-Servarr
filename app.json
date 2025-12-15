@@ -232,44 +232,29 @@
           "id": "add_devices",
           "template": "add_devices"
         }
-      ],
-      "widgets": [
-        {
-          "id": "release_agenda",
-          "title": {
-            "en": "Release Agenda Today"
-          },
-          "capabilities": [
-            "text_today_releases"
-          ],
-          "template": "custom",
-          "path": "drivers/servarr_hub/widgets/release_agenda/index.html"
-        },
-        {
-          "id": "downloads_panel",
-          "title": {
-            "en": "Downloads & Action Panel"
-          },
-          "capabilities": [
-            "measure_queue_count"
-          ],
-          "template": "custom",
-          "path": "drivers/servarr_hub/widgets/downloads_panel/index.html"
-        },
-        {
-          "id": "calendar",
-          "title": {
-            "en": "Release Calendar"
-          },
-          "capabilities": [
-            "text_today_releases"
-          ],
-          "template": "custom",
-          "path": "drivers/servarr_hub/widgets/calendar/index.html"
-        }
       ]
     }
   ],
+  "widgets": {
+    "release_agenda": {
+      "id": "release_agenda",
+      "name": {
+        "en": "Release Agenda Today"
+      }
+    },
+    "downloads_panel": {
+      "id": "downloads_panel",
+      "name": {
+        "en": "Downloads & Action Panel"
+      }
+    },
+    "calendar": {
+      "id": "calendar",
+      "name": {
+        "en": "Release Calendar"
+      }
+    }
+  },
   "flow": {
     "triggers": [
       {

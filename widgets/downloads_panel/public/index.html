@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Downloads Panel</title>
+  <script src="/lib/homey.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 15px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: transparent;
+    }
+    .widget-container {
+      text-align: center;
+    }
+    .queue-info {
+      margin-bottom: 20px;
+    }
+    .count {
+      font-size: 36px;
+      font-weight: bold;
+      color: #2c3e50;
+      margin: 5px 0;
+    }
+    .label {
+      font-size: 12px;
+      color: #7f8c8d;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .list {
+      list-style: none;
+      padding: 0;
+      margin: 10px 0 0 0;
+      text-align: left;
+    }
+    .list li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 4px;
+      border-bottom: 1px solid #ecf0f1;
+      font-size: 13px;
+      color: #2c3e50;
+    }
+    .flag {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      display: inline-block;
+    }
+    .title {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .status {
+      font-size: 12px;
+      color: #7f8c8d;
+      min-width: 70px;
+      text-align: right;
+    }
+.badges {
+  display: flex;
+  gap: 6px;
+  margin-left: 18px;
+  margin-top: 2px;
+  flex-wrap: wrap;
+}
+.badge {
+  background: #ecf0f1;
+  color: #34495e;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+.badge-status {
+  background: #95a5a6;
+  color: white;
+}
+.badge-eta {
+  background: #3498db;
+  color: white;
+}
+.badge-size {
+  background: #27ae60;
+  color: white;
+}
+    .actions-row {
+      display: flex;
+      gap: 6px;
+    }
+    .btn-mini {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+  display: inline-block;
+    }
+    .btn-remove {
+      background: #e67e22;
+      color: white;
+    }
+    .btn-remove:hover {
+      background: #d35400;
+    }
+    .btn-block {
+      background: #c0392b;
+      color: white;
+    }
+    .btn-block:hover {
+      background: #922b21;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+.toolbar {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 8px;
+}
+    .btn {
+      flex: 1;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .btn-pause {
+      background: #e74c3c;
+      color: white;
+    }
+    .btn-pause:hover {
+      background: #c0392b;
+    }
+    .btn-resume {
+      background: #27ae60;
+      color: white;
+    }
+    .btn-resume:hover {
+      background: #229954;
+    }
+    .btn:active {
+      transform: scale(0.95);
+    }
+    .legend {
+      margin-top: 10px;
+      font-size: 11px;
+      color: #7f8c8d;
+      text-align: left;
+      line-height: 1.4;
+    }
+    .errors {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #c0392b;
+      text-align: left;
+      line-height: 1.4;
+    }
+.stats {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #7f8c8d;
+  text-align: left;
+}
+.filters {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #2c3e50;
+  text-align: left;
+}
+.filters label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+  </style>
+</head>
+<body>
+  <div class="widget-container">
+    <div class="queue-info">
+      <div class="label">Queue</div>
+      <div class="count" id="queue-count">0</div>
+      <div class="label" style="margin-top: 5px;">Items</div>
+    </div>
+    
+    <div class="actions">
+      <button class="btn btn-pause" id="btn-pause">Pause</button>
+      <button class="btn btn-resume" id="btn-resume">Resume</button>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn btn-pause" id="btn-refresh" style="flex:0 0 auto;">Refresh</button>
+      <button class="btn btn-resume" id="btn-refresh-radarr" style="flex:0 0 auto;">Radarr</button>
+      <button class="btn btn-resume" id="btn-refresh-sonarr" style="flex:0 0 auto;">Sonarr</button>
+      <button class="btn btn-resume" id="btn-refresh-lidarr" style="flex:0 0 auto;">Lidarr</button>
+    </div>
+
+    <div class="filters">
+      <label>
+        <input type="checkbox" id="toggle-active">
+        Show only active items (hide completed/blocked/failed)
+      </label>
+    </div>
+
+    <ul class="list" id="queue-list"></ul>
+    <div class="legend">
+      <div><strong>Remove</strong>: remove from queue and download client.</div>
+      <div><strong>Block</strong>: blocklist and remove from queue/client.</div>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="errors" id="error-box"></div>
+  </div>
+  
+  <script>
+    function onHomeyReady(Homey) {
+      Homey.ready();
+      
+      const listEl = document.getElementById('queue-list');
+      const countEl = document.getElementById('queue-count');
+      const errorBox = document.getElementById('error-box');
+      const statsEl = document.getElementById('stats');
+      const toggleActiveEl = document.getElementById('toggle-active');
+
+    const appColors = {
+      sonarr: '#3498db', // blue
+      radarr: '#f1c40f', // yellow
+      lidarr: '#27ae60', // green
+    };
+
+    function renderStats(stats) {
+      if (!stats) {
+        statsEl.textContent = '';
+        return;
+      }
+      const r = stats.radarr || 0;
+      const s = stats.sonarr || 0;
+      const l = stats.lidarr || 0;
+      statsEl.innerHTML = `<strong>Per App:</strong> Radarr: ${r} | Sonarr: ${s} | Lidarr: ${l}`;
+    }
+
+    function formatSize(bytes) {
+      if (!bytes || isNaN(bytes)) return null;
+      const gb = bytes / (1024 * 1024 * 1024);
+      if (gb >= 0.1) return `${gb.toFixed(1)} GB`;
+      const mb = bytes / (1024 * 1024);
+      return `${mb.toFixed(0)} MB`;
+    }
+
+    function formatEta(value) {
+      if (!value) return null;
+      // If ISO date: show remaining hh:mm
+      const date = new Date(value);
+      if (!isNaN(date)) {
+        const diffMs = date.getTime() - Date.now();
+        if (diffMs <= 0) return '00:00';
+        const mins = Math.floor(diffMs / 60000);
+        const hh = Math.floor(mins / 60).toString().padStart(2, '0');
+        const mm = (mins % 60).toString().padStart(2, '0');
+        return `${hh}:${mm}`;
+      }
+      // If already hh:mm or text
+      if (typeof value === 'string') return value;
+      return null;
+    }
+
+    function normalizeStatus(status) {
+      if (!status) return '';
+      const s = status.toString().toLowerCase();
+      if (s.includes('download')) return 'Downloading';
+      if (s.includes('queue') || s.includes('queued')) return 'Queued';
+      if (s.includes('import')) return 'Importing';
+      if (s.includes('pause')) return 'Paused';
+      if (s.includes('block')) return 'Blocked';
+      if (s.includes('complete')) return 'Completed';
+      return status;
+    }
+
+    function renderList(items) {
+      listEl.innerHTML = '';
+      if (!items || items.length === 0) {
+        listEl.innerHTML = '<li>No items in queue</li>';
+        return;
+      }
+      const onlyActive = toggleActiveEl.checked;
+      const filtered = onlyActive
+        ? items.filter((item) => {
+            const st = (item.status || '').toLowerCase();
+            return !(st.includes('complete') || st.includes('blocked') || st.includes('failed'));
+          })
+        : items;
+      const sorted = [...items].sort((a, b) => {
+        const sa = (a.status || '').toLowerCase();
+        const sb = (b.status || '').toLowerCase();
+        if (sa === sb) return (a.title || '').localeCompare(b.title || '');
+        return sa.localeCompare(sb);
+      });
+
+      const source = filtered.length ? filtered : sorted;
+      if (!source.length) {
+        listEl.innerHTML = '<li>No active items</li>';
+        return;
+      }
+
+      for (const item of source) {
+        const color = appColors[item.app] || '#7f8c8d';
+        const li = document.createElement('li');
+        const niceStatus = normalizeStatus(item.status || '');
+        const eta = formatEta(item.timeLeft || item.eta);
+        const sizeText = formatSize(item.size);
+        li.innerHTML = `
+          <span class="flag" style="background:${color};"></span>
+          <span class="title">${item.title}</span>
+          <span class="status">${niceStatus}</span>
+        `;
+        const badges = document.createElement('div');
+        badges.className = 'badges';
+
+        if (niceStatus) {
+          const stBadge = document.createElement('span');
+          stBadge.className = 'badge badge-status';
+          stBadge.textContent = niceStatus;
+          badges.appendChild(stBadge);
+        }
+
+        if (eta) {
+          const etaBadge = document.createElement('span');
+          etaBadge.className = 'badge badge-eta';
+          etaBadge.textContent = eta;
+          badges.appendChild(etaBadge);
+        }
+
+        if (sizeText) {
+          const sizeBadge = document.createElement('span');
+          sizeBadge.className = 'badge badge-size';
+          sizeBadge.textContent = sizeText;
+          badges.appendChild(sizeBadge);
+        }
+
+        if (badges.children.length > 0) {
+          li.appendChild(badges);
+        }
+
+        const actions = document.createElement('div');
+        actions.className = 'actions-row';
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'btn-mini btn-remove';
+        removeBtn.textContent = 'Remove';
+        removeBtn.addEventListener('click', async () => {
+          removeBtn.disabled = true;
+          try {
+            await Homey.api('POST', '/remove', { deviceId, app: item.app, id: item.id, blocklist: false });
+            Homey.showNotification('Removed from queue');
+            load(); // refresh
+          } catch (error) {
+            Homey.alert('Error removing: ' + (error.message || error));
+          } finally {
+            removeBtn.disabled = false;
+          }
+        });
+
+        const blockBtn = document.createElement('button');
+        blockBtn.className = 'btn-mini btn-block';
+        blockBtn.textContent = 'Block';
+        blockBtn.addEventListener('click', async () => {
+          blockBtn.disabled = true;
+          try {
+            await Homey.api('POST', '/remove', { deviceId, app: item.app, id: item.id, blocklist: true });
+            Homey.showNotification('Blocked and removed');
+            load(); // refresh
+          } catch (error) {
+            Homey.alert('Error blocking/removing: ' + (error.message || error));
+          } finally {
+            blockBtn.disabled = false;
+          }
+        });
+
+        actions.appendChild(removeBtn);
+        actions.appendChild(blockBtn);
+        li.appendChild(actions);
+        listEl.appendChild(li);
+      }
+    }
+
+    let deviceId = null;
+    
+    async function load() {
+      const deviceIds = Homey.getDeviceIds();
+      if (!deviceIds || deviceIds.length === 0) {
+        countEl.textContent = '0';
+        listEl.innerHTML = '<li>Please select a device in widget settings</li>';
+        statsEl.textContent = '';
+        deviceId = null;
+        return;
+      }
+      
+      deviceId = deviceIds[0];
+      
+      try {
+        const data = await Homey.api('GET', '/', { deviceIds: deviceIds.join(',') });
+        const total = Object.values(data.queueAppCounts || {}).reduce((a, b) => a + b, 0);
+        countEl.textContent = total.toString();
+        renderList(data.queueItems || []);
+        renderStats(data.queueAppCounts || {});
+        renderErrors(data.errors || {});
+      } catch (error) {
+        console.error('Error loading queue data:', error);
+        countEl.textContent = '0';
+        renderList([]);
+        renderStats({});
+        renderErrors({});
+      }
+    }
+    
+    // Initial load and refresh every 30 seconds
+    load();
+    setInterval(load, 30000);
+    
+    // Button handlers
+    document.getElementById('btn-pause').addEventListener('click', async () => {
+      const btn = document.getElementById('btn-pause');
+      btn.disabled = true;
+      btn.textContent = '...';
+      
+      try {
+        if (!deviceId) {
+          Homey.alert('Please select a device in widget settings');
+          return;
+        }
+        await Homey.api('POST', '/pause', { deviceId });
+        Homey.showNotification('Downloads paused');
+        load();
+      } catch (error) {
+        Homey.alert('Error pausing: ' + (error.message || error));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Pause';
+      }
+    });
+    
+    document.getElementById('btn-resume').addEventListener('click', async () => {
+      const btn = document.getElementById('btn-resume');
+      btn.disabled = true;
+      btn.textContent = '...';
+      
+      try {
+        if (!deviceId) {
+          Homey.alert('Please select a device in widget settings');
+          return;
+        }
+        await Homey.api('POST', '/resume', { deviceId });
+        Homey.showNotification('Downloads resumed');
+        load();
+      } catch (error) {
+        Homey.alert('Error resuming: ' + (error.message || error));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Resume';
+      }
+    });
+
+    // Refresh handler
+    document.getElementById('btn-refresh').addEventListener('click', async () => {
+      const btn = document.getElementById('btn-refresh');
+      btn.disabled = true;
+      btn.textContent = '...';
+      try {
+        await load();
+      } catch (error) {
+        Homey.alert('Error refreshing: ' + error.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Refresh';
+      }
+    });
+
+    async function refreshApp(app) {
+      const btn = document.getElementById(`btn-refresh-${app}`);
+      if (!btn) return;
+      btn.disabled = true;
+      const old = btn.textContent;
+      btn.textContent = '...';
+      try {
+        if (!deviceId) {
+          Homey.alert('Please select a device in widget settings');
+          return;
+        }
+        await Homey.api('POST', '/refresh', { deviceId, app });
+        await load();
+      } catch (error) {
+        Homey.alert(`Error refreshing ${app}: ` + (error.message || error));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = old;
+      }
+    }
+
+    document.getElementById('btn-refresh-radarr').addEventListener('click', () => refreshApp('radarr'));
+    document.getElementById('btn-refresh-sonarr').addEventListener('click', () => refreshApp('sonarr'));
+    document.getElementById('btn-refresh-lidarr').addEventListener('click', () => refreshApp('lidarr'));
+
+    // Filter toggle
+    toggleActiveEl.addEventListener('change', () => {
+      load();
+    });
+    }
+  </script>
+</body>
+</html>
+

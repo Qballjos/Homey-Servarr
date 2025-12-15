@@ -266,8 +266,18 @@ class ServarrHubDevice extends Homey.Device {
     await this.setCapabilityValue('text_today_releases', totalReleases.toString());
     // Store detailed releases for widget rendering (keep it small)
     await this.setStoreValue('today_releases', releases.slice(0, 100));
+    
+    // Store per-app release counts
+    const perAppReleases = { radarr: 0, sonarr: 0, lidarr: 0 };
+    releases.forEach(r => {
+      if (perAppReleases.hasOwnProperty(r.app)) {
+        perAppReleases[r.app]++;
+      }
+    });
+    await this.setStoreValue('app_release_counts', perAppReleases);
+    
     await this.setStoreValue('app_errors', this._serializeErrors());
-    this.log(`Today's releases: ${totalReleases}`);
+    this.log(`Today's releases: ${totalReleases} (Radarr: ${perAppReleases.radarr}, Sonarr: ${perAppReleases.sonarr}, Lidarr: ${perAppReleases.lidarr})`);
     
     // Also fetch and store calendar data for wider range (for calendar widget)
     await this.updateCalendarData();
@@ -402,20 +412,26 @@ class ServarrHubDevice extends Homey.Device {
    */
   async updateMissingCount() {
     let totalMissing = 0;
-    
+    const perAppMissing = { radarr: 0, sonarr: 0, lidarr: 0 };
+
     for (const [appName, client] of Object.entries(this._apiClients)) {
       try {
         const result = await client.getMissing(1); // Use pageSize=1 to minimize data transfer
-        totalMissing += result.count || 0;
+        const count = result.count || 0;
+        totalMissing += count;
+        if (perAppMissing.hasOwnProperty(appName)) {
+          perAppMissing[appName] = count;
+        }
         this._clearAppError(appName);
       } catch (error) {
         this.error(`Error getting missing items for ${appName}: ${error.message || error}`);
         this._setAppError(appName, error.message || 'Missing items error');
       }
     }
-    
+
     await this.setCapabilityValue('measure_missing_count', totalMissing);
-    this.log(`Total missing items: ${totalMissing}`);
+    await this.setStoreValue('app_missing_counts', perAppMissing);
+    this.log(`Total missing items: ${totalMissing} (Radarr: ${perAppMissing.radarr}, Sonarr: ${perAppMissing.sonarr}, Lidarr: ${perAppMissing.lidarr})`);
   }
 
   /**

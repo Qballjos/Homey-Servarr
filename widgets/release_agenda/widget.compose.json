@@ -2,6 +2,26 @@
   "name": {
     "en": "Release Agenda Today"
   },
+  "settings": [
+    {
+      "id": "device",
+      "type": "devices",
+      "title": {
+        "en": "Select Servarr Control Hub"
+      },
+      "singular": true,
+      "type": "app",
+      "filter": {
+        "driver_id": "servarr_hub"
+      }
+    }
+  ],
   "height": 200,
-  "transparent": true
+  "transparent": true,
+  "api": {
+    "getDeviceData": {
+      "method": "GET",
+      "path": "/"
+    }
+  }
 }

@@ -2,6 +2,30 @@
   "name": {
     "en": "Release Calendar"
   },
+  "settings": [
+    {
+      "id": "device",
+      "type": "devices",
+      "title": {
+        "en": "Select Servarr Control Hub"
+      },
+      "singular": true,
+      "type": "app",
+      "filter": {
+        "driver_id": "servarr_hub"
+      }
+    }
+  ],
+  "height": 400,
+  "transparent": true,
+  "api": {
+    "getDeviceData": {
+      "method": "GET",
+      "path": "/"
+    }
+  }
+    }
+  ],
   "height": 400,
   "transparent": true
 }
