@@ -30,20 +30,24 @@ class ServarrHubDevice extends Homey.Device {
     this._lastHealthStatus = {}; // Track health status per app
     
     // Initialize capabilities with default values
-    if (!this.hasCapability('text_today_releases')) {
-      await this.addCapability('text_today_releases');
-    }
-    if (!this.hasCapability('measure_queue_count')) {
-      await this.addCapability('measure_queue_count');
-    }
-    if (!this.hasCapability('measure_missing_count')) {
-      await this.addCapability('measure_missing_count');
-    }
-    if (!this.hasCapability('queue_paused')) {
-      await this.addCapability('queue_paused');
-    }
-    if (!this.hasCapability('measure_library_size')) {
-      await this.addCapability('measure_library_size');
+    const capabilities = [
+      'text_today_releases',
+      'measure_queue_count',
+      'measure_missing_count',
+      'queue_paused',
+      'measure_library_size',
+      'measure_radarr_releases',
+      'measure_sonarr_releases',
+      'measure_lidarr_releases',
+      'measure_radarr_missing',
+      'measure_sonarr_missing',
+      'measure_lidarr_missing'
+    ];
+    
+    for (const cap of capabilities) {
+      if (!this.hasCapability(cap)) {
+        await this.addCapability(cap);
+      }
     }
     
     // Set initial values
@@ -52,6 +56,12 @@ class ServarrHubDevice extends Homey.Device {
     await this.setCapabilityValue('measure_missing_count', 0);
     await this.setCapabilityValue('queue_paused', false);
     await this.setCapabilityValue('measure_library_size', 0);
+    await this.setCapabilityValue('measure_radarr_releases', 0);
+    await this.setCapabilityValue('measure_sonarr_releases', 0);
+    await this.setCapabilityValue('measure_lidarr_releases', 0);
+    await this.setCapabilityValue('measure_radarr_missing', 0);
+    await this.setCapabilityValue('measure_sonarr_missing', 0);
+    await this.setCapabilityValue('measure_lidarr_missing', 0);
     
     // Load configuration
     await this.loadConfiguration();
@@ -263,18 +273,25 @@ class ServarrHubDevice extends Homey.Device {
       }
     }
     
-    await this.setCapabilityValue('text_today_releases', totalReleases.toString());
     // Store detailed releases for widget rendering (keep it small)
     await this.setStoreValue('today_releases', releases.slice(0, 100));
     
-    // Store per-app release counts
+    // Store per-app release counts for widgets & panel view
     const perAppReleases = { radarr: 0, sonarr: 0, lidarr: 0 };
-    releases.forEach(r => {
+    for (const r of releases) {
       if (perAppReleases.hasOwnProperty(r.app)) {
         perAppReleases[r.app]++;
       }
-    });
+    }
     await this.setStoreValue('app_release_counts', perAppReleases);
+    
+    // Update per-app release capabilities
+    await this.setCapabilityValue('measure_radarr_releases', perAppReleases.radarr);
+    await this.setCapabilityValue('measure_sonarr_releases', perAppReleases.sonarr);
+    await this.setCapabilityValue('measure_lidarr_releases', perAppReleases.lidarr);
+    
+    // Update text capability with total
+    await this.setCapabilityValue('text_today_releases', totalReleases.toString());
     
     await this.setStoreValue('app_errors', this._serializeErrors());
     this.log(`Today's releases: ${totalReleases} (Radarr: ${perAppReleases.radarr}, Sonarr: ${perAppReleases.sonarr}, Lidarr: ${perAppReleases.lidarr})`);
@@ -408,6 +425,7 @@ class ServarrHubDevice extends Homey.Device {
 
   /**
    * Update missing items count
+   * Only counts past releases (not future ones)
    * Polls every 15 minutes (same interval as health check)
    */
   async updateMissingCount() {
@@ -416,7 +434,8 @@ class ServarrHubDevice extends Homey.Device {
 
     for (const [appName, client] of Object.entries(this._apiClients)) {
       try {
-        const result = await client.getMissing(1); // Use pageSize=1 to minimize data transfer
+        // Fetch missing items and filter out future releases (only count past releases)
+        const result = await client.getMissing(100, false); // pageSize=100, includeFuture=false
         const count = result.count || 0;
         totalMissing += count;
         if (perAppMissing.hasOwnProperty(appName)) {
@@ -431,8 +450,15 @@ class ServarrHubDevice extends Homey.Device {
 
     await this.setCapabilityValue('measure_missing_count', totalMissing);
     await this.setStoreValue('app_missing_counts', perAppMissing);
-    this.log(`Total missing items: ${totalMissing} (Radarr: ${perAppMissing.radarr}, Sonarr: ${perAppMissing.sonarr}, Lidarr: ${perAppMissing.lidarr})`);
+    
+    // Update per-app missing capabilities
+    await this.setCapabilityValue('measure_radarr_missing', perAppMissing.radarr);
+    await this.setCapabilityValue('measure_sonarr_missing', perAppMissing.sonarr);
+    await this.setCapabilityValue('measure_lidarr_missing', perAppMissing.lidarr);
+    
+    this.log(`Total missing items (past only): ${totalMissing} (Radarr: ${perAppMissing.radarr}, Sonarr: ${perAppMissing.sonarr}, Lidarr: ${perAppMissing.lidarr})`);
   }
+
 
   /**
    * Update library size (total movies/series/albums)

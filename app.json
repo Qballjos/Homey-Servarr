@@ -81,6 +81,60 @@
       "decimals": 0,
       "uiComponent": "sensor",
       "icon": "/assets/icon.svg"
+    },
+    "measure_radarr_releases": {
+      "type": "number",
+      "title": { "en": "Radarr Releases Today" },
+      "getable": true,
+      "setable": false,
+      "decimals": 0,
+      "uiComponent": "sensor",
+      "icon": "/assets/icon.svg"
+    },
+    "measure_sonarr_releases": {
+      "type": "number",
+      "title": { "en": "Sonarr Releases Today" },
+      "getable": true,
+      "setable": false,
+      "decimals": 0,
+      "uiComponent": "sensor",
+      "icon": "/assets/icon.svg"
+    },
+    "measure_lidarr_releases": {
+      "type": "number",
+      "title": { "en": "Lidarr Releases Today" },
+      "getable": true,
+      "setable": false,
+      "decimals": 0,
+      "uiComponent": "sensor",
+      "icon": "/assets/icon.svg"
+    },
+    "measure_radarr_missing": {
+      "type": "number",
+      "title": { "en": "Radarr Missing (Past)" },
+      "getable": true,
+      "setable": false,
+      "decimals": 0,
+      "uiComponent": "sensor",
+      "icon": "/assets/icon.svg"
+    },
+    "measure_sonarr_missing": {
+      "type": "number",
+      "title": { "en": "Sonarr Missing (Past)" },
+      "getable": true,
+      "setable": false,
+      "decimals": 0,
+      "uiComponent": "sensor",
+      "icon": "/assets/icon.svg"
+    },
+    "measure_lidarr_missing": {
+      "type": "number",
+      "title": { "en": "Lidarr Missing (Past)" },
+      "getable": true,
+      "setable": false,
+      "decimals": 0,
+      "uiComponent": "sensor",
+      "icon": "/assets/icon.svg"
     }
   },
   "drivers": [
@@ -95,7 +149,13 @@
         "measure_queue_count",
         "measure_missing_count",
         "queue_paused",
-        "measure_library_size"
+        "measure_library_size",
+        "measure_radarr_releases",
+        "measure_sonarr_releases",
+        "measure_lidarr_releases",
+        "measure_radarr_missing",
+        "measure_sonarr_missing",
+        "measure_lidarr_missing"
       ],
       "images": {
         "small": "/drivers/servarr_hub/assets/images/small.png",
