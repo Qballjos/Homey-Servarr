@@ -13,7 +13,7 @@
     "sonarr",
     "lidarr"
   ],
-  "author": "",
+  "author": "Jos Visser <qballjos@gmail.com> (https://josvisserict.nl)",
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {}

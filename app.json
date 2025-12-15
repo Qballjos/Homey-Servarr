@@ -19,8 +19,10 @@
     "xlarge": "/assets/images/xlarge.png"
   },
   "author": {
-    "name": "Servarr Control Hub"
+    "name": "Jos Visser",
+    "email": "qballjos@gmail.com"
   },
+  "homepage": "https://josvisserict.nl",
   "brandColor": "#4B0082",
   "tags": {
     "en": [
