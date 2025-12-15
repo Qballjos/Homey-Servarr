@@ -235,26 +235,6 @@
       ]
     }
   ],
-  "widgets": {
-    "release_agenda": {
-      "id": "release_agenda",
-      "name": {
-        "en": "Release Agenda Today"
-      }
-    },
-    "downloads_panel": {
-      "id": "downloads_panel",
-      "name": {
-        "en": "Downloads & Action Panel"
-      }
-    },
-    "calendar": {
-      "id": "calendar",
-      "name": {
-        "en": "Release Calendar"
-      }
-    }
-  },
   "flow": {
     "triggers": [
       {

@@ -10,7 +10,6 @@
         "en": "Select Servarr Control Hub"
       },
       "singular": true,
-      "type": "app",
       "filter": {
         "driver_id": "servarr_hub"
       }
@@ -40,8 +39,4 @@
       "path": "/refresh"
     }
   }
-    }
-  ],
-  "height": 300,
-  "transparent": true
 }
