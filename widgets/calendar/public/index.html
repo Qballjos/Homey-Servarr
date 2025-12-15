@@ -431,7 +431,9 @@
     }
     
     async function loadCalendarData() {
+      const settings = Homey.getSettings();
       const deviceIds = Homey.getDeviceIds();
+      
       if (!deviceIds || deviceIds.length === 0) {
         calendarData = [];
         render();

@@ -403,7 +403,9 @@
     let deviceId = null;
     
     async function load() {
+      const settings = Homey.getSettings();
       const deviceIds = Homey.getDeviceIds();
+      
       if (!deviceIds || deviceIds.length === 0) {
         countEl.textContent = '0';
         listEl.innerHTML = '<li>Please select a device in widget settings</li>';

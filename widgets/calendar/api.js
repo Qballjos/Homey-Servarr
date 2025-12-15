@@ -8,7 +8,7 @@ module.exports = {
     }
     
     try {
-      const device = await homey.app.homey.devices.getDevice({ id: deviceIds[0] });
+      const device = await homey.homey.devices.getDevice({ id: deviceIds[0] });
       if (!device) {
         return { calendarData: [] };
       }

@@ -151,7 +151,9 @@
       }
 
       async function load() {
+        const settings = Homey.getSettings();
         const deviceIds = Homey.getDeviceIds();
+        
         if (!deviceIds || deviceIds.length === 0) {
           countEl.textContent = '0';
           listEl.innerHTML = '<li>Please select a device in widget settings</li>';
@@ -159,6 +161,7 @@
         }
         
         try {
+          // Pass deviceIds as query parameter per SDK pattern
           const data = await Homey.api('GET', '/', { deviceIds: deviceIds.join(',') });
           const total = Object.values(data.appReleaseCounts || {}).reduce((a, b) => a + b, 0);
           countEl.textContent = total.toString();

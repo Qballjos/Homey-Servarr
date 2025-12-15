@@ -8,7 +8,7 @@ module.exports = {
     }
     
     try {
-      const device = await homey.app.homey.devices.getDevice({ id: deviceIds[0] });
+      const device = await homey.homey.devices.getDevice({ id: deviceIds[0] });
       if (!device) {
         return { queueItems: [], queueAppCounts: {}, errors: {} };
       }
@@ -28,7 +28,7 @@ module.exports = {
     const { deviceId } = body;
     if (!deviceId) throw new Error('Device ID required');
     
-    const device = await homey.app.homey.devices.getDevice({ id: deviceId });
+    const device = await homey.homey.devices.getDevice({ id: deviceId });
     if (!device) throw new Error('Device not found');
     
     await device.pauseAllDownloads();
@@ -39,7 +39,7 @@ module.exports = {
     const { deviceId } = body;
     if (!deviceId) throw new Error('Device ID required');
     
-    const device = await homey.app.homey.devices.getDevice({ id: deviceId });
+    const device = await homey.homey.devices.getDevice({ id: deviceId });
     if (!device) throw new Error('Device not found');
     
     await device.resumeAllDownloads();
@@ -50,7 +50,7 @@ module.exports = {
     const { deviceId, app, id, blocklist } = body;
     if (!deviceId || !app || !id) throw new Error('Missing parameters');
     
-    const device = await homey.app.homey.devices.getDevice({ id: deviceId });
+    const device = await homey.homey.devices.getDevice({ id: deviceId });
     if (!device) throw new Error('Device not found');
     
     await device.removeQueueItem(app, id, { blocklist: !!blocklist });
@@ -61,7 +61,7 @@ module.exports = {
     const { deviceId, app } = body;
     if (!deviceId || !app) throw new Error('Missing parameters');
     
-    const device = await homey.app.homey.devices.getDevice({ id: deviceId });
+    const device = await homey.homey.devices.getDevice({ id: deviceId });
     if (!device) throw new Error('Device not found');
     
     await device.refreshApp(app);
