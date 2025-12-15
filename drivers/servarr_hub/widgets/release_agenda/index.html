@@ -116,6 +116,15 @@
       }
     }
 
+    function renderErrors(errors) {
+      if (!errors || errors.length === 0) {
+        errorBox.innerHTML = '';
+        return;
+      }
+      const errorList = errors.map(e => `${e.app}: ${e.message}`).join('<br>');
+      errorBox.innerHTML = `<strong>Errors:</strong><br>${errorList}`;
+    }
+
     async function load() {
       const releases = await device.getStoreValue('today_releases');
       const count = await device.getCapabilityValue('text_today_releases');
@@ -136,6 +145,7 @@
     load().catch((error) => {
       console.error('Error loading release data:', error);
       renderList([]);
+      renderErrors([]);
     });
   </script>
 </body>

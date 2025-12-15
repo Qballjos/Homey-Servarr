@@ -1,7 +1,7 @@
 {
   "id": "com.servarr.flowcontrol",
   "version": "1.0.0",
-  "compatibility": ">=5.0.0",
+  "compatibility": ">=12.3.0",
   "sdk": 3,
   "name": {
     "en": "Servarr Flow Control"
@@ -32,6 +32,51 @@
       "monitoring"
     ]
   },
+  "capabilities": {
+    "text_today_releases": {
+      "type": "string",
+      "title": { "en": "Releases Today" },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/icon.svg"
+    },
+    "measure_queue_count": {
+      "type": "number",
+      "title": { "en": "Queue Items" },
+      "getable": true,
+      "setable": false,
+      "decimals": 0,
+      "uiComponent": "sensor",
+      "icon": "/assets/icon.svg"
+    },
+    "measure_missing_count": {
+      "type": "number",
+      "title": { "en": "Missing Items" },
+      "getable": true,
+      "setable": false,
+      "decimals": 0,
+      "uiComponent": "sensor",
+      "icon": "/assets/icon.svg"
+    },
+    "queue_paused": {
+      "type": "boolean",
+      "title": { "en": "Queue Paused" },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/icon.svg"
+    },
+    "measure_library_size": {
+      "type": "number",
+      "title": { "en": "Library Size" },
+      "getable": true,
+      "setable": false,
+      "decimals": 0,
+      "uiComponent": "sensor",
+      "icon": "/assets/icon.svg"
+    }
+  },
   "drivers": [
     {
       "id": "servarr_hub",
@@ -39,14 +84,147 @@
         "en": "Servarr Control Hub"
       },
       "class": "other",
-      "capabilities": [],
+      "capabilities": [
+        "text_today_releases",
+        "measure_queue_count",
+        "measure_missing_count",
+        "queue_paused",
+        "measure_library_size"
+      ],
       "images": {
         "small": "/drivers/servarr_hub/assets/images/small.png",
         "large": "/drivers/servarr_hub/assets/images/large.png"
       },
+      "settings": [
+        {
+          "id": "manual_refresh_only",
+          "type": "checkbox",
+          "label": { "en": "Manual refresh only" },
+          "value": false,
+          "hint": {
+            "en": "Skip scheduled polling, refresh via widgets only"
+          }
+        },
+        {
+          "id": "radarr_group",
+          "type": "group",
+          "label": { "en": "Radarr" },
+          "children": [
+            {
+              "id": "radarr_enabled",
+              "type": "checkbox",
+              "label": { "en": "Enable Radarr" },
+              "value": false
+            },
+            {
+              "id": "radarr_url",
+              "type": "text",
+              "label": { "en": "Base URL" },
+              "value": "",
+              "hint": {
+                "en": "e.g. http://192.168.1.100 or https://radarr.example.com"
+              }
+            },
+            {
+              "id": "radarr_port",
+              "type": "number",
+              "label": { "en": "Port" },
+              "value": 7878,
+              "min": 1,
+              "max": 65535
+            },
+            {
+              "id": "radarr_api_key",
+              "type": "password",
+              "label": { "en": "API Key" },
+              "value": ""
+            }
+          ]
+        },
+        {
+          "id": "sonarr_group",
+          "type": "group",
+          "label": { "en": "Sonarr" },
+          "children": [
+            {
+              "id": "sonarr_enabled",
+              "type": "checkbox",
+              "label": { "en": "Enable Sonarr" },
+              "value": false
+            },
+            {
+              "id": "sonarr_url",
+              "type": "text",
+              "label": { "en": "Base URL" },
+              "value": "",
+              "hint": {
+                "en": "e.g. http://192.168.1.100 or https://sonarr.example.com"
+              }
+            },
+            {
+              "id": "sonarr_port",
+              "type": "number",
+              "label": { "en": "Port" },
+              "value": 8989,
+              "min": 1,
+              "max": 65535
+            },
+            {
+              "id": "sonarr_api_key",
+              "type": "password",
+              "label": { "en": "API Key" },
+              "value": ""
+            }
+          ]
+        },
+        {
+          "id": "lidarr_group",
+          "type": "group",
+          "label": { "en": "Lidarr" },
+          "children": [
+            {
+              "id": "lidarr_enabled",
+              "type": "checkbox",
+              "label": { "en": "Enable Lidarr" },
+              "value": false
+            },
+            {
+              "id": "lidarr_url",
+              "type": "text",
+              "label": { "en": "Base URL" },
+              "value": "",
+              "hint": {
+                "en": "e.g. http://192.168.1.100 or https://lidarr.example.com"
+              }
+            },
+            {
+              "id": "lidarr_port",
+              "type": "number",
+              "label": { "en": "Port" },
+              "value": 8686,
+              "min": 1,
+              "max": 65535
+            },
+            {
+              "id": "lidarr_api_key",
+              "type": "password",
+              "label": { "en": "API Key" },
+              "value": ""
+            }
+          ]
+        }
+      ],
       "pair": [
         {
-          "id": "setup"
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
         }
       ],
       "widgets": [
@@ -57,7 +235,9 @@
           },
           "capabilities": [
             "text_today_releases"
-          ]
+          ],
+          "template": "custom",
+          "path": "drivers/servarr_hub/widgets/release_agenda/index.html"
         },
         {
           "id": "downloads_panel",
@@ -66,7 +246,20 @@
           },
           "capabilities": [
             "measure_queue_count"
-          ]
+          ],
+          "template": "custom",
+          "path": "drivers/servarr_hub/widgets/downloads_panel/index.html"
+        },
+        {
+          "id": "calendar",
+          "title": {
+            "en": "Release Calendar"
+          },
+          "capabilities": [
+            "text_today_releases"
+          ],
+          "template": "custom",
+          "path": "drivers/servarr_hub/widgets/calendar/index.html"
         }
       ]
     }

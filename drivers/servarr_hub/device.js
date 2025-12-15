@@ -58,27 +58,14 @@ class ServarrHubDevice extends Homey.Device {
     
     // Start polling
     this.startPolling();
-    
-    // Register capabilities (read-only, no action needed)
-    this.registerCapabilityListener('text_today_releases', async () => {
-      // Read-only capability
-    });
-    
-    this.registerCapabilityListener('measure_queue_count', async () => {
-      // Read-only capability
-    });
-    
-    this.registerCapabilityListener('measure_missing_count', async () => {
-      // Read-only capability
-    });
+  }
 
-    this.registerCapabilityListener('queue_paused', async () => {
-      // Read-only capability
-    });
-    
-    this.registerCapabilityListener('measure_library_size', async () => {
-      // Read-only capability
-    });
+  /**
+   * Cleanup when device is uninitialized
+   */
+  async onUninit() {
+    this.stopPolling();
+    this.log('Servarr Hub Device has been uninitialized');
   }
 
   /**
@@ -163,21 +150,25 @@ class ServarrHubDevice extends Homey.Device {
     }
     
     // Set up polling interval (5 minutes = 300000 ms)
-    this._pollingInterval = setInterval(() => {
+    // Use Homey's setInterval for automatic cleanup
+    this._pollingInterval = this.homey.setInterval(() => {
       this.updateData();
     }, 300000);
     
     // Set up health check interval (15 minutes = 900000 ms)
-    this._healthCheckInterval = setInterval(() => {
+    // Use Homey's setInterval for automatic cleanup
+    this._healthCheckInterval = this.homey.setInterval(() => {
       this.checkHealth();
       this.updateMissingCount();
       this.updateLibrarySize();
+      this.updateCalendarData(); // Update calendar data periodically
     }, 900000);
     
-    // Initial health check, missing count, and library size
+    // Initial health check, missing count, library size, and calendar data
     this.checkHealth();
     this.updateMissingCount();
     this.updateLibrarySize();
+    this.updateCalendarData();
     
     this.log('Started polling (interval: 5 minutes, health/missing/library: 15 minutes)');
   }
@@ -187,11 +178,11 @@ class ServarrHubDevice extends Homey.Device {
    */
   stopPolling() {
     if (this._pollingInterval) {
-      clearInterval(this._pollingInterval);
+      this.homey.clearInterval(this._pollingInterval);
       this._pollingInterval = null;
     }
     if (this._healthCheckInterval) {
-      clearInterval(this._healthCheckInterval);
+      this.homey.clearInterval(this._healthCheckInterval);
       this._healthCheckInterval = null;
     }
     this.log('Stopped polling');
@@ -277,6 +268,68 @@ class ServarrHubDevice extends Homey.Device {
     await this.setStoreValue('today_releases', releases.slice(0, 100));
     await this.setStoreValue('app_errors', this._serializeErrors());
     this.log(`Today's releases: ${totalReleases}`);
+    
+    // Also fetch and store calendar data for wider range (for calendar widget)
+    await this.updateCalendarData();
+  }
+
+  /**
+   * Update calendar data for a wider date range (for calendar widget)
+   * Fetches calendar for current month +/- 1 month
+   */
+  async updateCalendarData() {
+    const calendarData = [];
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(now.getFullYear(), now.getMonth() + 2, 0);
+    end.setHours(23, 59, 59, 999);
+    
+    for (const [appName, client] of Object.entries(this._apiClients)) {
+      try {
+        const calendar = await client.getCalendar(start, end);
+        
+        for (const item of calendar) {
+          const title =
+            item.title ||
+            item.series?.title ||
+            item.movie?.title ||
+            item.album?.title ||
+            item.artist?.artistName ||
+            item.sourceTitle ||
+            'Unknown';
+
+          const hasFile = !!item.hasFile;
+          // Servarr APIs return dates in various formats
+          const releaseDate = item.airDate || 
+                             item.releaseDate || 
+                             item.releaseDateUtc ||
+                             item.inCinemas ||
+                             item.physicalRelease ||
+                             item.digitalRelease;
+          
+          if (releaseDate) {
+            const date = new Date(releaseDate);
+            // Only add if date is valid
+            if (!isNaN(date.getTime())) {
+              calendarData.push({
+                date: date.toISOString().split('T')[0], // YYYY-MM-DD format
+                title,
+                app: appName,
+                hasFile,
+                timestamp: date.getTime()
+              });
+            }
+          }
+        }
+      } catch (error) {
+        this.error(`Error fetching calendar data for ${appName}: ${error.message || error}`);
+      }
+    }
+    
+    // Store calendar data grouped by date
+    await this.setStoreValue('calendar_data', calendarData);
+    this.log(`Updated calendar data: ${calendarData.length} releases`);
   }
 
   /**
@@ -831,8 +884,17 @@ class ServarrHubDevice extends Homey.Device {
     // Restart polling
     this.startPolling();
     
-    // Force immediate update
-    await this.updateData();
+    // Force immediate update of all data (don't wait for polling intervals)
+    try {
+      await this.updateData();
+      await this.checkHealth();
+      await this.updateMissingCount();
+      await this.updateLibrarySize();
+      await this.updateCalendarData();
+      this.log('Immediate data update completed after settings change');
+    } catch (error) {
+      this.error('Error during immediate update after settings change:', error);
+    }
   }
 
   /**

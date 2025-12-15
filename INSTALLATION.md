@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- Homey Pro Mini with firmware version 5.0.0 or higher
+- Homey device with firmware version 12.3.0 or higher (required for widget support)
 - Servarr applications (Radarr, Sonarr, Lidarr) running on any platform (Docker, native installation, Unraid, etc.)
 - API keys from your Servarr applications
 - Network access from Homey to your Servarr servers
@@ -122,8 +122,10 @@ For each Servarr application you want to use:
 ### Widgets show no data
 
 1. Wait a few minutes (polling interval is 5 minutes)
-2. Check if the device is correctly configured
-3. Check Homey logs for error messages
+2. Use the refresh button in the Downloads & Action Panel widget for immediate update
+3. Check if the device is correctly configured
+4. Verify settings are saved (check Advanced Settings)
+5. Check Homey logs for error messages
 
 ### Flow Cards don't work
 

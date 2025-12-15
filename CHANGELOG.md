@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2025-12-15 - SDK v3 Migration & Widget Improvements
+
+### Added
+- **Calendar Widget**: New interactive calendar widget with Day, Week, and Month views
+  - Color-coded releases: Radarr (yellow), Sonarr (blue), Lidarr (green)
+  - Download status indicators
+  - Navigation controls for browsing releases
+  - Displays releases from current month ± 1 month
+- **Immediate Data Refresh**: Settings changes now trigger immediate data update (no waiting for polling interval)
+- **Standard SDK Settings**: Device settings now use Homey's standard settings interface (no custom HTML)
+
+### Changed
+- **Migrated to Homey SDK v3**: Complete migration from SDK v2 to SDK v3
+  - Flow cards now use `getTriggerCard()`/`getActionCard()` instead of deprecated constructors
+  - Pairing flow uses standard SDK templates (`list_devices`, `add_devices`)
+  - Settings defined in `app.json` using standard SDK types
+  - Timer management uses `this.homey.setInterval()`/`clearInterval()` for automatic cleanup
+- **Improved API Client**: Enhanced URL parsing and port detection
+  - Automatic API version detection (Lidarr v1, Radarr/Sonarr v3)
+  - Better error messages for connection failures
+- **Widget Structure**: Widgets moved to driver directory structure (`drivers/servarr_hub/widgets/`)
+- **Compatibility**: Updated minimum Homey firmware requirement to 12.3.0 (required for widgets)
+
+### Removed
+- Custom pairing HTML (`pair/setup.html`) - replaced with standard SDK templates
+- Custom settings HTML (`settings/settings.html`) - replaced with standard SDK settings
+- Unused Flow Card classes (`lib/flow/*.js`) - Flow cards now registered directly in `app.js`
+- Redundant driver compose files (`driver.compose.json`, `driver.settings.compose.json`)
+
+### Fixed
+- Device pairing now works correctly with standard SDK flow
+- Settings are immediately applied and trigger data refresh
+- Widgets are properly discoverable in Homey dashboard
+- Improved error handling during device initialization
+
 ## [1.3.0] - 2024-XX-XX - Complete Feature Set
 
 ### Added

@@ -22,6 +22,11 @@ This application is optimized for minimal CPU/memory usage and delivers the requ
    - Remove = remove from queue/client; Block = blocklist + remove
    - Badges: shows ETA (hh:mm) when available and size (MB/GB) per item
    - Refresh button: on-demand refresh without extra polling
+3. **Release Calendar** - Interactive calendar widget with Day, Week, and Month views
+   - Color-coded releases: Radarr (yellow), Sonarr (blue), Lidarr (green)
+   - Download status indicators for each release
+   - Navigation controls for easy browsing
+   - Displays releases from current month ± 1 month
 
 ### Flow Cards
 
@@ -58,6 +63,8 @@ When adding the device, configure:
 
 You don't need to configure all apps - only the apps you use.
 
+**Note**: Settings can be updated at any time via the device's Advanced Settings. Changes take effect immediately with automatic data refresh.
+
 ## 🔧 Technical Details
 
 ### Performance Optimizations
@@ -74,7 +81,9 @@ You don't need to configure all apps - only the apps you use.
 The app communicates directly with Servarr APIs via HTTP/HTTPS:
 - Radarr API v3
 - Sonarr API v3
-- Lidarr API v3
+- Lidarr API v1 (Lidarr uses a different API version)
+
+The app automatically handles URL parsing, port detection, and API version selection for each application.
 
 ### Capabilities
 
@@ -91,17 +100,17 @@ The device has the following capabilities:
 
 ```
 Homey Servarr/
-├── app.json                 # App manifest
+├── app.json                 # App manifest (SDK v3)
 ├── drivers/
 │   └── servarr_hub/
 │       ├── driver.js        # Driver implementation
 │       ├── device.js        # Device implementation
-│       ├── pair/
-│       │   └── setup.html   # Setup interface
 │       └── widgets/         # Dashboard widgets
+│           ├── release_agenda/
+│           ├── downloads_panel/
+│           └── calendar/
 ├── lib/
-│   ├── ServarrAPI.js        # API client library
-│   └── flow/                # Flow card implementations
+│   └── ServarrAPI.js        # API client library
 ├── locales/                 # Translations (EN)
 └── assets/                  # App icons
 ```

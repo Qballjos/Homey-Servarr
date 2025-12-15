@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Release Calendar</title>
+  <script src="/lib/homey.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 10px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: transparent;
+    }
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 5px 0;
+    }
+    .view-toggle {
+      display: flex;
+      gap: 5px;
+      background: rgba(0,0,0,0.1);
+      border-radius: 4px;
+      padding: 2px;
+    }
+    .view-toggle button {
+      padding: 4px 8px;
+      border: none;
+      background: transparent;
+      color: #666;
+      font-size: 11px;
+      cursor: pointer;
+      border-radius: 3px;
+      transition: all 0.2s;
+    }
+    .view-toggle button.active {
+      background: #4B0082;
+      color: white;
+    }
+    .nav-buttons {
+      display: flex;
+      gap: 5px;
+    }
+    .nav-buttons button {
+      padding: 4px 10px;
+      border: none;
+      background: rgba(0,0,0,0.1);
+      color: #333;
+      font-size: 12px;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+    .current-date {
+      font-weight: 600;
+      font-size: 14px;
+      color: #2c3e50;
+    }
+    .calendar-container {
+      margin-top: 10px;
+    }
+    /* Day View */
+    .day-view {
+      display: none;
+    }
+    .day-view.active {
+      display: block;
+    }
+    .day-events {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .day-events li {
+      padding: 8px;
+      margin-bottom: 6px;
+      border-radius: 4px;
+      border-left: 4px solid;
+      background: rgba(255,255,255,0.5);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .day-events li.radarr { border-left-color: #f1c40f; }
+    .day-events li.sonarr { border-left-color: #3498db; }
+    .day-events li.lidarr { border-left-color: #27ae60; }
+    .event-title {
+      flex: 1;
+      font-weight: 500;
+      font-size: 13px;
+    }
+    .event-app {
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: white;
+      font-weight: 600;
+    }
+    .event-app.radarr { background: #f1c40f; }
+    .event-app.sonarr { background: #3498db; }
+    .event-app.lidarr { background: #27ae60; }
+    .event-downloaded {
+      color: #27ae60;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    /* Week View */
+    .week-view {
+      display: none;
+    }
+    .week-view.active {
+      display: block;
+    }
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .week-day {
+      min-height: 60px;
+      padding: 4px;
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 3px;
+      background: rgba(255,255,255,0.3);
+    }
+    .week-day-header {
+      font-size: 10px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #666;
+    }
+    .week-day-number {
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    .week-day.today {
+      background: rgba(75, 0, 130, 0.1);
+      border-color: #4B0082;
+    }
+    .week-event {
+      font-size: 9px;
+      padding: 2px 4px;
+      margin: 2px 0;
+      border-radius: 2px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: white;
+      font-weight: 500;
+    }
+    .week-event.radarr { background: #f1c40f; }
+    .week-event.sonarr { background: #3498db; }
+    .week-event.lidarr { background: #27ae60; }
+    /* Month View */
+    .month-view {
+      display: none;
+    }
+    .month-view.active {
+      display: block;
+    }
+    .month-header {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+    .month-day-name {
+      text-align: center;
+      font-size: 10px;
+      font-weight: 600;
+      color: #666;
+      padding: 4px;
+    }
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .month-day {
+      min-height: 50px;
+      padding: 3px;
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 3px;
+      background: rgba(255,255,255,0.3);
+      font-size: 11px;
+    }
+    .month-day.today {
+      background: rgba(75, 0, 130, 0.15);
+      border-color: #4B0082;
+      font-weight: bold;
+    }
+    .month-day.other-month {
+      opacity: 0.4;
+    }
+    .month-day-number {
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .month-event {
+      font-size: 8px;
+      padding: 1px 3px;
+      margin: 1px 0;
+      border-radius: 2px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: white;
+      font-weight: 500;
+    }
+    .month-event.radarr { background: #f1c40f; }
+    .month-event.sonarr { background: #3498db; }
+    .month-event.lidarr { background: #27ae60; }
+    .empty-state {
+      text-align: center;
+      padding: 20px;
+      color: #999;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="calendar-header">
+    <div class="view-toggle">
+      <button id="btn-day">Day</button>
+      <button id="btn-week">Week</button>
+      <button id="btn-month" class="active">Month</button>
+    </div>
+    <div class="current-date" id="current-date"></div>
+    <div class="nav-buttons">
+      <button id="btn-prev">‹</button>
+      <button id="btn-today">Today</button>
+      <button id="btn-next">›</button>
+    </div>
+  </div>
+  
+  <div class="calendar-container">
+    <div id="day-view" class="day-view">
+      <ul class="day-events" id="day-events"></ul>
+    </div>
+    
+    <div id="week-view" class="week-view">
+      <div class="week-grid" id="week-grid"></div>
+    </div>
+    
+    <div id="month-view" class="month-view active">
+      <div class="month-header">
+        <div class="month-day-name">Sun</div>
+        <div class="month-day-name">Mon</div>
+        <div class="month-day-name">Tue</div>
+        <div class="month-day-name">Wed</div>
+        <div class="month-day-name">Thu</div>
+        <div class="month-day-name">Fri</div>
+        <div class="month-day-name">Sat</div>
+      </div>
+      <div class="month-grid" id="month-grid"></div>
+    </div>
+  </div>
+  
+  <script>
+    Homey.ready();
+    
+    const device = Homey.getDevice();
+    let calendarData = [];
+    let currentDate = new Date();
+    let currentView = 'month'; // 'day', 'week', 'month'
+    
+    const appColors = {
+      radarr: '#f1c40f', // yellow
+      sonarr: '#3498db', // blue
+      lidarr: '#27ae60', // green
+    };
+    
+    const appNames = {
+      radarr: 'Radarr',
+      sonarr: 'Sonarr',
+      lidarr: 'Lidarr',
+    };
+    
+    // View toggle buttons
+    document.getElementById('btn-day').addEventListener('click', () => setView('day'));
+    document.getElementById('btn-week').addEventListener('click', () => setView('week'));
+    document.getElementById('btn-month').addEventListener('click', () => setView('month'));
+    
+    // Navigation buttons
+    document.getElementById('btn-prev').addEventListener('click', () => navigate(-1));
+    document.getElementById('btn-next').addEventListener('click', () => navigate(1));
+    document.getElementById('btn-today').addEventListener('click', () => {
+      currentDate = new Date();
+      render();
+    });
+    
+    function setView(view) {
+      currentView = view;
+      document.querySelectorAll('.view-toggle button').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(`btn-${view}`).classList.add('active');
+      
+      document.querySelectorAll('.day-view, .week-view, .month-view').forEach(v => v.classList.remove('active'));
+      document.getElementById(`${view}-view`).classList.add('active');
+      
+      render();
+    }
+    
+    function navigate(direction) {
+      if (currentView === 'day') {
+        currentDate.setDate(currentDate.getDate() + direction);
+      } else if (currentView === 'week') {
+        currentDate.setDate(currentDate.getDate() + (direction * 7));
+      } else if (currentView === 'month') {
+        currentDate.setMonth(currentDate.getMonth() + direction);
+      }
+      render();
+    }
+    
+    function formatDate(date) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return date.toLocaleDateString('en-US', options);
+    }
+    
+    function getEventsForDate(date) {
+      const dateStr = date.toISOString().split('T')[0];
+      return calendarData.filter(e => e.date === dateStr);
+    }
+    
+    function renderDayView() {
+      const events = getEventsForDate(currentDate);
+      const listEl = document.getElementById('day-events');
+      
+      if (events.length === 0) {
+        listEl.innerHTML = '<div class="empty-state">No releases scheduled for this day</div>';
+        return;
+      }
+      
+      listEl.innerHTML = '';
+      events.forEach(event => {
+        const li = document.createElement('li');
+        li.className = event.app;
+        li.innerHTML = `
+          <span class="event-app ${event.app}">${appNames[event.app]}</span>
+          <span class="event-title">${escapeHtml(event.title)}</span>
+          ${event.hasFile ? '<span class="event-downloaded">✓</span>' : ''}
+        `;
+        listEl.appendChild(li);
+      });
+    }
+    
+    function renderWeekView() {
+      const gridEl = document.getElementById('week-grid');
+      gridEl.innerHTML = '';
+      
+      // Get start of week (Sunday)
+      const start = new Date(currentDate);
+      start.setDate(start.getDate() - start.getDay());
+      
+      for (let i = 0; i < 7; i++) {
+        const day = new Date(start);
+        day.setDate(start.getDate() + i);
+        const events = getEventsForDate(day);
+        const isToday = day.toDateString() === new Date().toDateString();
+        
+        const dayEl = document.createElement('div');
+        dayEl.className = `week-day ${isToday ? 'today' : ''}`;
+        dayEl.innerHTML = `
+          <div class="week-day-header">${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][i]}</div>
+          <div class="week-day-number">${day.getDate()}</div>
+          ${events.map(e => `
+            <div class="week-event ${e.app}" title="${escapeHtml(e.title)}">
+              ${escapeHtml(e.title)} ${e.hasFile ? '✓' : ''}
+            </div>
+          `).join('')}
+        `;
+        gridEl.appendChild(dayEl);
+      }
+    }
+    
+    function renderMonthView() {
+      const gridEl = document.getElementById('month-grid');
+      gridEl.innerHTML = '';
+      
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const startDate = new Date(firstDay);
+      startDate.setDate(startDate.getDate() - startDate.getDay()); // Start from Sunday
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      for (let i = 0; i < 42; i++) { // 6 weeks * 7 days
+        const day = new Date(startDate);
+        day.setDate(startDate.getDate() + i);
+        const events = getEventsForDate(day);
+        const isToday = day.getTime() === today.getTime();
+        const isOtherMonth = day.getMonth() !== month;
+        
+        const dayEl = document.createElement('div');
+        dayEl.className = `month-day ${isToday ? 'today' : ''} ${isOtherMonth ? 'other-month' : ''}`;
+        dayEl.innerHTML = `
+          <div class="month-day-number">${day.getDate()}</div>
+          ${events.slice(0, 3).map(e => `
+            <div class="month-event ${e.app}" title="${escapeHtml(e.title)}">
+              ${escapeHtml(e.title.substring(0, 15))}${e.title.length > 15 ? '...' : ''} ${e.hasFile ? '✓' : ''}
+            </div>
+          `).join('')}
+          ${events.length > 3 ? `<div style="font-size:9px;color:#666;margin-top:2px;">+${events.length - 3} more</div>` : ''}
+        `;
+        gridEl.appendChild(dayEl);
+      }
+    }
+    
+    function render() {
+      document.getElementById('current-date').textContent = formatDate(currentDate);
+      
+      if (currentView === 'day') {
+        renderDayView();
+      } else if (currentView === 'week') {
+        renderWeekView();
+      } else if (currentView === 'month') {
+        renderMonthView();
+      }
+    }
+    
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    async function loadCalendarData() {
+      try {
+        calendarData = await device.getStoreValue('calendar_data') || [];
+        render();
+      } catch (error) {
+        console.error('Error loading calendar data:', error);
+        calendarData = [];
+        render();
+      }
+    }
+    
+    // Initial load
+    loadCalendarData();
+    
+    // Update when calendar data changes (poll periodically)
+    setInterval(() => {
+      loadCalendarData();
+    }, 60000); // Refresh every minute
+    
+    // Also listen for capability changes to refresh
+    device.on('capability:text_today_releases', () => {
+      loadCalendarData();
+    });
+  </script>
+</body>
+</html>

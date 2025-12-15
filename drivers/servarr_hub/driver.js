@@ -53,98 +53,41 @@ class ServarrHubDriver extends Homey.Driver {
   }
 
   /**
-   * onPair is called when a user is adding a device
+   * onPairListDevices is called when a user is adding a device.
+   * Returns a list of devices available for pairing.
    */
-  async onPair(session) {
-    // Handle the setup view
-    session.setHandler('showView', async (viewId) => {
-      this.log(`Showing view: ${viewId}`);
-    });
-    
-    // Get settings from the pair view
-    session.setHandler('getSettings', async () => {
-      return {};
-    });
-    
-    // Validate and add device
-    session.setHandler('add', async (data) => {
-      // Validate that at least one app is enabled and configured
-      const hasRadarr = data.radarr_enabled && data.radarr_url && data.radarr_api_key;
-      const hasSonarr = data.sonarr_enabled && data.sonarr_url && data.sonarr_api_key;
-      const hasLidarr = data.lidarr_enabled && data.lidarr_url && data.lidarr_api_key;
-      
-      if (!hasRadarr && !hasSonarr && !hasLidarr) {
-        throw new Error('Enable at least one Servarr application and configure it');
-      }
-      
-      // Create device with settings from pair view
-      return {
+  async onPairListDevices() {
+    this.log('Listing devices for pairing');
+    return [
+      {
         name: 'Servarr Control Hub',
         data: {
           id: 'servarr_hub_' + Date.now()
         },
+        capabilities: [
+          'text_today_releases',
+          'measure_queue_count',
+          'measure_missing_count',
+          'queue_paused',
+          'measure_library_size'
+        ],
         settings: {
-          manual_refresh_only: data.manual_refresh_only || false,
-          radarr_enabled: data.radarr_enabled || false,
-          radarr_url: data.radarr_url || '',
-          radarr_port: parseInt(data.radarr_port) || 7878,
-          radarr_api_key: data.radarr_api_key || '',
-          sonarr_enabled: data.sonarr_enabled || false,
-          sonarr_url: data.sonarr_url || '',
-          sonarr_port: parseInt(data.sonarr_port) || 8989,
-          sonarr_api_key: data.sonarr_api_key || '',
-          lidarr_enabled: data.lidarr_enabled || false,
-          lidarr_url: data.lidarr_url || '',
-          lidarr_port: parseInt(data.lidarr_port) || 8686,
-          lidarr_api_key: data.lidarr_api_key || ''
-        }
-      };
-    });
-
-    // Test connections without creating the device yet
-    session.setHandler('testConnection', async (data) => {
-      const results = [];
-      const tests = [];
-      const configs = [
-        { enabled: data.radarr_enabled, url: data.radarr_url, port: data.radarr_port || 7878, key: data.radarr_api_key, app: 'radarr' },
-        { enabled: data.sonarr_enabled, url: data.sonarr_url, port: data.sonarr_port || 8989, key: data.sonarr_api_key, app: 'sonarr' },
-        { enabled: data.lidarr_enabled, url: data.lidarr_url, port: data.lidarr_port || 8686, key: data.lidarr_api_key, app: 'lidarr' },
-      ];
-
-      for (const cfg of configs) {
-        if (!cfg.enabled || !cfg.url || !cfg.key) continue;
-        try {
-          const client = new ServarrAPI({
-            baseUrl: cfg.url,
-            port: cfg.port,
-            apiKey: cfg.key,
-            appName: cfg.app,
-          });
-          tests.push(
-            client.testConnection().then((ok) => ({
-              app: cfg.app,
-              success: ok === true,
-            })).catch((err) => ({
-              app: cfg.app,
-              success: false,
-              error: err.message,
-            }))
-          );
-        } catch (err) {
-          results.push({ app: cfg.app, success: false, error: err.message });
+          manual_refresh_only: false,
+          radarr_enabled: false,
+          radarr_url: '',
+          radarr_port: 7878,
+          radarr_api_key: '',
+          sonarr_enabled: false,
+          sonarr_url: '',
+          sonarr_port: 8989,
+          sonarr_api_key: '',
+          lidarr_enabled: false,
+          lidarr_url: '',
+          lidarr_port: 8686,
+          lidarr_api_key: ''
         }
       }
-
-      if (tests.length) {
-        results.push(...(await Promise.all(tests)));
-      }
-
-      if (results.length === 0) {
-        return [{ app: 'none', success: false, error: 'No enabled apps to test' }];
-      }
-
-      return results;
-    });
+    ];
   }
 
 }

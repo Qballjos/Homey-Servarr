@@ -156,3 +156,5 @@
 - **Cache wisely**: Use device store for state tracking to avoid extra API calls
 - **User choice**: Consider making some features optional (settings toggle) to keep base app minimal
 
+
+
