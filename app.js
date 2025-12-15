@@ -3,14 +3,14 @@
 const Homey = require('homey');
 
 /**
- * Servarr Flow Control App
+ * Servarr Control Hub App
  * 
  * Main app entry point. Initializes the app and sets up global error handling.
  */
-class ServarrFlowControlApp extends Homey.App {
+class ServarrControlHubApp extends Homey.App {
 
   async onInit() {
-    this.log('Servarr Flow Control App is running...');
+    this.log('Servarr Control Hub App is running...');
     
     // Register Flow Triggers
     this.downloadFinishedTrigger = this.homey.flow.getTriggerCard('download_finished');
@@ -31,5 +31,5 @@ class ServarrFlowControlApp extends Homey.App {
 
 }
 
-module.exports = ServarrFlowControlApp;
+module.exports = ServarrControlHubApp;
 

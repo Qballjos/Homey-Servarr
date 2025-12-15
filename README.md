@@ -1,6 +1,6 @@
-# Servarr Flow Control - Homey App
+# Servarr Control Hub - Homey App
 
-<img src="assets/images/app logo.png" alt="Servarr Flow Control" width="120" />
+<img src="assets/images/app logo.png" alt="Servarr Control Hub" width="120" />
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Homey SDK](https://img.shields.io/badge/Homey%20SDK-v3-blue)](https://apps-sdk-v3.developer.athom.com/)

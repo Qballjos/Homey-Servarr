@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Servarr Flow Control",
+    "name": "Servarr Control Hub",
     "description": "Lightweight monitoring and Flow bridge for Servarr suite (Radarr, Sonarr, Lidarr)"
   },
   "driver": {

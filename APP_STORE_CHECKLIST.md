@@ -24,7 +24,7 @@ This checklist helps ensure your app meets all requirements for Homey App Store 
 **Status**: ✅ All required image assets present
 
 ### Design & Branding
-- [x] Clear and concise app name ("Servarr Flow Control")
+- [x] Clear and concise app name ("Servarr Control Hub")
 - [x] Appropriate description
 - [x] No protocol names in app name
 - [x] Consistent with Homey UI standards

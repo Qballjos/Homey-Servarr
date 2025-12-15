@@ -4,10 +4,10 @@
   "compatibility": ">=12.3.0",
   "sdk": 3,
   "name": {
-    "en": "Servarr Flow Control"
+    "en": "Servarr Control Hub"
   },
   "description": {
-    "en": "Lightweight monitoring and Flow bridge for Servarr suite (Radarr, Sonarr, Lidarr). Works with Servarr on any platform (Docker, native, Unraid, etc.)"
+    "en": "Lightweight monitoring and control hub for Servarr suite (Radarr, Sonarr, Lidarr). Works with Servarr on any platform (Docker, native, Unraid, etc.)"
   },
   "category": [
     "tools"
@@ -19,7 +19,7 @@
     "xlarge": "/assets/images/xlarge.png"
   },
   "author": {
-    "name": "Servarr Flow Control"
+    "name": "Servarr Control Hub"
   },
   "brandColor": "#4B0082",
   "tags": {

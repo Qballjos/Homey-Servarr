@@ -132,7 +132,7 @@ Existing devices continue to work. When editing settings, users can now use togg
 
 ### Added
 
-- Initial release of Servarr Flow Control Homey App
+- Initial release of Servarr Control Hub Homey App
 - Support for Radarr, Sonarr, and Lidarr
 - Dashboard widgets:
   - Release Agenda Today

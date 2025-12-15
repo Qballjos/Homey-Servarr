@@ -1,7 +1,7 @@
 {
   "name": "com.servarr.flowcontrol",
   "version": "1.0.0",
-  "description": "Lightweight monitoring and Flow bridge for Servarr suite",
+  "description": "Lightweight monitoring and control hub for Servarr suite (Radarr, Sonarr, Lidarr)",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

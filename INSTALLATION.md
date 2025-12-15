@@ -33,7 +33,7 @@ homey app install
 ## Step 3: Add Device
 
 1. Open the Homey app on your phone
-2. Go to **Apps** → **Servarr Flow Control**
+2. Go to **Apps** → **Servarr Control Hub**
 3. Click **Add Device**
 4. Select **Servarr Control Hub**
 5. Fill in the configuration:

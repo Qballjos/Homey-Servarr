@@ -1,4 +1,4 @@
-# Servarr Flow Control – Project Overview
+# Servarr Control Hub – Project Overview
 
 ## What This Repo Contains
 - Homey app (SDK v3) that monitors and controls Servarr apps (Radarr, Sonarr, Lidarr).

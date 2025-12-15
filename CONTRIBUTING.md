@@ -1,6 +1,6 @@
-# Contributing to Servarr Flow Control
+# Contributing to Servarr Control Hub
 
-Thank you for your interest in contributing to Servarr Flow Control! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to Servarr Control Hub! This document provides guidelines and instructions for contributing.
 
 ## Code of Conduct
 
