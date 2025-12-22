@@ -1,0 +1,15 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Releases Today"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "decimals": 0,
+  "insights": {
+    "log": {
+      "type": "number"
+    }
+  }
+}

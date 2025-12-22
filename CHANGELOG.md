@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2025-12-22 - Performance & Stability Optimization
+
+### Added
+- **Homey Compose Migration**: Fully migrated the project to the Homey Compose structure for better manifest management and stability.
+
+### Changed
+- **Memory Optimization**: Implemented data pruning and title truncation in the device store to significantly reduce RAM usage.
+- **Asset Minification**: Manually minified all dashboard widget HTML, CSS, and JS to improve load times and reduce footprint.
+- **Improved Polling**: Refined polling intervals and added fetch timeouts to balance performance with battery/resource usage.
+
+### Fixed
+- **Manifest Validation**: Resolved conflicts in `app.json` where widgets were incorrectly structured as an array.
+- **Standardized Sensors**: Standardized all custom capabilities to follow Homey best practices for sensor values.
+
 ## [1.5.0] - 2025-12-15 - General Improvements & Bugfixes
 
 ### Added
