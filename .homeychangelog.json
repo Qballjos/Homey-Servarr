@@ -1,0 +1,5 @@
+{
+  "1.6.0": {
+    "en": "Major performance and stability optimizations: significantly improved RAM usage and minified all dashboard widget assets."
+  }
+}
