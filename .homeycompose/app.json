@@ -1,0 +1,49 @@
+{
+  "id": "com.servarr.flowcontrol",
+  "version": "1.5.0",
+  "compatibility": ">=12.1.0",
+  "sdk": 3,
+  "name": {
+    "en": "Servarr Control Hub"
+  },
+  "description": {
+    "en": "Lightweight monitoring and control hub for Servarr suite (Radarr, Sonarr, Lidarr). Works with Servarr on any platform (Docker, native, Unraid, etc.)"
+  },
+  "category": [
+    "tools"
+  ],
+  "permissions": [
+    "homey:manager:api"
+  ],
+  "platforms": [
+    "local"
+  ],
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "Jos Visser",
+    "email": "qballjos@gmail.com"
+  },
+  "homepage": "https://josvisserict.nl",
+  "support": "https://github.com/Qballjos/Homey-Servarr/issues",
+  "brandColor": "#4B0082",
+  "tags": {
+    "en": [
+      "servarr",
+      "radarr",
+      "sonarr",
+      "lidarr",
+      "media",
+      "monitoring"
+    ]
+  },
+  "api": {
+    "getCalendar": {
+      "method": "GET",
+      "path": "/"
+    }
+  }
+}

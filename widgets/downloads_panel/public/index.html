@@ -230,14 +230,14 @@
   </div>
   
   <script>
-    function onHomeyReady(Homey) {
-      Homey.ready();
-      
-      const listEl = document.getElementById('queue-list');
-      const countEl = document.getElementById('queue-count');
-      const errorBox = document.getElementById('error-box');
-      const statsEl = document.getElementById('stats');
-      const toggleActiveEl = document.getElementById('toggle-active');
+    Homey.ready();
+    
+    const device = Homey.getDevice();
+    const listEl = document.getElementById('queue-list');
+    const countEl = document.getElementById('queue-count');
+    const errorBox = document.getElementById('error-box');
+    const statsEl = document.getElementById('stats');
+    const toggleActiveEl = document.getElementById('toggle-active');
 
     const appColors = {
       sonarr: '#3498db', // blue
@@ -246,14 +246,10 @@
     };
 
     function renderStats(stats) {
-      if (!stats) {
-        statsEl.textContent = '';
-        return;
-      }
       const r = stats.radarr || 0;
       const s = stats.sonarr || 0;
       const l = stats.lidarr || 0;
-      statsEl.innerHTML = `<strong>Per App:</strong> Radarr: ${r} | Sonarr: ${s} | Lidarr: ${l}`;
+      statsEl.textContent = `R:${r}  S:${s}  L:${l}`;
     }
 
     function formatSize(bytes) {
@@ -367,11 +363,11 @@
         removeBtn.addEventListener('click', async () => {
           removeBtn.disabled = true;
           try {
-            await Homey.api('POST', '/remove', { deviceId, app: item.app, id: item.id, blocklist: false });
+            await device.removeQueueItem(item.app, item.id, { blocklist: false });
             Homey.showNotification('Removed from queue');
             load(); // refresh
           } catch (error) {
-            Homey.alert('Error removing: ' + (error.message || error));
+            Homey.alert('Error removing: ' + error.message);
           } finally {
             removeBtn.disabled = false;
           }
@@ -383,11 +379,11 @@
         blockBtn.addEventListener('click', async () => {
           blockBtn.disabled = true;
           try {
-            await Homey.api('POST', '/remove', { deviceId, app: item.app, id: item.id, blocklist: true });
+            await device.removeQueueItem(item.app, item.id, { blocklist: true });
             Homey.showNotification('Blocked and removed');
             load(); // refresh
           } catch (error) {
-            Homey.alert('Error blocking/removing: ' + (error.message || error));
+            Homey.alert('Error blocking/removing: ' + error.message);
           } finally {
             blockBtn.disabled = false;
           }
@@ -400,41 +396,29 @@
       }
     }
 
-    let deviceId = null;
-    
     async function load() {
-      const settings = Homey.getSettings();
-      const deviceIds = Homey.getDeviceIds();
-      
-      if (!deviceIds || deviceIds.length === 0) {
-        countEl.textContent = '0';
-        listEl.innerHTML = '<li>Please select a device in widget settings</li>';
-        statsEl.textContent = '';
-        deviceId = null;
-        return;
-      }
-      
-      deviceId = deviceIds[0];
-      
-      try {
-        const data = await Homey.api('GET', '/', { deviceIds: deviceIds.join(',') });
-        const total = Object.values(data.queueAppCounts || {}).reduce((a, b) => a + b, 0);
-        countEl.textContent = total.toString();
-        renderList(data.queueItems || []);
-        renderStats(data.queueAppCounts || {});
-        renderErrors(data.errors || {});
-      } catch (error) {
-        console.error('Error loading queue data:', error);
-        countEl.textContent = '0';
-        renderList([]);
-        renderStats({});
-        renderErrors({});
-      }
+      const items = await device.getStoreValue('queue_items');
+      const count = await device.getCapabilityValue('measure_queue_count');
+      const errors = await device.getStoreValue('app_errors');
+      const stats = await device.getStoreValue('queue_app_counts');
+      countEl.textContent = count || 0;
+      renderList(items || []);
+      renderStats(stats || {});
+      renderErrors(errors || []);
     }
     
-    // Initial load and refresh every 30 seconds
-    load();
-    setInterval(load, 30000);
+    // Update on capability change
+    device.on('capability:measure_queue_count', (value) => {
+      countEl.textContent = value || 0;
+      device.getStoreValue('queue_items').then(renderList);
+      device.getStoreValue('app_errors').then(renderErrors);
+    });
+    
+    // Initial load
+    load().catch((error) => {
+      console.error('Error loading queue data:', error);
+      renderList([]);
+    });
     
     // Button handlers
     document.getElementById('btn-pause').addEventListener('click', async () => {
@@ -443,15 +427,10 @@
       btn.textContent = '...';
       
       try {
-        if (!deviceId) {
-          Homey.alert('Please select a device in widget settings');
-          return;
-        }
-        await Homey.api('POST', '/pause', { deviceId });
+        await device.pauseAllDownloads();
         Homey.showNotification('Downloads paused');
-        load();
       } catch (error) {
-        Homey.alert('Error pausing: ' + (error.message || error));
+        Homey.alert('Error pausing: ' + error.message);
       } finally {
         btn.disabled = false;
         btn.textContent = 'Pause';
@@ -464,15 +443,10 @@
       btn.textContent = '...';
       
       try {
-        if (!deviceId) {
-          Homey.alert('Please select a device in widget settings');
-          return;
-        }
-        await Homey.api('POST', '/resume', { deviceId });
+        await device.resumeAllDownloads();
         Homey.showNotification('Downloads resumed');
-        load();
       } catch (error) {
-        Homey.alert('Error resuming: ' + (error.message || error));
+        Homey.alert('Error resuming: ' + error.message);
       } finally {
         btn.disabled = false;
         btn.textContent = 'Resume';
@@ -501,14 +475,10 @@
       const old = btn.textContent;
       btn.textContent = '...';
       try {
-        if (!deviceId) {
-          Homey.alert('Please select a device in widget settings');
-          return;
-        }
-        await Homey.api('POST', '/refresh', { deviceId, app });
+        await device.refreshApp(app);
         await load();
       } catch (error) {
-        Homey.alert(`Error refreshing ${app}: ` + (error.message || error));
+        Homey.alert(`Error refreshing ${app}: ` + error.message);
       } finally {
         btn.disabled = false;
         btn.textContent = old;
@@ -521,9 +491,8 @@
 
     // Filter toggle
     toggleActiveEl.addEventListener('change', () => {
-      load();
+      device.getStoreValue('queue_items').then(renderList);
     });
-    }
   </script>
 </body>
 </html>

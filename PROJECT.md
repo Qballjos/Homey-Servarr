@@ -23,7 +23,7 @@
 
 ## Capabilities & Data
 - Capabilities (declared in device class):
-  - `text_today_releases`: number of releases today
+  - `measure_today_releases`: number of releases today
   - `measure_queue_count`: total queue items
   - `measure_missing_count`: wanted items not yet downloaded
   - `measure_library_size`: total movies/series/albums

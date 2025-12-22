@@ -1,0 +1,26 @@
+{
+  "name": {
+    "en": "Library Size"
+  },
+  "settings": [
+    {
+      "id": "device",
+      "type": "devices",
+      "title": {
+        "en": "Select Servarr Control Hub"
+      },
+      "singular": true,
+      "filter": {
+        "driver_id": "servarr_hub"
+      }
+    }
+  ],
+  "height": 100,
+  "transparent": true,
+  "api": {
+    "getDeviceData": {
+      "method": "GET",
+      "path": "/"
+    }
+  }
+}

@@ -261,12 +261,12 @@
   </div>
   
   <script>
-    function onHomeyReady(Homey) {
-      Homey.ready();
-      
-      let calendarData = [];
-      let currentDate = new Date();
-      let currentView = 'month'; // 'day', 'week', 'month'
+    Homey.ready();
+    
+    const device = Homey.getDevice();
+    let calendarData = [];
+    let currentDate = new Date();
+    let currentView = 'month'; // 'day', 'week', 'month'
     
     const appColors = {
       radarr: '#f1c40f', // yellow
@@ -431,18 +431,8 @@
     }
     
     async function loadCalendarData() {
-      const settings = Homey.getSettings();
-      const deviceIds = Homey.getDeviceIds();
-      
-      if (!deviceIds || deviceIds.length === 0) {
-        calendarData = [];
-        render();
-        return;
-      }
-      
       try {
-        const data = await Homey.api('GET', '/', { deviceIds: deviceIds.join(',') });
-        calendarData = data.calendarData || [];
+        calendarData = await device.getStoreValue('calendar_data') || [];
         render();
       } catch (error) {
         console.error('Error loading calendar data:', error);
@@ -458,7 +448,11 @@
     setInterval(() => {
       loadCalendarData();
     }, 60000); // Refresh every minute
-    }
+    
+    // Also listen for capability changes to refresh
+    device.on('capability:measure_today_releases', () => {
+      loadCalendarData();
+    });
   </script>
 </body>
 </html>

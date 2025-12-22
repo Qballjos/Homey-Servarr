@@ -1,0 +1,16 @@
+{
+  "id": "pause_all",
+  "title": {
+    "en": "Pause all Servarr Downloads"
+  },
+  "titleFormatted": {
+    "en": "Pause all Servarr Downloads"
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=servarr_hub"
+    }
+  ]
+}

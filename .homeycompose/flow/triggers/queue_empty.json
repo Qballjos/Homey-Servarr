@@ -1,0 +1,16 @@
+{
+  "id": "queue_empty",
+  "title": {
+    "en": "The queue is empty"
+  },
+  "titleFormatted": {
+    "en": "The queue is empty"
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=servarr_hub"
+    }
+  ]
+}

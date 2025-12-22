@@ -1,17 +1,9 @@
 {
   "type": "number",
-  "title": {
-    "en": "Library Size"
-  },
+  "title": { "en": "Missing Items" },
   "getable": true,
   "setable": false,
   "uiComponent": "sensor",
   "decimals": 0,
-  "units": {
-    "en": "items"
-  },
-  "min": 0
+  "insights": true
 }
-
-
-

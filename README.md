@@ -88,7 +88,7 @@ The app automatically handles URL parsing, port detection, and API version selec
 ### Capabilities
 
 The device has the following capabilities:
-- `text_today_releases` - Text display of the number of releases today
+- `measure_today_releases` - Number of releases today
 - `measure_queue_count` - Measurement of the number of items in the queue
 - `measure_missing_count` - Count of missing/wanted items across enabled apps
 - `measure_library_size` - Total number of movies/series/albums in library

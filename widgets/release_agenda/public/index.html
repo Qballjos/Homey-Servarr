@@ -84,101 +84,69 @@
   </div>
   
   <script>
-    function onHomeyReady(Homey) {
-      Homey.ready();
-      
-      const listEl = document.getElementById('release-list');
-      const countEl = document.getElementById('release-count');
-      const errorBox = document.getElementById('error-box');
+    Homey.ready();
+    
+    const device = Homey.getDevice();
+    const listEl = document.getElementById('release-list');
+    const countEl = document.getElementById('release-count');
+    const errorBox = document.getElementById('error-box');
 
-      const appColors = {
-        sonarr: '#3498db', // blue
-        radarr: '#f1c40f', // yellow
-        lidarr: '#27ae60', // green
-      };
+    const appColors = {
+      sonarr: '#3498db', // blue
+      radarr: '#f1c40f', // yellow
+      lidarr: '#27ae60', // green
+    };
 
-      function renderList(items, appReleaseCounts) {
-        listEl.innerHTML = '';
-        if (!items || items.length === 0) {
-          listEl.innerHTML = '<li>No releases today</li>';
-          return;
-        }
-        
-        // Group by app and show per-app counts
-        const appGroups = {};
-        items.forEach(item => {
-          if (!appGroups[item.app]) {
-            appGroups[item.app] = [];
-          }
-          appGroups[item.app].push(item);
-        });
-        
-        // Show per-app summary
-        Object.keys(appGroups).forEach(app => {
-          const count = appReleaseCounts[app] || appGroups[app].length;
-          const color = appColors[app] || '#7f8c8d';
-          const li = document.createElement('li');
-          li.style.fontWeight = 'bold';
-          li.style.paddingTop = '8px';
-          li.innerHTML = `
-            <span class="flag" style="background:${color};"></span>
-            <span class="title">${app.charAt(0).toUpperCase() + app.slice(1)}: ${count}</span>
-          `;
-          listEl.appendChild(li);
-          
-          // Show items for this app
-          appGroups[app].slice(0, 5).forEach(item => {
-            const check = item.hasFile ? '✓' : '';
-            const itemLi = document.createElement('li');
-            itemLi.style.paddingLeft = '20px';
-            itemLi.innerHTML = `
-              <span class="flag" style="background:${color};"></span>
-              <span class="title">${item.title}</span>
-              <span class="check">${check}</span>
-            `;
-            listEl.appendChild(itemLi);
-          });
-        });
+    function renderList(items) {
+      listEl.innerHTML = '';
+      if (!items || items.length === 0) {
+        listEl.innerHTML = '<li>No releases today</li>';
+        return;
       }
-
-      function renderErrors(errors) {
-        if (!errors || Object.keys(errors).length === 0) {
-          errorBox.innerHTML = '';
-          return;
-        }
-        const errorList = Object.keys(errors).map(app => `${app}: ${errors[app]}`).join('<br>');
-        errorBox.innerHTML = `<strong>Errors:</strong><br>${errorList}`;
+      for (const item of items) {
+        const color = appColors[item.app] || '#7f8c8d';
+        const check = item.hasFile ? '✓' : '';
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <span class="flag" style="background:${color};"></span>
+          <span class="title">${item.title}</span>
+          <span class="check">${check}</span>
+        `;
+        listEl.appendChild(li);
       }
-
-      async function load() {
-        const settings = Homey.getSettings();
-        const deviceIds = Homey.getDeviceIds();
-        
-        if (!deviceIds || deviceIds.length === 0) {
-          countEl.textContent = '0';
-          listEl.innerHTML = '<li>Please select a device in widget settings</li>';
-          return;
-        }
-        
-        try {
-          // Pass deviceIds as query parameter per SDK pattern
-          const data = await Homey.api('GET', '/', { deviceIds: deviceIds.join(',') });
-          const total = Object.values(data.appReleaseCounts || {}).reduce((a, b) => a + b, 0);
-          countEl.textContent = total.toString();
-          renderList(data.releases || [], data.appReleaseCounts || {});
-          renderErrors(data.errors || {});
-        } catch (error) {
-          console.error('Error loading release data:', error);
-          countEl.textContent = '0';
-          renderList([], {});
-          renderErrors({});
-        }
-      }
-      
-      load();
-      // Refresh every 30 seconds
-      setInterval(load, 30000);
     }
+
+    function renderErrors(errors) {
+      if (!errors || errors.length === 0) {
+        errorBox.innerHTML = '';
+        return;
+      }
+      const errorList = errors.map(e => `${e.app}: ${e.message}`).join('<br>');
+      errorBox.innerHTML = `<strong>Errors:</strong><br>${errorList}`;
+    }
+
+    async function load() {
+      const releases = await device.getStoreValue('today_releases');
+      const count = await device.getCapabilityValue('text_today_releases');
+      const errors = await device.getStoreValue('app_errors');
+      countEl.textContent = count || '0';
+      renderList(releases || []);
+      renderErrors(errors || []);
+    }
+    
+    // Update on capability change
+    device.on('capability:text_today_releases', (value) => {
+      countEl.textContent = value || '0';
+      // refresh list from store
+      device.getStoreValue('today_releases').then(renderList);
+      device.getStoreValue('app_errors').then(renderErrors);
+    });
+    
+    load().catch((error) => {
+      console.error('Error loading release data:', error);
+      renderList([]);
+      renderErrors([]);
+    });
   </script>
 </body>
 </html>

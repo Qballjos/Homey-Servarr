@@ -1,0 +1,16 @@
+{
+  "id": "resume_all",
+  "title": {
+    "en": "Resume all Servarr Downloads"
+  },
+  "titleFormatted": {
+    "en": "Resume all Servarr Downloads"
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=servarr_hub"
+    }
+  ]
+}

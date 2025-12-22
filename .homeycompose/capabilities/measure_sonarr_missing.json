@@ -1,14 +1,9 @@
 {
   "type": "number",
-  "title": {
-    "en": "Queue Count"
-  },
+  "title": { "en": "Sonarr Missing" },
   "getable": true,
   "setable": false,
   "uiComponent": "sensor",
   "decimals": 0,
-  "units": {
-    "en": "items"
-  },
-  "min": 0
+  "insights": true
 }

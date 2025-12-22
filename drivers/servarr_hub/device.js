@@ -31,7 +31,7 @@ class ServarrHubDevice extends Homey.Device {
     
     // Initialize capabilities with default values
     const capabilities = [
-      'text_today_releases',
+      'measure_today_releases',
       'measure_queue_count',
       'measure_missing_count',
       'queue_paused',
@@ -51,7 +51,7 @@ class ServarrHubDevice extends Homey.Device {
     }
     
     // Set initial values
-    await this.setCapabilityValue('text_today_releases', '0');
+    await this.setCapabilityValue('measure_today_releases', 0);
     await this.setCapabilityValue('measure_queue_count', 0);
     await this.setCapabilityValue('measure_missing_count', 0);
     await this.setCapabilityValue('queue_paused', false);
@@ -218,7 +218,7 @@ class ServarrHubDevice extends Homey.Device {
       
       // Check if queue is empty (compare previous with current)
       if (queueInfo.previous > 0 && queueInfo.current === 0) {
-        const trigger = this.driver._queueEmptyTrigger;
+        const trigger = this.homey.app.queueEmptyTrigger;
         await trigger.trigger(this, {}, {});
         this.log('Queue is now empty');
       }
@@ -291,13 +291,10 @@ class ServarrHubDevice extends Homey.Device {
     await this.setCapabilityValue('measure_lidarr_releases', perAppReleases.lidarr);
     
     // Update text capability with total
-    await this.setCapabilityValue('text_today_releases', totalReleases.toString());
+    await this.setCapabilityValue('measure_today_releases', totalReleases);
     
     await this.setStoreValue('app_errors', this._serializeErrors());
     this.log(`Today's releases: ${totalReleases} (Radarr: ${perAppReleases.radarr}, Sonarr: ${perAppReleases.sonarr}, Lidarr: ${perAppReleases.lidarr})`);
-    
-    // Also fetch and store calendar data for wider range (for calendar widget)
-    await this.updateCalendarData();
   }
 
   /**
@@ -501,7 +498,7 @@ class ServarrHubDevice extends Homey.Device {
           const issueId = issue.id || issue.message;
           if (!previousIssueIds.has(issueId)) {
             // New issue detected, trigger Flow card
-            const trigger = this.driver._healthCheckFailedTrigger;
+            const trigger = this.homey.app.healthCheckFailedTrigger;
             await trigger.trigger(this, {
               app: appName,
               message: issue.message || issue.source || 'Health check issue',
@@ -525,6 +522,10 @@ class ServarrHubDevice extends Homey.Device {
    */
   async checkFinishedDownloads() {
     for (const [appName, client] of Object.entries(this._apiClients)) {
+      // Load persistent history of triggered events
+      let triggeredDownloadIds = (await this.getStoreValue('triggeredDownloadIds')) || [];
+      let triggeredAddedIds = (await this.getStoreValue('triggeredAddedIds')) || [];
+
       try {
         const history = await client.getHistory(20); // Get recent history (last 20 items)
         
@@ -540,8 +541,7 @@ class ServarrHubDevice extends Homey.Device {
           
           if (isCompleted) {
             // Check if we've already triggered for this download
-            if (!this._lastDownloadStates.has(downloadId) || 
-                this._lastDownloadStates.get(downloadId).status !== 'completed') {
+            if (!triggeredDownloadIds.includes(downloadId)) {
               
               // Extract title based on app type
               let title = 'Unknown';
@@ -552,7 +552,7 @@ class ServarrHubDevice extends Homey.Device {
               else if (item.title) title = item.title;
               
               // Trigger download finished flow
-              const trigger = this.driver._downloadFinishedTrigger;
+              const trigger = this.homey.app.downloadFinishedTrigger;
               await trigger.trigger(this, {
                 title: title,
                 app: appName
@@ -560,12 +560,9 @@ class ServarrHubDevice extends Homey.Device {
               
               this.log(`Download finished: ${title} (${appName})`);
               
-              // Mark as completed
-              this._lastDownloadStates.set(downloadId, {
-                status: 'completed',
-                title: title,
-                timestamp: Date.now()
-              });
+              // Add to persistent log and rotate
+              triggeredDownloadIds.push(downloadId);
+              if (triggeredDownloadIds.length > 100) triggeredDownloadIds.shift();
             }
           }
 
@@ -577,7 +574,7 @@ class ServarrHubDevice extends Homey.Device {
                                eventType.includes('albumadded');
 
           if (isMediaAdded) {
-            if (!this._lastAddedStates.has(addedId)) {
+            if (!triggeredAddedIds.includes(addedId)) {
               let title = 'Unknown';
               let mediaType = 'movie';
               if (item.movie) {
@@ -598,7 +595,7 @@ class ServarrHubDevice extends Homey.Device {
                 title = item.title;
               }
 
-              const trigger = this.driver._mediaAddedTrigger;
+              const trigger = this.homey.app.mediaAddedTrigger;
               await trigger.trigger(this, {
                 title,
                 app: appName,
@@ -607,34 +604,16 @@ class ServarrHubDevice extends Homey.Device {
 
               this.log(`Media added: ${title} (${mediaType}) via ${appName}`);
 
-              this._lastAddedStates.set(addedId, {
-                status: 'added',
-                title,
-                timestamp: Date.now()
-              });
+              // Add to persistent log and rotate
+              triggeredAddedIds.push(addedId);
+              if (triggeredAddedIds.length > 100) triggeredAddedIds.shift();
             }
-          }
-          
-          // Clean up old states (keep only last 100)
-          if (this._lastDownloadStates.size > 100) {
-            const entries = Array.from(this._lastDownloadStates.entries());
-            entries.sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0));
-            this._lastDownloadStates.clear();
-            entries.slice(0, 100).forEach(([key, value]) => {
-              this._lastDownloadStates.set(key, value);
-            });
-          }
-
-          if (this._lastAddedStates.size > 100) {
-            const entries = Array.from(this._lastAddedStates.entries());
-            entries.sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0));
-            this._lastAddedStates.clear();
-            entries.slice(0, 100).forEach(([key, value]) => {
-              this._lastAddedStates.set(key, value);
-            });
           }
         }
         this._clearAppError(appName);
+        // Save the updated persistent logs
+        await this.setStoreValue('triggeredDownloadIds', triggeredDownloadIds);
+        await this.setStoreValue('triggeredAddedIds', triggeredAddedIds);
       } catch (error) {
         this.error(`Error checking downloads for ${appName}: ${error.message || error}`);
         this._setAppError(appName, error.message || 'History error');
@@ -867,7 +846,7 @@ class ServarrHubDevice extends Homey.Device {
       });
       const mergedReleases = [...filteredReleases, ...newReleases].slice(0, 100);
       await this.setStoreValue('today_releases', mergedReleases);
-      await this.setCapabilityValue('text_today_releases', mergedReleases.length.toString());
+      await this.setCapabilityValue('measure_today_releases', mergedReleases.length);
 
       // Update queue store
       const queueItems = (await this.getStoreValue('queue_items')) || [];
@@ -937,6 +916,8 @@ class ServarrHubDevice extends Homey.Device {
     } catch (error) {
       this.error('Error during immediate update after settings change:', error);
     }
+
+    return "Settings saved, and a manual refresh has been initiated. Please allow a few moments for all data to update."
   }
 
   /**
@@ -950,4 +931,3 @@ class ServarrHubDevice extends Homey.Device {
 }
 
 module.exports = ServarrHubDevice;
-

@@ -2,6 +2,8 @@
   "name": {
     "en": "Release Calendar"
   },
+  "height": 400,
+  "transparent": true,
   "settings": [
     {
       "id": "device",
@@ -15,8 +17,6 @@
       }
     }
   ],
-  "height": 400,
-  "transparent": true,
   "api": {
     "getDeviceData": {
       "method": "GET",
@@ -24,3 +24,4 @@
     }
   }
 }
+

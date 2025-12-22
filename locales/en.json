@@ -23,6 +23,22 @@
       },
       "queue_empty": {
         "title": "The queue is empty"
+      },
+      "health_check_failed": {
+        "title": "Health check failed",
+        "args": {
+          "app": { "label": "Servarr App" },
+          "message": { "label": "Health Message" },
+          "type": { "label": "Health Type" }
+        }
+      },
+      "media_added": {
+        "title": "A media item was added",
+        "args": {
+          "title": { "label": "Media Title" },
+          "app": { "label": "Servarr App" },
+          "type": { "label": "Media Type" }
+        }
       }
     },
     "actions": {
@@ -39,21 +55,57 @@
             "label": "Servarr App"
           }
         }
+      },
+      "resume_app": {
+        "title": "Resume [APP] Downloads",
+        "args": {
+          "app": {
+            "label": "Servarr App"
+          }
+        }
+      },
+      "search_missing": {
+        "title": "Search missing items for [APP]",
+        "args": {
+          "app": {
+            "label": "Servarr App"
+          }
+        }
+      },
+      "toggle_monitored": {
+        "title": "Toggle monitored status",
+        "args": {
+          "app": { "label": "Servarr App" },
+          "title": { "label": "Media Title" },
+          "monitored": { "label": "Monitored Status" }
+        }
       }
     }
   },
   "settings": {
+    "manual_refresh_only": "Manual refresh only",
+    "radarr_enabled": "Enable Radarr",
     "radarr_url": "Radarr URL",
     "radarr_port": "Radarr Port",
     "radarr_api_key": "Radarr API Key",
+    "sonarr_enabled": "Enable Sonarr",
     "sonarr_url": "Sonarr URL",
     "sonarr_port": "Sonarr Port",
     "sonarr_api_key": "Sonarr API Key",
+    "lidarr_enabled": "Enable Lidarr",
     "lidarr_url": "Lidarr URL",
     "lidarr_port": "Lidarr Port",
-    "lidarr_api_key": "Lidarr API Key"
+    "lidarr_api_key": "Lidarr API Key",
+    "radarr_group": "Radarr",
+    "sonarr_group": "Sonarr",
+    "lidarr_group": "Lidarr"
+  },
+  "widgets": {
+    "calendar": {
+      "settings": {
+        "calendar_view": "Calendar View"
+      }
+    }
   }
 }
-
-
 

@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2025-12-15 - General Improvements & Bugfixes
+
+### Added
+- **Library Size Widget**: New widget to display the total number of items in the library.
+- **Insights**: Added Homey Insights support for all capabilities.
+
+### Changed
+- **API Client**: Replaced `node-fetch` with Homey's built-in `fetch` for better performance and efficiency.
+- **Pairing**: Simplified pairing process by using a fixed device ID and moving capability and setting definitions to `driver.compose.json`.
+- **Capabilities**: Shortened capability titles for a cleaner UI.
+
+### Fixed
+- **`onSettings`**: Correctly implemented the `onSettings` method to be compliant with Homey SDK v3 best practices.
+- **`api.js`**: Added a try-catch block to the `getCalendarEvents` function to prevent crashes.
+- **Calendar Widget**: Fixed the calendar widget by correctly using the device from the settings.
+- **Flow Cards**: Added `titleFormatted` to all flow cards for better readability.
+
 ## [1.4.0] - 2025-12-15 - SDK v3 Migration & Widget Improvements
 
 ### Added
