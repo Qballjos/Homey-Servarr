@@ -249,7 +249,7 @@ class ServarrHubDevice extends Homey.Device {
 
         // Map calendar entries to a simplified structure for the widget
         for (const item of calendar) {
-          const title =
+          let title =
             item.title ||
             item.series?.title ||
             item.movie?.title ||
@@ -258,18 +258,21 @@ class ServarrHubDevice extends Homey.Device {
             item.sourceTitle ||
             'Unknown';
 
-          const hasFile = !!item.hasFile;
+          // Truncate long titles to save memory
+          if (title.length > 40) {
+            title = title.substring(0, 37) + '...';
+          }
 
           releases.push({
             app: appName,
             title,
-            hasFile,
+            hasFile: !!item.hasFile,
           });
         }
         this._clearAppError(appName);
       } catch (error) {
         this.error(`Error fetching calendar for ${appName}: ${error.message || error}`);
-        this._setAppError(appName, error.message || 'Calendar error');
+        this._setAppError(appName, (error.message || 'Calendar error').substring(0, 100));
       }
     }
     
@@ -314,7 +317,7 @@ class ServarrHubDevice extends Homey.Device {
         const calendar = await client.getCalendar(start, end);
         
         for (const item of calendar) {
-          const title =
+          let title =
             item.title ||
             item.series?.title ||
             item.movie?.title ||
@@ -322,6 +325,10 @@ class ServarrHubDevice extends Homey.Device {
             item.artist?.artistName ||
             item.sourceTitle ||
             'Unknown';
+
+          if (title.length > 40) {
+            title = title.substring(0, 37) + '...';
+          }
 
           const hasFile = !!item.hasFile;
           // Servarr APIs return dates in various formats
@@ -346,8 +353,10 @@ class ServarrHubDevice extends Homey.Device {
             }
           }
         }
+        this._clearAppError(appName);
       } catch (error) {
         this.error(`Error fetching calendar data for ${appName}: ${error.message || error}`);
+        this._setAppError(appName, (error.message || 'Calendar data error').substring(0, 100));
       }
     }
     
@@ -379,28 +388,34 @@ class ServarrHubDevice extends Homey.Device {
           perAppCounts[appName] = queue.length;
         }
 
-        for (const item of queue) {
-          const title =
+        // Map queue records to simplified objects to save memory
+        const simplifiedRecords = queue.map(item => {
+          let title =
             item.title ||
             item.series?.title ||
             item.movie?.title ||
             item.artist?.artistName ||
             item.sourceTitle ||
             'Unknown';
-
-          queueItems.push({
+          if (title.length > 40) {
+            title = title.substring(0, 37) + '...';
+          }
+          
+          return {
             id: item.id || item.queueId || item.downloadId || item.trackedDownloadId || '',
             app: appName,
             title,
             status: item.status || item.trackedDownloadStatus || 'queued',
             size: item.size || item.sizeleft || null,
             timeLeft: item.timeleft || item.estimatedCompletionTime || null,
-          });
-        }
+          };
+        });
+        
+        queueItems.push(...simplifiedRecords);
         this._clearAppError(appName);
       } catch (error) {
         this.error(`Error fetching queue for ${appName}: ${error.message || error}`);
-        this._setAppError(appName, error.message || 'Queue error');
+        this._setAppError(appName, (error.message || 'Queue error').substring(0, 100));
       }
     }
     
