@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.1] - 2025-12-22 - Widget Fix
+
+### Fixed
+- **Widget Setup**: Broadened device selection filter in all widgets to ensure the Servarr Control Hub device is correctly listed during widget addition.
+
 ## [1.6.0] - 2025-12-22 - Performance & Stability Optimization
 
 ### Added

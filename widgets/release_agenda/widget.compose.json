@@ -11,7 +11,8 @@
       },
       "singular": true,
       "filter": {
-        "driver_id": "servarr_hub"
+        "driver_id": "servarr_hub",
+        "class": "other"
       }
     }
   ],
