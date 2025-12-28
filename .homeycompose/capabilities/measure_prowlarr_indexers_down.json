@@ -1,10 +1,10 @@
 {
   "type": "number",
-  "title": { "en": "Library Size" },
+  "title": { "en": "Indexers Down" },
   "getable": true,
   "setable": false,
   "uiComponent": "sensor",
   "decimals": 0,
-  "icon": "homey:ui:storage",
+  "icon": "homey:ui:warning",
   "insights": true
 }

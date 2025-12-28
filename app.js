@@ -17,6 +17,8 @@ class ServarrControlHubApp extends Homey.App {
     this.queueEmptyTrigger = this.homey.flow.getDeviceTriggerCard('queue_empty');
     this.healthCheckFailedTrigger = this.homey.flow.getDeviceTriggerCard('health_check_failed');
     this.mediaAddedTrigger = this.homey.flow.getDeviceTriggerCard('media_added');
+    this.grabEventTrigger = this.homey.flow.getDeviceTriggerCard('grab_event');
+    this.indexerIssueTrigger = this.homey.flow.getDeviceTriggerCard('indexer_issue');
 
     this.log('Flow cards registered successfully');
 
@@ -50,6 +52,11 @@ class ServarrControlHubApp extends Homey.App {
       .registerRunListener(async (args) => {
         const monitored = args.monitored === 'true';
         return await args.device.toggleMonitoredStatus(args.app.id, args.title, monitored);
+      });
+
+    this.homey.flow.getActionCard('command_app')
+      .registerRunListener(async (args) => {
+        return await args.device.runAppCommand(args.app.id, args.command.id);
       });
   }
 

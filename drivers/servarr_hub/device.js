@@ -41,7 +41,9 @@ class ServarrHubDevice extends Homey.Device {
       'measure_lidarr_releases',
       'measure_radarr_missing',
       'measure_sonarr_missing',
-      'measure_lidarr_missing'
+      'measure_lidarr_missing',
+      'measure_prowlarr_indexers',
+      'measure_prowlarr_indexers_down'
     ];
     
     for (const cap of capabilities) {
@@ -62,6 +64,8 @@ class ServarrHubDevice extends Homey.Device {
     await this.setCapabilityValue('measure_radarr_missing', 0);
     await this.setCapabilityValue('measure_sonarr_missing', 0);
     await this.setCapabilityValue('measure_lidarr_missing', 0);
+    await this.setCapabilityValue('measure_prowlarr_indexers', 0);
+    await this.setCapabilityValue('measure_prowlarr_indexers_down', 0);
     
     // Load configuration
     await this.loadConfiguration();
@@ -134,6 +138,21 @@ class ServarrHubDevice extends Homey.Device {
         this.error('Failed to initialize Lidarr client:', error);
       }
     }
+
+    // Initialize Prowlarr client if enabled and configured
+    if (settings.prowlarr_enabled && settings.prowlarr_url && settings.prowlarr_api_key) {
+      try {
+        this._apiClients.prowlarr = new ServarrAPI({
+          baseUrl: settings.prowlarr_url,
+          port: settings.prowlarr_port || 9696,
+          apiKey: settings.prowlarr_api_key,
+          appName: 'Prowlarr'
+        });
+        this.log('Prowlarr client initialized');
+      } catch (error) {
+        this.error('Failed to initialize Prowlarr client:', error);
+      }
+    }
     
     const enabledCount = Object.keys(this._apiClients).length;
     this.log(`Loaded configuration for ${enabledCount} enabled Servarr app(s)`);
@@ -172,13 +191,15 @@ class ServarrHubDevice extends Homey.Device {
       this.updateMissingCount();
       this.updateLibrarySize();
       this.updateCalendarData(); // Update calendar data periodically
+      this.updateProwlarrStatus(); // Update Prowlarr indexers periodically
     }, 900000);
     
-    // Initial health check, missing count, library size, and calendar data
+    // Initial health check, missing count, library size, calendar data, and Prowlarr status
     this.checkHealth();
     this.updateMissingCount();
     this.updateLibrarySize();
     this.updateCalendarData();
+    this.updateProwlarrStatus();
     
     this.log('Started polling (interval: 5 minutes, health/missing/library: 15 minutes)');
   }
@@ -280,7 +301,7 @@ class ServarrHubDevice extends Homey.Device {
     await this.setStoreValue('today_releases', releases.slice(0, 100));
     
     // Store per-app release counts for widgets & panel view
-    const perAppReleases = { radarr: 0, sonarr: 0, lidarr: 0 };
+    const perAppReleases = { radarr: 0, sonarr: 0, lidarr: 0, prowlarr: 0 };
     for (const r of releases) {
       if (perAppReleases.hasOwnProperty(r.app)) {
         perAppReleases[r.app]++;
@@ -371,7 +392,7 @@ class ServarrHubDevice extends Homey.Device {
   async updateQueueCount() {
     let totalQueue = 0;
     const queueItems = [];
-    const perAppCounts = { radarr: 0, sonarr: 0, lidarr: 0 };
+    const perAppCounts = { radarr: 0, sonarr: 0, lidarr: 0, prowlarr: 0 };
     const pausedApps = [];
     
     for (const [appName, client] of Object.entries(this._apiClients)) {
@@ -442,7 +463,7 @@ class ServarrHubDevice extends Homey.Device {
    */
   async updateMissingCount() {
     let totalMissing = 0;
-    const perAppMissing = { radarr: 0, sonarr: 0, lidarr: 0 };
+    const perAppMissing = { radarr: 0, sonarr: 0, lidarr: 0, prowlarr: 0 };
 
     for (const [appName, client] of Object.entries(this._apiClients)) {
       try {
@@ -530,6 +551,30 @@ class ServarrHubDevice extends Homey.Device {
         // Don't trigger on API errors (handled by app_errors)
       }
     }
+
+    // Generate unified health summary for the widget
+    const summary = {};
+    for (const appName of ['radarr', 'sonarr', 'lidarr', 'prowlarr']) {
+      const client = this._apiClients[appName];
+      if (!client) {
+        summary[appName] = { status: 'disabled' };
+        continue;
+      }
+
+      const issues = this._lastHealthStatus[appName] || [];
+      const appErr = this._appErrors[appName];
+
+      if (appErr) {
+        summary[appName] = { status: 'error', message: appErr.message };
+      } else if (issues.some(i => i.type === 'error')) {
+        summary[appName] = { status: 'error', message: 'Internal application error' };
+      } else if (issues.some(i => i.type === 'warning')) {
+        summary[appName] = { status: 'warning', message: 'Application warning' };
+      } else {
+        summary[appName] = { status: 'ok' };
+      }
+    }
+    await this.setStoreValue('health_summary', summary);
   }
 
   /**
@@ -540,6 +585,7 @@ class ServarrHubDevice extends Homey.Device {
       // Load persistent history of triggered events
       let triggeredDownloadIds = (await this.getStoreValue('triggeredDownloadIds')) || [];
       let triggeredAddedIds = (await this.getStoreValue('triggeredAddedIds')) || [];
+      let triggeredGrabIds = (await this.getStoreValue('triggeredGrabIds')) || [];
 
       try {
         const history = await client.getHistory(20); // Get recent history (last 20 items)
@@ -547,7 +593,29 @@ class ServarrHubDevice extends Homey.Device {
         for (const item of history) {
           const downloadId = `${appName}_${item.id || item.eventType}_${item.date}`;
           const addedId = `${appName}_added_${item.id || item.eventType}_${item.date}`;
+          const grabId = `${appName}_grab_${item.id || item.eventType}_${item.date}`;
           
+          // Check if this is a grabbed event
+          const isGrabbed = item.eventType === 'grabbed' || item.eventType === 'Grabbed' ||
+                           (item.data && item.data.reason === 'grabbed');
+          
+          if (isGrabbed && !triggeredGrabIds.includes(grabId)) {
+            // Extract title
+            let title = this._extractTitle(item);
+            
+            // Trigger grab flow
+            const trigger = this.homey.app.grabEventTrigger;
+            await trigger.trigger(this, {
+              title: title,
+              app: appName
+            }, {});
+            
+            this.log(`Release grabbed: ${title} (${appName})`);
+            
+            triggeredGrabIds.push(grabId);
+            if (triggeredGrabIds.length > 100) triggeredGrabIds.shift();
+          }
+
           // Check if this is a completed download event
           // Servarr apps use different event types: 'downloadFolderImported', 'grabbed', etc.
           const isCompleted = item.eventType === 'downloadFolderImported' || 
@@ -629,6 +697,7 @@ class ServarrHubDevice extends Homey.Device {
         // Save the updated persistent logs
         await this.setStoreValue('triggeredDownloadIds', triggeredDownloadIds);
         await this.setStoreValue('triggeredAddedIds', triggeredAddedIds);
+        await this.setStoreValue('triggeredGrabIds', triggeredGrabIds);
       } catch (error) {
         this.error(`Error checking downloads for ${appName}: ${error.message || error}`);
         this._setAppError(appName, error.message || 'History error');
@@ -792,6 +861,82 @@ class ServarrHubDevice extends Homey.Device {
     delete this._appErrors[appName];
   }
 
+  /**
+   * Helper to extract title from history item
+   */
+  _extractTitle(item) {
+    let title = 'Unknown';
+    if (item.movie) title = item.movie.title || item.movie.title;
+    else if (item.series) title = `${item.series.title}${item.episode ? ' - ' + item.episode.title : ''}`;
+    else if (item.artist) title = `${item.artist.artistName}${item.album ? ' - ' + item.album.title : ''}`;
+    else if (item.sourceTitle) title = item.sourceTitle;
+    else if (item.title) title = item.title;
+    return title;
+  }
+
+  /**
+   * Update Prowlarr specific status
+   */
+  async updateProwlarrStatus() {
+    const client = this._apiClients.prowlarr;
+    if (!client) return;
+
+    try {
+      const indexers = await client.getIndexers();
+      const totalIndexers = indexers.length;
+      const downIndexers = indexers.filter(i => i.enable === false || i.status !== 'ok').length;
+
+      await this.setCapabilityValue('measure_prowlarr_indexers', totalIndexers);
+      await this.setCapabilityValue('measure_prowlarr_indexers_down', downIndexers);
+
+      // Check for indexer issues and trigger flow
+      const previousIndexers = (await this.getStoreValue('indexer_status')) || {};
+      const currentIndexers = {};
+
+      for (const indexer of indexers) {
+        const name = indexer.name;
+        const status = indexer.status || 'ok';
+        currentIndexers[name] = status;
+
+        if (status !== 'ok' && previousIndexers[name] === 'ok') {
+          // New issue detected
+          const trigger = this.homey.app.indexerIssueTrigger;
+          await trigger.trigger(this, {
+            indexer: name,
+            app: 'prowlarr',
+            message: status === 'disabled' ? 'Indexer is disabled' : `Indexer status: ${status}`
+          }, {});
+          this.log(`Indexer issue detected: ${name} (${status})`);
+        }
+      }
+
+      await this.setStoreValue('indexer_status', currentIndexers);
+      this.log(`Prowlarr status: ${totalIndexers} indexers, ${downIndexers} down`);
+    } catch (error) {
+      this.error('Error updating Prowlarr status:', error);
+      this._setAppError('prowlarr', error.message || 'Prowlarr status error');
+    }
+  }
+
+  /**
+   * Run generic app command
+   */
+  async runAppCommand(appName, commandName) {
+    const client = this._apiClients[appName];
+    if (!client) {
+      throw new Error(`No client configured for ${appName}`);
+    }
+
+    try {
+      await client.executeCommand(commandName);
+      this.log(`Executed command ${commandName} on ${appName}`);
+      return true;
+    } catch (error) {
+      this.error(`Error executing command ${commandName} on ${appName}:`, error);
+      throw error;
+    }
+  }
+
   _serializeErrors() {
     return Object.entries(this._appErrors).map(([app, err]) => ({
       app,
@@ -884,7 +1029,7 @@ class ServarrHubDevice extends Homey.Device {
         };
       });
 
-      const perAppCounts = (await this.getStoreValue('queue_app_counts')) || { radarr: 0, sonarr: 0, lidarr: 0 };
+      const perAppCounts = (await this.getStoreValue('queue_app_counts')) || { radarr: 0, sonarr: 0, lidarr: 0, prowlarr: 0 };
       perAppCounts[appName] = newQueueItems.length;
 
       const mergedQueue = [...filteredQueue, ...newQueueItems];
@@ -927,6 +1072,7 @@ class ServarrHubDevice extends Homey.Device {
       await this.updateMissingCount();
       await this.updateLibrarySize();
       await this.updateCalendarData();
+      await this.updateProwlarrStatus();
       this.log('Immediate data update completed after settings change');
     } catch (error) {
       this.error('Error during immediate update after settings change:', error);

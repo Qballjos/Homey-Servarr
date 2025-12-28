@@ -1,0 +1,43 @@
+{
+  "id": "indexer_issue",
+  "title": {
+    "en": "An indexer has an issue"
+  },
+  "titleFormatted": {
+    "en": "Indexer [[indexer]] in [[app]] has issue: [[message]]"
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=servarr_hub"
+    },
+    {
+      "name": "indexer",
+      "type": "text",
+      "label": {
+        "en": "Indexer Name"
+      }
+    },
+    {
+      "name": "app",
+      "type": "dropdown",
+      "label": {
+        "en": "Servarr App"
+      },
+      "values": [
+        { "id": "prowlarr", "label": { "en": "Prowlarr" } },
+        { "id": "radarr", "label": { "en": "Radarr" } },
+        { "id": "sonarr", "label": { "en": "Sonarr" } },
+        { "id": "lidarr", "label": { "en": "Lidarr" } }
+      ]
+    },
+    {
+      "name": "message",
+      "type": "text",
+      "label": {
+        "en": "Error Message"
+      }
+    }
+  ]
+}

@@ -5,5 +5,6 @@
   "setable": false,
   "uiComponent": "sensor",
   "decimals": 0,
+  "icon": "homey:ui:download",
   "insights": true
 }
