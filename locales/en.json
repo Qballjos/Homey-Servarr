@@ -1,7 +1,7 @@
 {
   "app": {
     "name": "Servarr Control Hub",
-    "description": "Lightweight monitoring and Flow bridge for Servarr suite (Radarr, Sonarr, Lidarr)"
+    "description": "Lightweight monitoring and Flow bridge for Servarr suite (Radarr, Sonarr, Lidarr, Prowlarr)"
   },
   "driver": {
     "servarr_hub": {
@@ -13,12 +13,8 @@
       "download_finished": {
         "title": "A download has finished",
         "args": {
-          "title": {
-            "label": "Media Title"
-          },
-          "app": {
-            "label": "Servarr App"
-          }
+          "title": { "label": "Media Title" },
+          "app": { "label": "Servarr App" }
         }
       },
       "queue_empty": {
@@ -38,6 +34,21 @@
           "title": { "label": "Media Title" },
           "app": { "label": "Servarr App" },
           "type": { "label": "Media Type" }
+        }
+      },
+      "grab_event": {
+        "title": "A release has been grabbed",
+        "args": {
+          "title": { "label": "Media Title" },
+          "app": { "label": "Servarr App" }
+        }
+      },
+      "indexer_issue": {
+        "title": "An indexer has an issue",
+        "args": {
+          "indexer": { "label": "Indexer Name" },
+          "app": { "label": "Servarr App" },
+          "message": { "label": "Error Message" }
         }
       }
     },
@@ -79,6 +90,13 @@
           "title": { "label": "Media Title" },
           "monitored": { "label": "Monitored Status" }
         }
+      },
+      "command_app": {
+        "title": "Run command on [APP]",
+        "args": {
+          "app": { "label": "Servarr App" },
+          "command": { "label": "Command" }
+        }
       }
     }
   },
@@ -96,9 +114,14 @@
     "lidarr_url": "Lidarr URL",
     "lidarr_port": "Lidarr Port",
     "lidarr_api_key": "Lidarr API Key",
+    "prowlarr_enabled": "Enable Prowlarr",
+    "prowlarr_url": "Prowlarr URL",
+    "prowlarr_port": "Prowlarr Port",
+    "prowlarr_api_key": "Prowlarr API Key",
     "radarr_group": "Radarr",
     "sonarr_group": "Sonarr",
-    "lidarr_group": "Lidarr"
+    "lidarr_group": "Lidarr",
+    "prowlarr_group": "Prowlarr"
   },
   "widgets": {
     "calendar": {
@@ -108,4 +131,3 @@
     }
   }
 }
-

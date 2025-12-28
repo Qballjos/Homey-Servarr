@@ -4,6 +4,7 @@ const APP_COLORS = {
   radarr: '#FFC107', // Yellow
   sonarr: '#2196F3', // Blue
   lidarr: '#4CAF50',  // Green
+  prowlarr: '#9C27B0', // Purple
 };
 
 /**

@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2025-12-28 - Prowlarr Integration & Advanced Automations
+
+### Added
+- **Prowlarr Support**: Full integration for monitoring indexer health and global history.
+- **New Widget: System Health Status**: A unified dashboard widget to monitor the connectivity and health of all connected Servarr apps.
+- **Flow Trigger: Grabbed Release**: Triggers immediately when a media search result is grabbed.
+- **Flow Trigger: Indexer Issue**: Triggers when Prowlarr detects an indexer is down.
+- **Flow Action: Run App Command**: Generic action to execute various Servarr commands (Refresh, Rescan, Backup).
+- **Standard Icons**: Applied official Homey SDK icons to all custom capabilities for a native look and feel.
+
+### Changed
+- **Optimized Polling**: Added 15-minute polling interval for Prowlarr indexer status.
+- **Improved UI**: Refreshed the Downloads & Action Panel widget with a modern, cleaner design.
+- **Better Capabilities**: Added `measure_prowlarr_indexers` and `measure_prowlarr_indexers_down`.
+
+### Fixed
+- **API Versioning**: Correctly handles Lidarr and Prowlarr as API v1.
+
 ## [1.6.1] - 2025-12-22 - Widget Fix
 
 ### Fixed

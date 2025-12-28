@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Homey SDK](https://img.shields.io/badge/Homey%20SDK-v3-blue)](https://apps-sdk-v3.developer.athom.com/)
 
-An extremely lightweight Homey App for the Homey Pro Mini that functions as a read-only monitoring interface and Flow bridge to control the Servarr suite (Radarr, Sonarr, Lidarr). Works with Servarr applications on any platform (Unraid, Docker, native installations, etc.).
+An extremely lightweight Homey App for the Homey Pro and Homey Pro Mini that functions as a monitoring interface and Flow bridge for the Servarr suite (Radarr, Sonarr, Lidarr, Prowlarr).
 
 ## 🎯 Purpose
 
@@ -17,73 +17,57 @@ This application is optimized for minimal CPU/memory usage and delivers the requ
 
 1. **Release Agenda Today** - Shows the total number of planned releases (movies, series, albums) for today
 2. **Downloads & Action Panel** - Shows queue status with pause/resume buttons
-   - Per-item controls: remove or block+remove downloads, with app color flags (Sonarr blue, Radarr yellow, Lidarr green)
-   - Note: per-item pause/resume is not supported by Servarr APIs; only remove/block per item or pause/resume the full queue (per app/all)
-   - Remove = remove from queue/client; Block = blocklist + remove
-   - Badges: shows ETA (hh:mm) when available and size (MB/GB) per item
-   - Refresh button: on-demand refresh without extra polling
+   - Per-item controls: remove or block+remove downloads, with app color flags (Sonarr blue, Radarr yellow, Lidarr green, Prowlarr purple)
+   - Badge: shows ETA (hh:mm) when available and size (MB/GB) per item
+   - Global controls: pause/resume all or per app
 3. **Release Calendar** - Interactive calendar widget with Day, Week, and Month views
-   - Color-coded releases: Radarr (yellow), Sonarr (blue), Lidarr (green)
-   - Download status indicators for each release
-   - Navigation controls for easy browsing
-   - Displays releases from current month ± 1 month
+   - Color-coded releases and navigation controls
+4. **System Health Status** - Unified overview of connectivity and health for all connected Servarr apps
 
 ### Flow Cards
 
 #### IF... Triggers (Status Reporting)
-- **A download has finished** - Triggered when a download successfully completes (with media title as tag)
-- **The queue is empty** - Triggered when the total queue of all apps drops to zero
+- **A release has been grabbed** - [NEW] Triggered as soon as a release is identified and sent to the download client
+- **An indexer has an issue** - [NEW] Specifically for Prowlarr, triggered when an indexer is detected as down
+- **A download has finished** - Triggered when a download successfully completes
+- **The queue is empty** - Triggered when the total queue drops to zero
 - **Health check failed** - Triggered when Servarr reports a health warning/error
 - **A media item was added** - Triggered when a movie/series/album/artist is added
 
 #### THEN... Actions (Action Control)
-- **Pause all Servarr Downloads** - Pauses downloads in all configured Servarr applications
-- **Resume all Servarr Downloads** - Resumes downloads in all configured Servarr applications
-- **Pause [APP] Downloads** - Pauses downloads for a specific app (Radarr/Sonarr/Lidarr)
-- **Resume [APP] Downloads** - Resumes downloads for a specific app (Radarr/Sonarr/Lidarr)
-- **Search missing items for [APP]** - Triggers a search for missing/wanted items for the chosen app
-- **Toggle monitored status** - Enable/disable monitoring for a specific media item by title
+- **Run command on [APP]** - [NEW] Generic action to execute various commands (e.g., Refresh, Rescan, Backup)
+- **Pause/Resume all Downloads** - Control all configured Servarr applications
+- **Pause/Resume [APP] Downloads** - Control a specific app
+- **Search missing items for [APP]** - Triggers a search for missing items
+- **Toggle monitored status** - Enable/disable monitoring for a specific media item
 
 ## 🚀 Installation
 
 1. Copy this app to your Homey App directory
 2. Install via the Homey Developer Console or via `homey app install`
 3. Add a "Servarr Control Hub" device via the Homey app
-4. Configure the API settings for Radarr, Sonarr and/or Lidarr
+4. Configure the API settings for Radarr, Sonarr, Lidarr, and/or Prowlarr
 
 ## ⚙️ Configuration
 
-When adding the device, configure:
-
-- **Radarr**: Base URL, port (default 7878), API key
-- **Sonarr**: Base URL, port (default 8989), API key
-- **Lidarr**: Base URL, port (default 8686), API key
-- **Manual refresh only** (optional): skip scheduled polling; use widget refresh instead
-- **Test Connections** button in pairing to verify URLs/API keys per app
-
-You don't need to configure all apps - only the apps you use.
-
-**Note**: Settings can be updated at any time via the device's Advanced Settings. Changes take effect immediately with automatic data refresh.
+Configure each app you use:
+- **Radarr**: Port 7878
+- **Sonarr**: Port 8989
+- **Lidarr**: Port 8686
+- **Prowlarr**: Port 9696
+- **Manual refresh only**: skip scheduled polling; use widget refresh instead
 
 ## 🔧 Technical Details
 
 ### Performance Optimizations
-
-- **Polling Interval**: 5 minutes for queue/releases (as required)
-- **Extended Polling**: 15 minutes for health checks, missing count, and library size
-- **Efficient API Calls**: Minimal data transfer, only required information (counts instead of full lists)
-- **Caching**: Results are cached where possible
-- **Lightweight**: Optimized for Homey Pro Mini
-- **Manual Refresh Mode**: Option to disable scheduled polling and refresh on-demand only
+- **Poll Rates**: 5 minutes for queue/releases, 15 minutes for health/missing/library/indexers.
+- **Data Pruning**: Truncates media titles and strips API overhead before storage.
+- **Minified Assets**: Widget UI assets are minified for minimal memory pressure.
 
 ### API Communication
-
-The app communicates directly with Servarr APIs via HTTP/HTTPS:
-- Radarr API v3
-- Sonarr API v3
-- Lidarr API v1 (Lidarr uses a different API version)
-
-The app automatically handles URL parsing, port detection, and API version selection for each application.
+- Radarr/Sonarr API v3
+- Lidarr/Prowlarr API v1
+- Implements `AbortController` with 15s timeouts.
 
 ### Capabilities
 
@@ -121,7 +105,7 @@ The code contains extensive comments about efficiency choices and implementation
 
 ## 📄 License
 
-This app is developed for use with Homey and Servarr applications.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🤝 Support
 

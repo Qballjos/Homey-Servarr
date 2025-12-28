@@ -57,6 +57,11 @@ For each Servarr application you want to use:
 - Default port: `8686`
 - Enable/disable with the toggle switch
 
+### Prowlarr
+- Default port: `9696`
+- Enable/disable with the toggle switch
+- Monitor indexer health and global history
+
 **Note**: 
 - You don't need to configure all apps - only enable the apps you use
 - The app works with Servarr on any platform (Docker, native, Unraid, etc.)
@@ -70,10 +75,20 @@ For each Servarr application you want to use:
 4. Choose one of the available widgets:
    - **Release Agenda Today** - Shows planned releases for today
    - **Downloads & Action Panel** - Shows queue status with pause/resume buttons
+   - **System Health Status** - [NEW] Unified overview of app connectivity and health
+   - **Release Calendar** - Calendar view of upcoming/past releases
 
 ## Step 5: Use Flow Cards
 
 ### IF... Triggers
+
+#### Release Grabbed
+- [NEW] Triggered when a new release is sent to the download client
+- Provides media title and app name as tags
+
+#### Indexer Issue
+- [NEW] Triggered when Prowlarr detects an indexer is down or has errors
+- Provides indexer name and error message
 
 #### Download Finished
 - Triggered when a download successfully completes
@@ -90,24 +105,21 @@ For each Servarr application you want to use:
 
 ### THEN... Actions
 
-#### Pause All Downloads
-- Pauses downloads in all configured Servarr apps
+#### Run App Command
+- [NEW] Generic action to run maintenance commands (Refresh, Rescan, Backup, etc.)
 
-#### Resume All Downloads
-- Resumes downloads in all configured Servarr apps
+#### Pause/Resume All Downloads
+- Control all configured Servarr apps simultaneously
 
-#### Pause App Downloads
-- Pauses downloads for a specific app (Radarr/Sonarr/Lidarr)
-
-#### Resume App Downloads
-- Resumes downloads for a specific app (Radarr/Sonarr/Lidarr)
+#### Pause/Resume App Downloads
+- Control a specific app (Radarr/Sonarr/Lidarr)
 
 #### Search Missing Items (per app)
-- Triggers a search for missing/wanted items for the chosen app
+- Triggers a search for missing items for the chosen app
 
 #### Toggle Monitored Status
 - Enable/disable monitoring for a specific media item by title
-- Searches for the item by title and toggles its monitored status
+- Searches for the item and toggles its status
 
 ## Troubleshooting
 
