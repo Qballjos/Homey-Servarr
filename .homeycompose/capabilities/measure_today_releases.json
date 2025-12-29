@@ -5,6 +5,5 @@
   "setable": false,
   "uiComponent": "sensor",
   "decimals": 0,
-  "icon": "homey:ui:calendar",
   "insights": true
 }

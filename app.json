@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "com.servarr.flowcontrol",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "compatibility": ">=12.1.0",
   "sdk": 3,
   "name": {
@@ -100,6 +100,62 @@
         ]
       },
       {
+        "id": "grab_event",
+        "title": {
+          "en": "A release has been grabbed"
+        },
+        "titleFormatted": {
+          "en": "Grabbed: [[title]] from [[app]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=servarr_hub"
+          },
+          {
+            "name": "title",
+            "type": "text",
+            "label": {
+              "en": "Media Title"
+            }
+          },
+          {
+            "name": "app",
+            "type": "dropdown",
+            "label": {
+              "en": "Servarr App"
+            },
+            "values": [
+              {
+                "id": "radarr",
+                "label": {
+                  "en": "Radarr"
+                }
+              },
+              {
+                "id": "sonarr",
+                "label": {
+                  "en": "Sonarr"
+                }
+              },
+              {
+                "id": "lidarr",
+                "label": {
+                  "en": "Lidarr"
+                }
+              },
+              {
+                "id": "prowlarr",
+                "label": {
+                  "en": "Prowlarr"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
         "id": "health_check_failed",
         "title": {
           "en": "Health check failed"
@@ -167,6 +223,69 @@
                 }
               }
             ]
+          }
+        ]
+      },
+      {
+        "id": "indexer_issue",
+        "title": {
+          "en": "An indexer has an issue"
+        },
+        "titleFormatted": {
+          "en": "Indexer [[indexer]] in [[app]] has issue: [[message]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=servarr_hub"
+          },
+          {
+            "name": "indexer",
+            "type": "text",
+            "label": {
+              "en": "Indexer Name"
+            }
+          },
+          {
+            "name": "app",
+            "type": "dropdown",
+            "label": {
+              "en": "Servarr App"
+            },
+            "values": [
+              {
+                "id": "prowlarr",
+                "label": {
+                  "en": "Prowlarr"
+                }
+              },
+              {
+                "id": "radarr",
+                "label": {
+                  "en": "Radarr"
+                }
+              },
+              {
+                "id": "sonarr",
+                "label": {
+                  "en": "Sonarr"
+                }
+              },
+              {
+                "id": "lidarr",
+                "label": {
+                  "en": "Lidarr"
+                }
+              }
+            ]
+          },
+          {
+            "name": "message",
+            "type": "text",
+            "label": {
+              "en": "Error Message"
+            }
           }
         ]
       },
@@ -271,6 +390,100 @@
       }
     ],
     "actions": [
+      {
+        "id": "command_app",
+        "title": {
+          "en": "Run command on [APP]"
+        },
+        "titleFormatted": {
+          "en": "Run [[command]] on [[app]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=servarr_hub"
+          },
+          {
+            "name": "app",
+            "type": "dropdown",
+            "label": {
+              "en": "Servarr App"
+            },
+            "values": [
+              {
+                "id": "radarr",
+                "label": {
+                  "en": "Radarr"
+                }
+              },
+              {
+                "id": "sonarr",
+                "label": {
+                  "en": "Sonarr"
+                }
+              },
+              {
+                "id": "lidarr",
+                "label": {
+                  "en": "Lidarr"
+                }
+              },
+              {
+                "id": "prowlarr",
+                "label": {
+                  "en": "Prowlarr"
+                }
+              }
+            ]
+          },
+          {
+            "name": "command",
+            "type": "dropdown",
+            "label": {
+              "en": "Command"
+            },
+            "values": [
+              {
+                "id": "RefreshMonitoredDownloads",
+                "label": {
+                  "en": "Refresh Downloads"
+                }
+              },
+              {
+                "id": "RescanMovie",
+                "label": {
+                  "en": "Rescan Movies (Radarr)"
+                }
+              },
+              {
+                "id": "RescanSeries",
+                "label": {
+                  "en": "Rescan Series (Sonarr)"
+                }
+              },
+              {
+                "id": "RescanAlbum",
+                "label": {
+                  "en": "Rescan Albums (Lidarr)"
+                }
+              },
+              {
+                "id": "ApplicationUpdateCheck",
+                "label": {
+                  "en": "Check for Updates"
+                }
+              },
+              {
+                "id": "Backup",
+                "label": {
+                  "en": "Backup Database"
+                }
+              }
+            ]
+          }
+        ]
+      },
       {
         "id": "pause_all",
         "title": {
@@ -522,7 +735,9 @@
         "measure_lidarr_releases",
         "measure_radarr_missing",
         "measure_sonarr_missing",
-        "measure_lidarr_missing"
+        "measure_lidarr_missing",
+        "measure_prowlarr_indexers",
+        "measure_prowlarr_indexers_down"
       ],
       "images": {
         "small": "/drivers/servarr_hub/assets/images/small.png",
@@ -677,6 +892,52 @@
               "value": ""
             }
           ]
+        },
+        {
+          "id": "prowlarr_group",
+          "type": "group",
+          "label": {
+            "en": "Prowlarr"
+          },
+          "children": [
+            {
+              "id": "prowlarr_enabled",
+              "type": "checkbox",
+              "label": {
+                "en": "Enable Prowlarr"
+              },
+              "value": false
+            },
+            {
+              "id": "prowlarr_url",
+              "type": "text",
+              "label": {
+                "en": "Base URL"
+              },
+              "value": "",
+              "hint": {
+                "en": "e.g. http://192.168.1.100 or https://prowlarr.example.com"
+              }
+            },
+            {
+              "id": "prowlarr_port",
+              "type": "number",
+              "label": {
+                "en": "Port"
+              },
+              "value": 9696,
+              "min": 1,
+              "max": 65535
+            },
+            {
+              "id": "prowlarr_api_key",
+              "type": "password",
+              "label": {
+                "en": "API Key"
+              },
+              "value": ""
+            }
+          ]
         }
       ],
       "pair": [
@@ -711,7 +972,8 @@
           },
           "singular": true,
           "filter": {
-            "driver_id": "servarr_hub"
+            "driver_id": "servarr_hub",
+            "class": "other"
           }
         }
       ],
@@ -736,7 +998,8 @@
           },
           "singular": true,
           "filter": {
-            "driver_id": "servarr_hub"
+            "driver_id": "servarr_hub",
+            "class": "other"
           }
         }
       ],
@@ -766,6 +1029,34 @@
       },
       "id": "downloads_panel"
     },
+    "health_status": {
+      "name": {
+        "en": "System Health Status"
+      },
+      "settings": [
+        {
+          "id": "device",
+          "type": "devices",
+          "title": {
+            "en": "Select Servarr Control Hub"
+          },
+          "singular": true,
+          "filter": {
+            "driver_id": "servarr_hub",
+            "class": "other"
+          }
+        }
+      ],
+      "height": 200,
+      "transparent": true,
+      "api": {
+        "getDeviceData": {
+          "method": "GET",
+          "path": "/"
+        }
+      },
+      "id": "health_status"
+    },
     "library_size": {
       "name": {
         "en": "Library Size"
@@ -779,7 +1070,8 @@
           },
           "singular": true,
           "filter": {
-            "driver_id": "servarr_hub"
+            "driver_id": "servarr_hub",
+            "class": "other"
           }
         }
       ],
@@ -806,7 +1098,8 @@
           },
           "singular": true,
           "filter": {
-            "driver_id": "servarr_hub"
+            "driver_id": "servarr_hub",
+            "class": "other"
           }
         }
       ],
@@ -859,6 +1152,28 @@
       "type": "number",
       "title": {
         "en": "Missing Items"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "decimals": 0,
+      "insights": true
+    },
+    "measure_prowlarr_indexers": {
+      "type": "number",
+      "title": {
+        "en": "Total Indexers"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "decimals": 0,
+      "insights": true
+    },
+    "measure_prowlarr_indexers_down": {
+      "type": "number",
+      "title": {
+        "en": "Indexers Down"
       },
       "getable": true,
       "setable": false,
@@ -939,8 +1254,7 @@
       },
       "getable": true,
       "setable": false,
-      "uiComponent": "sensor",
-      "insights": true
+      "uiComponent": "sensor"
     }
   }
 }
