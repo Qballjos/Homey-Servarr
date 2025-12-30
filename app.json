@@ -2,7 +2,7 @@
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "com.servarr.flowcontrol",
   "version": "1.6.1",
-  "compatibility": ">=12.1.0",
+  "compatibility": ">=12.3.0",
   "sdk": 3,
   "name": {
     "en": "Servarr Control Hub"
@@ -958,53 +958,36 @@
   ],
   "widgets": {
     "calendar": {
+      "id": "calendar",
       "name": {
         "en": "Release Calendar"
       },
       "height": 400,
       "transparent": true,
-      "settings": [
-        {
-          "id": "device",
-          "type": "devices",
-          "title": {
-            "en": "Select Servarr Control Hub"
-          },
-          "singular": true,
-          "filter": {
-            "driver_id": "servarr_hub",
-            "class": "other"
-          }
-        }
-      ],
+      "devices": {
+        "type": "app",
+        "singular": true
+      },
+      "settings": [],
       "api": {
         "getDeviceData": {
           "method": "GET",
           "path": "/"
         }
-      },
-      "id": "calendar"
+      }
     },
     "downloads_panel": {
+      "id": "downloads_panel",
       "name": {
         "en": "Downloads & Action Panel"
       },
-      "settings": [
-        {
-          "id": "device",
-          "type": "devices",
-          "title": {
-            "en": "Select Servarr Control Hub"
-          },
-          "singular": true,
-          "filter": {
-            "driver_id": "servarr_hub",
-            "class": "other"
-          }
-        }
-      ],
       "height": 300,
       "transparent": true,
+      "devices": {
+        "type": "app",
+        "singular": true
+      },
+      "settings": [],
       "api": {
         "getDeviceData": {
           "method": "GET",
@@ -1026,92 +1009,64 @@
           "method": "POST",
           "path": "/refresh"
         }
-      },
-      "id": "downloads_panel"
+      }
     },
     "health_status": {
+      "id": "health_status",
       "name": {
         "en": "System Health Status"
       },
-      "settings": [
-        {
-          "id": "device",
-          "type": "devices",
-          "title": {
-            "en": "Select Servarr Control Hub"
-          },
-          "singular": true,
-          "filter": {
-            "driver_id": "servarr_hub",
-            "class": "other"
-          }
-        }
-      ],
       "height": 200,
       "transparent": true,
+      "devices": {
+        "type": "app",
+        "singular": true
+      },
+      "settings": [],
       "api": {
         "getDeviceData": {
           "method": "GET",
           "path": "/"
         }
-      },
-      "id": "health_status"
+      }
     },
     "library_size": {
+      "id": "library_size",
       "name": {
         "en": "Library Size"
       },
-      "settings": [
-        {
-          "id": "device",
-          "type": "devices",
-          "title": {
-            "en": "Select Servarr Control Hub"
-          },
-          "singular": true,
-          "filter": {
-            "driver_id": "servarr_hub",
-            "class": "other"
-          }
-        }
-      ],
       "height": 100,
       "transparent": true,
+      "devices": {
+        "type": "app",
+        "singular": true
+      },
+      "settings": [],
       "api": {
         "getDeviceData": {
           "method": "GET",
           "path": "/"
         }
-      },
-      "id": "library_size"
+      }
     },
     "release_agenda": {
+      "id": "release_agenda",
       "name": {
         "en": "Release Agenda Today"
       },
-      "settings": [
-        {
-          "id": "device",
-          "type": "devices",
-          "title": {
-            "en": "Select Servarr Control Hub"
-          },
-          "singular": true,
-          "filter": {
-            "driver_id": "servarr_hub",
-            "class": "other"
-          }
-        }
-      ],
       "height": 200,
       "transparent": true,
+      "devices": {
+        "type": "app",
+        "singular": true
+      },
+      "settings": [],
       "api": {
         "getDeviceData": {
           "method": "GET",
           "path": "/"
         }
-      },
-      "id": "release_agenda"
+      }
     }
   },
   "capabilities": {

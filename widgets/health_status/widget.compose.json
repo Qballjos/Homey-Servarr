@@ -1,23 +1,15 @@
 {
+  "id": "health_status",
   "name": {
     "en": "System Health Status"
   },
-  "settings": [
-    {
-      "id": "device",
-      "type": "devices",
-      "title": {
-        "en": "Select Servarr Control Hub"
-      },
-      "singular": true,
-      "filter": {
-        "driver_id": "servarr_hub",
-        "class": "other"
-      }
-    }
-  ],
   "height": 200,
   "transparent": true,
+  "devices": {
+    "type": "app",
+    "singular": true
+  },
+  "settings": [],
   "api": {
     "getDeviceData": {
       "method": "GET",

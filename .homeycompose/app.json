@@ -1,7 +1,7 @@
 {
   "id": "com.servarr.flowcontrol",
   "version": "1.6.1",
-  "compatibility": ">=12.1.0",
+  "compatibility": ">=12.3.0",
   "sdk": 3,
   "name": {
     "en": "Servarr Control Hub"

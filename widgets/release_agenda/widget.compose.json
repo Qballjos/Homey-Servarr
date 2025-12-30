@@ -1,23 +1,15 @@
 {
+  "id": "release_agenda",
   "name": {
     "en": "Release Agenda Today"
   },
-  "settings": [
-    {
-      "id": "device",
-      "type": "devices",
-      "title": {
-        "en": "Select Servarr Control Hub"
-      },
-      "singular": true,
-      "filter": {
-        "driver_id": "servarr_hub",
-        "class": "other"
-      }
-    }
-  ],
   "height": 200,
   "transparent": true,
+  "devices": {
+    "type": "app",
+    "singular": true
+  },
+  "settings": [],
   "api": {
     "getDeviceData": {
       "method": "GET",
@@ -25,4 +17,3 @@
     }
   }
 }
-

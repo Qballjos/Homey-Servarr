@@ -1,23 +1,15 @@
 {
+  "id": "downloads_panel",
   "name": {
     "en": "Downloads & Action Panel"
   },
-  "settings": [
-    {
-      "id": "device",
-      "type": "devices",
-      "title": {
-        "en": "Select Servarr Control Hub"
-      },
-      "singular": true,
-      "filter": {
-        "driver_id": "servarr_hub",
-        "class": "other"
-      }
-    }
-  ],
   "height": 300,
   "transparent": true,
+  "devices": {
+    "type": "app",
+    "singular": true
+  },
+  "settings": [],
   "api": {
     "getDeviceData": {
       "method": "GET",
@@ -41,4 +33,3 @@
     }
   }
 }
-
