@@ -4,5 +4,8 @@
   },
   "1.6.1": {
     "en": " icons and app updated"
+  },
+  "1.7.0": {
+    "en": "Fixed API port handling, restructured widgets for Homey 12.3+, and updated compatibility."
   }
 }
