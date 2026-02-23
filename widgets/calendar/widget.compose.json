@@ -5,9 +5,10 @@
   },
   "height": 400,
   "transparent": true,
-  "devices": {
-    "type": "app",
-    "singular": true
-  },
+      "devices": [
+        {
+          "driverId": "servarr_hub"
+        }
+      ],
   "settings": []
 }

@@ -1,1 +1,18 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><script src="/lib/homey.js"></script><style>body{margin:0;padding:15px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;text-align:center;color:#2c3e50;background:0 0}#library-size{font-size:2em;font-weight:700}</style></head><body><div id="library-size">...</div><script>Homey.ready();async function update(){try{const t = await Homey.api("GET", "/widgets/library");if(t&&t.librarySize!==undefined){document.getElementById("library-size").innerText=t.librarySize}}catch(e){console.error("Error updating library size:",e)}}update(),setInterval(update,6e4),Homey.on("capability:measure_library_size",update);</script></body></html>
+<!DOCTYPE html><html><head><meta charset="utf-8"><script src="/homey.js"></script><style>body{margin:0;padding:15px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;text-align:center;color:#2c3e50;background:0 0}#library-size{font-size:2em;font-weight:700}</style></head><body><div id="library-size">...</div><script>
+function logToServer(level, message, context) {
+    try { Homey.api("POST", "/widgets/log", { level, message, context: { widget: "library_size", ...context } }).catch(() => {}); } catch(e) {}
+}
+Homey.ready();
+logToServer("INFO", "Widget library_size ready");
+async function update(){
+    try{
+        logToServer("DEBUG", "Requesting /widgets/library");
+        const t = await Homey.api("GET", "/widgets/library");
+        logToServer("DEBUG", "Received library data", { hasResult: !!t });
+        if(t&&t.librarySize!==undefined){document.getElementById("library-size").innerText=t.librarySize}
+    }catch(e){
+        logToServer("ERROR", "Error updating library size", { error: e.message });
+        console.error("Error updating library size:",e)
+    }
+}
+update(),setInterval(update,6e4),Homey.on("capability:measure_library_size",update);</script></body></html>

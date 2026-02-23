@@ -1,6 +1,6 @@
 {
   "id": "com.servarr.flowcontrol",
-  "version": "1.7.6",
+  "version": "1.7.7",
   "compatibility": ">=12.3.0",
   "sdk": 3,
   "name": {
@@ -72,6 +72,10 @@
     "refreshApp": {
       "method": "POST",
       "path": "/widgets/queue/refresh"
+    },
+    "logWidget": {
+      "method": "POST",
+      "path": "/widgets/log"
     }
   }
 }

@@ -94,6 +94,7 @@ module.exports = [
     method: 'GET',
     path: '/widgets/calendar',
     fn: async ({ homey, query }) => {
+      homey.app.log('[API] GET /widgets/calendar', query);
       const view = query.calendar_view || 'week';
       return getCalendarEvents(homey, view);
     },
@@ -102,6 +103,7 @@ module.exports = [
     method: 'GET',
     path: '/widgets/health',
     fn: async ({ homey }) => {
+      homey.app.log('[API] GET /widgets/health');
       const device = await getHubDevice(homey);
       if (!device) return { healthSummary: {} };
       const healthSummary = await device.getStoreValue('health_summary') || {};
@@ -112,6 +114,7 @@ module.exports = [
     method: 'GET',
     path: '/widgets/library',
     fn: async ({ homey }) => {
+      homey.app.log('[API] GET /widgets/library');
       const device = await getHubDevice(homey);
       if (!device) return { librarySize: 0 };
       const librarySize = await device.getCapabilityValue('measure_library_size');
@@ -122,6 +125,7 @@ module.exports = [
     method: 'GET',
     path: '/widgets/queue',
     fn: async ({ homey }) => {
+      homey.app.log('[API] GET /widgets/queue');
       const device = await getHubDevice(homey);
       if (!device) return { queueItems: [], queueAppCounts: {}, errors: {} };
       const queueItems = await device.getStoreValue('queue_items') || [];
@@ -134,6 +138,7 @@ module.exports = [
     method: 'GET',
     path: '/widgets/agenda',
     fn: async ({ homey }) => {
+      homey.app.log('[API] GET /widgets/agenda');
       const device = await getHubDevice(homey);
       if (!device) return { releases: [], appReleaseCounts: {}, appMissingCounts: {}, errors: {} };
       const releases = await device.getStoreValue('today_releases') || [];
@@ -167,11 +172,26 @@ module.exports = [
     method: 'POST',
     path: '/widgets/queue/refresh',
     fn: async ({ homey, body }) => {
+      homey.app.log('[API] POST /widgets/queue/refresh', body);
       const device = await getHubDevice(homey);
       if (!device) throw new Error('Device not found');
       const { app } = body;
       if (!app) throw new Error('Missing parameters');
       await device.refreshApp(app);
+      return { success: true };
+    },
+  },
+  {
+    method: 'POST',
+    path: '/widgets/log',
+    fn: async ({ homey, body }) => {
+      const { level, message, context } = body;
+      const logMsg = `[WIDGET LOG][${level || 'INFO'}] ${message} ${context ? JSON.stringify(context) : ''}`;
+      if (level === 'ERROR') {
+        homey.app.error(logMsg);
+      } else {
+        homey.app.log(logMsg);
+      }
       return { success: true };
     },
   },

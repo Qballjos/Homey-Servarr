@@ -25,5 +25,8 @@
   },
   "1.7.6": {
     "en": "Corrected API routing for widgets. This definitively fixes the issue where widgets would stay stuck in a loading state."
+  },
+  "1.7.7": {
+    "en": "Fixed homey.js inclusion path and added deep logging for widget diagnostics. Improved device selection filtering."
   }
 }
