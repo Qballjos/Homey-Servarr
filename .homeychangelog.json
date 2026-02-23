@@ -7,5 +7,8 @@
   },
   "1.7.0": {
     "en": "Fixed API port handling, restructured widgets for Homey 12.3+, and updated compatibility."
+  },
+  "1.7.1": {
+    "en": "Fixed invalid API calls to Prowlarr for unsupported endpoints (calendar, queue, missing, history, library). Eliminates 404 errors and reduces unnecessary network traffic."
   }
 }
