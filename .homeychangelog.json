@@ -16,5 +16,8 @@
   },
   "1.7.3": {
     "en": "Fixed widget loading issues by refactoring them to use the correct Homey SDK 3 View API. All widgets (Calendar, Downloads, Health, Library, Agenda) now function correctly."
+  },
+  "1.7.4": {
+    "en": "Fixed communication issue in widgets that caused them to stay stuck in a loading state. Standardized communication with the background API."
   }
 }
