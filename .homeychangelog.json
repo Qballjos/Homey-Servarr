@@ -19,5 +19,8 @@
   },
   "1.7.4": {
     "en": "Fixed communication issue in widgets that caused them to stay stuck in a loading state. Standardized communication with the background API."
+  },
+  "1.7.5": {
+    "en": "Final fix for widget loading issues. Standardized all widget communication using Homey's recommended API pattern."
   }
 }
