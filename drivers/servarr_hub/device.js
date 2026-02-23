@@ -264,6 +264,8 @@ class ServarrHubDevice extends Homey.Device {
     tomorrow.setDate(tomorrow.getDate() + 1);
     
     for (const [appName, client] of Object.entries(this._apiClients)) {
+      // Prowlarr doesn't have a calendar endpoint
+      if (appName === 'prowlarr') continue;
       try {
         const calendar = await client.getCalendar(today, tomorrow);
         totalReleases += calendar.length;
@@ -301,7 +303,7 @@ class ServarrHubDevice extends Homey.Device {
     await this.setStoreValue('today_releases', releases.slice(0, 100));
     
     // Store per-app release counts for widgets & panel view
-    const perAppReleases = { radarr: 0, sonarr: 0, lidarr: 0, prowlarr: 0 };
+    const perAppReleases = { radarr: 0, sonarr: 0, lidarr: 0 };
     for (const r of releases) {
       if (perAppReleases.hasOwnProperty(r.app)) {
         perAppReleases[r.app]++;
@@ -334,6 +336,8 @@ class ServarrHubDevice extends Homey.Device {
     end.setHours(23, 59, 59, 999);
     
     for (const [appName, client] of Object.entries(this._apiClients)) {
+      // Prowlarr doesn't have a calendar endpoint
+      if (appName === 'prowlarr') continue;
       try {
         const calendar = await client.getCalendar(start, end);
         
@@ -392,10 +396,12 @@ class ServarrHubDevice extends Homey.Device {
   async updateQueueCount() {
     let totalQueue = 0;
     const queueItems = [];
-    const perAppCounts = { radarr: 0, sonarr: 0, lidarr: 0, prowlarr: 0 };
+    const perAppCounts = { radarr: 0, sonarr: 0, lidarr: 0 };
     const pausedApps = [];
     
     for (const [appName, client] of Object.entries(this._apiClients)) {
+      // Prowlarr doesn't have queue endpoints
+      if (appName === 'prowlarr') continue;
       try {
         // Queue status (paused)
         const status = await client.getQueueStatus();
@@ -463,9 +469,11 @@ class ServarrHubDevice extends Homey.Device {
    */
   async updateMissingCount() {
     let totalMissing = 0;
-    const perAppMissing = { radarr: 0, sonarr: 0, lidarr: 0, prowlarr: 0 };
+    const perAppMissing = { radarr: 0, sonarr: 0, lidarr: 0 };
 
     for (const [appName, client] of Object.entries(this._apiClients)) {
+      // Prowlarr doesn't have a wanted/missing endpoint
+      if (appName === 'prowlarr') continue;
       try {
         // Fetch missing items and filter out future releases (only count past releases)
         const result = await client.getMissing(100, false); // pageSize=100, includeFuture=false
@@ -501,6 +509,8 @@ class ServarrHubDevice extends Homey.Device {
     let totalLibrarySize = 0;
     
     for (const [appName, client] of Object.entries(this._apiClients)) {
+      // Prowlarr doesn't have a library endpoint
+      if (appName === 'prowlarr') continue;
       try {
         const count = await client.getLibraryCount();
         totalLibrarySize += count;
@@ -582,6 +592,8 @@ class ServarrHubDevice extends Homey.Device {
    */
   async checkFinishedDownloads() {
     for (const [appName, client] of Object.entries(this._apiClients)) {
+      // Prowlarr doesn't have a history endpoint
+      if (appName === 'prowlarr') continue;
       // Load persistent history of triggered events
       let triggeredDownloadIds = (await this.getStoreValue('triggeredDownloadIds')) || [];
       let triggeredAddedIds = (await this.getStoreValue('triggeredAddedIds')) || [];
@@ -713,6 +725,8 @@ class ServarrHubDevice extends Homey.Device {
     const results = [];
     
     for (const [appName, client] of Object.entries(this._apiClients)) {
+      // Prowlarr doesn't have queue management
+      if (appName === 'prowlarr') continue;
       try {
         await client.pauseQueue();
         results.push({ app: appName, success: true });
@@ -736,6 +750,8 @@ class ServarrHubDevice extends Homey.Device {
     const results = [];
     
     for (const [appName, client] of Object.entries(this._apiClients)) {
+      // Prowlarr doesn't have queue management
+      if (appName === 'prowlarr') continue;
       try {
         await client.resumeQueue();
         results.push({ app: appName, success: true });
@@ -978,6 +994,15 @@ class ServarrHubDevice extends Homey.Device {
       throw new Error(`No client configured for ${appName}`);
     }
 
+    // Prowlarr only supports indexer status, not calendar/queue
+    if (appName === 'prowlarr') {
+      await this.updateProwlarrStatus();
+      this._clearAppError(appName);
+      await this.setStoreValue('app_errors', this._serializeErrors());
+      this.log(`Refreshed app ${appName} (indexer status only)`);
+      return { success: true };
+    }
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
@@ -1029,7 +1054,7 @@ class ServarrHubDevice extends Homey.Device {
         };
       });
 
-      const perAppCounts = (await this.getStoreValue('queue_app_counts')) || { radarr: 0, sonarr: 0, lidarr: 0, prowlarr: 0 };
+      const perAppCounts = (await this.getStoreValue('queue_app_counts')) || { radarr: 0, sonarr: 0, lidarr: 0 };
       perAppCounts[appName] = newQueueItems.length;
 
       const mergedQueue = [...filteredQueue, ...newQueueItems];
