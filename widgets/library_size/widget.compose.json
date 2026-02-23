@@ -5,10 +5,13 @@
   },
   "height": 100,
   "transparent": true,
-  "devices": [
-    {
-      "driverId": "servarr_hub"
-    }
-  ],
+  "devices": {
+    "singular": true,
+    "filters": [
+      {
+        "driverId": "servarr_hub"
+      }
+    ]
+  },
   "settings": []
 }

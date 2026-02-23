@@ -73,6 +73,10 @@
     "refreshApp": {
       "method": "POST",
       "path": "/widgets/queue/refresh"
+    },
+    "logWidget": {
+      "method": "POST",
+      "path": "/widgets/log"
     }
   },
   "flow": {
@@ -992,10 +996,11 @@
       },
       "height": 400,
       "transparent": true,
-      "devices": {
-        "type": "app",
-        "singular": true
-      },
+      "devices": [
+        {
+          "driverId": "servarr_hub"
+        }
+      ],
       "settings": []
     },
     "downloads_panel": {
@@ -1005,10 +1010,11 @@
       },
       "height": 300,
       "transparent": true,
-      "devices": {
-        "type": "app",
-        "singular": true
-      },
+      "devices": [
+        {
+          "driverId": "servarr_hub"
+        }
+      ],
       "settings": []
     },
     "health_status": {
@@ -1018,10 +1024,11 @@
       },
       "height": 200,
       "transparent": true,
-      "devices": {
-        "type": "app",
-        "singular": true
-      },
+      "devices": [
+        {
+          "driverId": "servarr_hub"
+        }
+      ],
       "settings": []
     },
     "library_size": {
@@ -1031,10 +1038,11 @@
       },
       "height": 100,
       "transparent": true,
-      "devices": {
-        "type": "app",
-        "singular": true
-      },
+      "devices": [
+        {
+          "driverId": "servarr_hub"
+        }
+      ],
       "settings": []
     },
     "release_agenda": {
@@ -1044,10 +1052,11 @@
       },
       "height": 200,
       "transparent": true,
-      "devices": {
-        "type": "app",
-        "singular": true
-      },
+      "devices": [
+        {
+          "driverId": "servarr_hub"
+        }
+      ],
       "settings": []
     }
   },
