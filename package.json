@@ -1,6 +1,6 @@
 {
   "name": "com.servarr.flowcontrol",
-  "version": "1.7.5",
+  "version": "1.7.6",
   "description": "Lightweight monitoring and control hub for Servarr suite (Radarr, Sonarr, Lidarr, Prowlarr)",
   "main": "app.js",
   "scripts": {

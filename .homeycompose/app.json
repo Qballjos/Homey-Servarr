@@ -1,6 +1,6 @@
 {
   "id": "com.servarr.flowcontrol",
-  "version": "1.7.5",
+  "version": "1.7.6",
   "compatibility": ">=12.3.0",
   "sdk": 3,
   "name": {
@@ -41,9 +41,37 @@
     ]
   },
   "api": {
-    "getCalendar": {
+    "getWidgetCalendar": {
       "method": "GET",
-      "path": "/"
+      "path": "/widgets/calendar"
+    },
+    "getWidgetHealth": {
+      "method": "GET",
+      "path": "/widgets/health"
+    },
+    "getWidgetLibrary": {
+      "method": "GET",
+      "path": "/widgets/library"
+    },
+    "getWidgetQueue": {
+      "method": "GET",
+      "path": "/widgets/queue"
+    },
+    "getWidgetAgenda": {
+      "method": "GET",
+      "path": "/widgets/agenda"
+    },
+    "pauseQueue": {
+      "method": "POST",
+      "path": "/widgets/queue/pause"
+    },
+    "resumeQueue": {
+      "method": "POST",
+      "path": "/widgets/queue/resume"
+    },
+    "refreshApp": {
+      "method": "POST",
+      "path": "/widgets/queue/refresh"
     }
   }
 }

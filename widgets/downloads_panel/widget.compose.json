@@ -9,27 +9,5 @@
     "type": "app",
     "singular": true
   },
-  "settings": [],
-  "api": {
-    "getDeviceData": {
-      "method": "GET",
-      "path": "/"
-    },
-    "pause": {
-      "method": "POST",
-      "path": "/pause"
-    },
-    "resume": {
-      "method": "POST",
-      "path": "/resume"
-    },
-    "remove": {
-      "method": "POST",
-      "path": "/remove"
-    },
-    "refresh": {
-      "method": "POST",
-      "path": "/refresh"
-    }
-  }
+  "settings": []
 }

@@ -22,5 +22,8 @@
   },
   "1.7.5": {
     "en": "Final fix for widget loading issues. Standardized all widget communication using Homey's recommended API pattern."
+  },
+  "1.7.6": {
+    "en": "Corrected API routing for widgets. This definitively fixes the issue where widgets would stay stuck in a loading state."
   }
 }

@@ -9,11 +9,5 @@
     "type": "app",
     "singular": true
   },
-  "settings": [],
-  "api": {
-    "getDeviceData": {
-      "method": "GET",
-      "path": "/"
-    }
-  }
+  "settings": []
 }
