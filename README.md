@@ -22,7 +22,10 @@ This application is optimized for minimal CPU/memory usage and delivers the requ
    - Global controls: pause/resume all or per app
 3. **Release Calendar** - Interactive calendar widget with Day, Week, and Month views
    - Color-coded releases and navigation controls
+   - [Refactored] Performance-optimized for SDK v3 using decoupled backend API communication
 4. **System Health Status** - Unified overview of connectivity and health for all connected Servarr apps
+   - [NEW] Dedicated API handler for minimal frontend latency
+5. **Library Size [NEW]** - Real-time library metrics for movies, series, and music
 
 ### Flow Cards
 
