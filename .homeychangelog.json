@@ -10,5 +10,8 @@
   },
   "1.7.1": {
     "en": "Fixed invalid API calls to Prowlarr for unsupported endpoints (calendar, queue, missing, history, library). Eliminates 404 errors and reduces unnecessary network traffic."
+  },
+  "1.7.2": {
+    "en": "Fixed invalid API calls to Prowlarr for unsupported endpoints (calendar, queue, missing, history, library). Eliminates 404 errors and reduces unnecessary network traffic."
   }
 }
