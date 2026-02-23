@@ -6,6 +6,7 @@
   "height": 300,
   "transparent": true,
   "devices": {
+    "type": "app",
     "singular": true,
     "filters": [
       {
