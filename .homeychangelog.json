@@ -13,5 +13,8 @@
   },
   "1.7.2": {
     "en": "Fixed invalid API calls to Prowlarr for unsupported endpoints (calendar, queue, missing, history, library). Eliminates 404 errors and reduces unnecessary network traffic."
+  },
+  "1.7.3": {
+    "en": "Fixed widget loading issues by refactoring them to use the correct Homey SDK 3 View API. All widgets (Calendar, Downloads, Health, Library, Agenda) now function correctly."
   }
 }
